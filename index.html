@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#08080f">
+<meta name="description" content="Live gold and silver price tracker for Malaysia with real-time updates, zakat calculator, and price alerts.">
+<title>Gold Rush — Live Gold & Silver Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold: #FFD700; --gold-light: #FFE55C; --gold-dark: #B8860B;
+  --gold-glow: rgba(255,215,0,0.15);
+  --silver: #C0C0C0; --silver-light: #E8E8E8;
+  --bg-0: #08080f; --bg-1: #0e0e1a; --bg-2: #151525;
+  --bg-card: rgba(255,255,255,0.025); --border: rgba(255,255,255,0.06);
+  --text-1: #fff; --text-2: #9090a8; --text-3: #5a5a70;
+  --green: #00d68f; --green-bg: rgba(0,214,143,0.1);
+  --red: #ff4757; --red-bg: rgba(255,71,87,0.1);
+  --orange: #ffa502; --orange-bg: rgba(255,165,2,0.1);
+  --r: 16px; --r-sm: 10px; --pill: 100px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+html { background: var(--bg-0); }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-0); color: var(--text-1); min-height: 100dvh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+.app { max-width: 480px; margin: 0 auto; padding-bottom: calc(40px + var(--safe-b)); position: relative; }
+
+/* Ambient */
+.ambient { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, var(--gold-glow), transparent 70%); pointer-events: none; z-index: 0; opacity: 0.6; transition: opacity 0.8s; }
+.ambient.silver { background: radial-gradient(circle, rgba(192,192,192,0.1), transparent 70%); }
+
+/* Header */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 8px; position: relative; z-index: 1; }
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; letter-spacing: -0.3px; }
+.logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 8px; display: grid; place-items: center; font-size: 14px; color: #000; font-weight: 800; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.lang-btn { padding: 4px 10px; font-size: 11px; font-weight: 700; border: 1.5px solid var(--border); background: transparent; color: var(--text-2); border-radius: var(--pill); cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
+.update-timer { font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; min-width: 22px; text-align: right; }
+.live-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--green); background: var(--green-bg); padding: 4px 10px; border-radius: var(--pill); }
+.pulse-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(0,214,143,0.4); } 50% { opacity:0.6; box-shadow: 0 0 0 6px rgba(0,214,143,0); } }
+.live-badge.demo { color: var(--orange); background: var(--orange-bg); }
+.live-badge.demo .pulse-dot { background: var(--orange); animation: none; }
+
+/* Metal Toggle */
+.metal-toggle { display: flex; justify-content: center; padding: 12px 20px 4px; position: relative; z-index: 1; }
+.mt-inner { display: flex; background: var(--bg-2); border-radius: var(--pill); padding: 3px; position: relative; }
+.mt-inner::before { content:''; position: absolute; top: 3px; left: 3px; width: calc(50% - 3px); height: calc(100% - 6px); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: var(--pill); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 0; }
+.mt-inner.silver::before { transform: translateX(100%); background: linear-gradient(135deg, var(--silver), #888); }
+.metal-btn { padding: 8px 28px; font-size: 13px; font-weight: 600; border: none; background: none; color: var(--text-2); cursor: pointer; position: relative; z-index: 1; border-radius: var(--pill); transition: color 0.3s; }
+.metal-btn.active { color: #000; }
+
+/* Purity */
+.purity-row { display: flex; justify-content: center; gap: 8px; padding: 12px 20px 0; position: relative; z-index: 1; }
+.purity-btn { padding: 6px 16px; font-size: 12px; font-weight: 600; border: 1.5px solid var(--border); background: transparent; color: var(--text-2); border-radius: var(--pill); cursor: pointer; transition: all 0.25s; }
+.purity-btn.active { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+.purity-btn.active.sil { border-color: var(--silver); color: var(--silver); background: rgba(192,192,192,0.1); }
+
+/* Price */
+.price-section { text-align: center; padding: 20px 20px 4px; position: relative; z-index: 1; }
+.price-row { display: flex; align-items: baseline; justify-content: center; gap: 4px; }
+.price-currency { font-size: 20px; font-weight: 500; color: var(--text-2); }
+.price-value { font-size: 52px; font-weight: 900; letter-spacing: -2px; background: linear-gradient(135deg, var(--gold-light), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-variant-numeric: tabular-nums; transition: opacity 0.15s; line-height: 1.1; }
+.price-value.sil-text { background: linear-gradient(135deg, var(--silver-light), var(--silver)); -webkit-background-clip: text; background-clip: text; }
+.price-value.flash { opacity: 0.5; }
+.price-unit { font-size: 16px; color: var(--text-3); }
+.price-change { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 4px 12px; border-radius: var(--pill); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.price-change.up { color: var(--green); background: var(--green-bg); }
+.price-change.down { color: var(--red); background: var(--red-bg); }
+.price-change .arrow { font-size: 10px; }
+.last-updated { margin-top: 4px; font-size: 11px; color: var(--text-3); }
+.spot-label { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+/* Price Level */
+.level-section { padding: 6px 40px 8px; position: relative; z-index: 1; }
+.level-bar { height: 6px; background: linear-gradient(90deg, var(--green), var(--orange), var(--red)); border-radius: 3px; position: relative; }
+.level-dot { position: absolute; top: 50%; width: 14px; height: 14px; background: var(--text-1); border: 2px solid var(--bg-0); border-radius: 50%; transform: translate(-50%, -50%); transition: left 0.6s ease; box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+.level-labels { display: flex; justify-content: space-between; margin-top: 4px; font-size: 10px; color: var(--text-3); font-weight: 500; }
+
+/* Chart */
+.chart-section { padding: 12px 12px 4px; position: relative; z-index: 1; }
+.tf-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 10px; }
+.tf-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; background: transparent; color: var(--text-3); border-radius: var(--pill); cursor: pointer; transition: all 0.25s; }
+.tf-btn.active { background: var(--gold); color: #000; }
+.tf-btn.active.sil { background: var(--silver); }
+.chart-wrap { height: 220px; position: relative; }
+.chart-wrap canvas { border-radius: var(--r); }
+
+/* Events */
+.events-row { display: flex; gap: 6px; overflow-x: auto; padding: 6px 16px 2px; scrollbar-width: none; }
+.events-row::-webkit-scrollbar { display: none; }
+.ev-chip { flex-shrink: 0; display: flex; align-items: center; gap: 5px; padding: 5px 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 10px; color: var(--text-2); white-space: nowrap; }
+.ev-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.ev-dot.up { background: var(--green); }
+.ev-dot.down { background: var(--red); }
+.ev-dot.neutral { background: var(--text-3); }
+.ev-date { color: var(--text-3); }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 16px; position: relative; z-index: 1; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.stat-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.stat-val { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat-val.green { color: var(--green); }
+.stat-val.red { color: var(--red); }
+
+/* Spread */
+.spread-section { display: flex; gap: 10px; padding: 8px 16px; position: relative; z-index: 1; }
+.spread-card { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; text-align: center; }
+.spread-card .label { font-size: 11px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+.spread-card .val { font-size: 20px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.spread-card.buy .val { color: var(--green); }
+.spread-card.sell .val { color: var(--red); }
+
+/* Weights */
+.weights-section { padding: 8px 16px; position: relative; z-index: 1; }
+.section-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text-2); }
+.weights-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.weights-scroll::-webkit-scrollbar { display: none; }
+.weight-chip { flex-shrink: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 16px; text-align: center; min-width: 100px; }
+.weight-chip .grams { font-size: 12px; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
+.weight-chip.sil-chip .grams { color: var(--silver); }
+.weight-chip .wprice { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Zakat */
+.zakat-section { padding: 8px 16px; position: relative; z-index: 1; }
+.zakat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; }
+.zakat-inputs { display: flex; gap: 12px; margin-bottom: 14px; }
+.zakat-field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.zakat-field label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+.zakat-field input, .zakat-field select { width: 100%; padding: 10px 12px; font-size: 15px; font-weight: 600; font-family: inherit; background: var(--bg-1); border: 1.5px solid var(--border); border-radius: var(--r-sm); color: var(--text-1); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.zakat-field input:focus, .zakat-field select:focus { border-color: var(--gold); }
+.zakat-field select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239090a8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
+.zakat-field select option { background: var(--bg-1); color: var(--text-1); }
+.zakat-result { padding: 12px 14px; background: var(--bg-1); border-radius: var(--r-sm); text-align: center; }
+.zakat-result .zr-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.zakat-result .zr-value { font-size: 22px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+.zakat-result .zr-note { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.zakat-result .zr-value.exempt { color: var(--green); font-size: 16px; }
+
+/* Calculator */
+.calc-section { padding: 8px 16px 20px; position: relative; z-index: 1; }
+.calc-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; }
+.calc-row { display: flex; gap: 12px; align-items: stretch; }
+.calc-field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.calc-field label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+.calc-field input { width: 100%; padding: 12px 14px; font-size: 16px; font-weight: 600; font-family: inherit; background: var(--bg-1); border: 1.5px solid var(--border); border-radius: var(--r-sm); color: var(--text-1); outline: none; font-variant-numeric: tabular-nums; transition: border-color 0.2s; }
+.calc-field input:focus { border-color: var(--gold); }
+.calc-swap { display: grid; place-items: center; align-self: flex-end; width: 40px; height: 44px; background: var(--bg-1); border: 1.5px solid var(--border); border-radius: var(--r-sm); color: var(--gold); font-size: 18px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.calc-swap:hover { background: var(--gold-glow); border-color: var(--gold); }
+
+/* Footer */
+.footer { text-align: center; padding: 16px 20px; font-size: 10px; color: var(--text-3); position: relative; z-index: 1; }
+.footer a { color: var(--text-3); text-decoration: none; }
+
+::-webkit-scrollbar { width: 0; height: 0; }
+@media (min-width: 520px) { .app { padding-left: 12px; padding-right: 12px; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="ambient" id="ambient"></div>
+
+  <header class="header">
+    <div class="logo"><div class="logo-icon">Au</div><span>Gold Rush</span></div>
+    <div class="header-right">
+      <button class="lang-btn" id="langBtn">BM</button>
+      <span class="update-timer" id="timer">30s</span>
+      <div class="live-badge" id="liveBadge"><span class="pulse-dot"></span><span id="badgeText">LIVE</span></div>
+    </div>
+  </header>
+
+  <div class="metal-toggle">
+    <div class="mt-inner" id="metalToggle">
+      <button class="metal-btn active" data-metal="gold" id="btnGold">Gold</button>
+      <button class="metal-btn" data-metal="silver" id="btnSilver">Silver</button>
+    </div>
+  </div>
+
+  <div class="purity-row" id="purityRow">
+    <button class="purity-btn active" data-purity="999">999</button>
+    <button class="purity-btn" data-purity="916">916</button>
+    <button class="purity-btn" data-purity="750">750</button>
+  </div>
+
+  <section class="price-section">
+    <div class="price-row">
+      <span class="price-currency">RM</span>
+      <span class="price-value" id="priceValue">—</span>
+      <span class="price-unit">/g</span>
+    </div>
+    <div class="price-change up" id="priceChange">
+      <span class="arrow">&#9650;</span>
+      <span id="changeText">RM 0.00 (0.00%)</span>
+    </div>
+    <div class="last-updated" id="lastUpdated">Loading...</div>
+    <div class="spot-label" id="spotLabel"></div>
+  </section>
+
+  <div class="level-section">
+    <div class="level-bar"><div class="level-dot" id="levelDot" style="left:50%"></div></div>
+    <div class="level-labels"><span id="lvlLow">Low</span><span id="lvlMid">Mid</span><span id="lvlHigh">High</span></div>
+  </div>
+
+  <section class="chart-section">
+    <div class="tf-row" id="tfRow">
+      <button class="tf-btn" data-tf="1D">24H</button>
+      <button class="tf-btn active" data-tf="7D">7D</button>
+      <button class="tf-btn" data-tf="1M">1M</button>
+      <button class="tf-btn" data-tf="3M">3M</button>
+      <button class="tf-btn" data-tf="6M">6M</button>
+      <button class="tf-btn" data-tf="1Y">1Y</button>
+    </div>
+    <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  </section>
+
+  <div class="events-row" id="eventsRow"></div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><span class="stat-label" id="lHigh">High</span><span class="stat-val" id="statHigh">—</span></div>
+    <div class="stat-card"><span class="stat-label" id="lLow">Low</span><span class="stat-val" id="statLow">—</span></div>
+    <div class="stat-card"><span class="stat-label" id="lAvg">Average</span><span class="stat-val" id="statAvg">—</span></div>
+    <div class="stat-card"><span class="stat-label" id="lVol">Volatility</span><span class="stat-val" id="statVol">—</span></div>
+  </div>
+
+  <div class="spread-section">
+    <div class="spread-card buy"><span class="label" id="lBuy">Buy</span><div class="val" id="buyPrice">—</div></div>
+    <div class="spread-card sell"><span class="label" id="lSell">Sell</span><div class="val" id="sellPrice">—</div></div>
+  </div>
+
+  <div class="weights-section">
+    <div class="section-title" id="lWeights">Quick Prices</div>
+    <div class="weights-scroll" id="weightsScroll"></div>
+  </div>
+
+  <div class="zakat-section">
+    <div class="section-title" id="lZakat">Zakat Calculator</div>
+    <div class="zakat-card">
+      <div class="zakat-inputs">
+        <div class="zakat-field">
+          <label id="lZGold">Gold held (g)</label>
+          <input type="number" id="zakatGrams" placeholder="100" inputmode="decimal">
+        </div>
+        <div class="zakat-field">
+          <label id="lZType">Type</label>
+          <select id="zakatType">
+            <option value="simpan" id="zOptKeep">Kept / Investment</option>
+            <option value="pakai" id="zOptWear">Worn (uruf: 850g)</option>
+          </select>
+        </div>
+      </div>
+      <div class="zakat-result" id="zakatResult">
+        <div class="zr-label" id="lZDue">Zakat due</div>
+        <div class="zr-value exempt" id="zakatValue">—</div>
+        <div class="zr-note" id="zakatNote"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-section">
+    <div class="section-title" id="lCalc">Calculator</div>
+    <div class="calc-card">
+      <div class="calc-row">
+        <div class="calc-field"><label id="lWeight">Weight (g)</label><input type="number" id="calcGrams" placeholder="10" inputmode="decimal"></div>
+        <button class="calc-swap" id="calcSwap">&#8644;</button>
+        <div class="calc-field"><label id="lValue">Value (RM)</label><input type="number" id="calcValue" placeholder="5,000" inputmode="decimal"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Gold Rush v1.0 — <span id="lDisclaimer">Prices are indicative dealer rates. Not financial advice.</span></div>
+</div>
+
+<script>
+"use strict";
+
+/* ══════════════════ STATE ══════════════════ */
+const S = { metal:'gold', purity:999, tf:'7D', price:0, prevPrice:0, spot:0, change:0, changePct:0, liveData:null, isLive:false, history:[], chart:null, countdown:30, timer:null, lang:'en' };
+
+const FALLBACK = { gold:{999:576,916:543,750:458}, silver:{999:7.20} };
+const WEIGHTS = [1,5,10,20,50,100];
+const TF_DAYS = {'1D':1,'7D':7,'1M':30,'3M':90,'6M':180,'1Y':365};
+const NISAB_GRAMS = 85;
+const URUF_GRAMS = 850;
+const ZAKAT_RATE = 0.025;
+
+/* ══════════════════ i18n ══════════════════ */
+const L = {
+  en: {
+    gold:'Gold', silver:'Silver', live:'LIVE', demo:'DEMO',
+    high:'High', low:'Low', average:'Average', volatility:'Volatility',
+    buy:'Buy', sell:'Sell', weights:'Quick Prices', calc:'Calculator',
+    weight:'Weight (g)', value:'Value (RM)', updated:'Updated',
+    zakat:'Zakat Calculator', zGold:'Gold held (g)', zType:'Type',
+    zKeep:'Kept / Investment', zWear:'Worn (uruf: 850g)', zDue:'Zakat due',
+    zExempt:'Exempt — below nisab', zNisab:'Nisab: 85g of 999 gold',
+    lvlLow:'Low', lvlMid:'Mid-range', lvlHigh:'High',
+    spot:'Spot', perG:'/g', disclaimer:'Prices are indicative dealer rates. Not financial advice.',
+    langLabel:'BM',
+  },
+  bm: {
+    gold:'Emas', silver:'Perak', live:'LANGSUNG', demo:'DEMO',
+    high:'Tertinggi', low:'Terendah', average:'Purata', volatility:'Kemeruapan',
+    buy:'Beli', sell:'Jual', weights:'Harga Pantas', calc:'Kalkulator',
+    weight:'Berat (g)', value:'Nilai (RM)', updated:'Dikemas kini',
+    zakat:'Kalkulator Zakat', zGold:'Emas dimiliki (g)', zType:'Jenis',
+    zKeep:'Simpanan / Pelaburan', zWear:'Dipakai (uruf: 850g)', zDue:'Zakat perlu dibayar',
+    zExempt:'Dikecualikan — bawah nisab', zNisab:'Nisab: 85g emas 999',
+    lvlLow:'Rendah', lvlMid:'Sederhana', lvlHigh:'Tinggi',
+    spot:'Spot', perG:'/g', disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',
+    langLabel:'EN',
+  }
+};
+
+function t(key) { return L[S.lang][key] || L.en[key] || key; }
+
+function applyLang() {
+  const m = (id, key) => { const el = document.getElementById(id); if(el) el.textContent = t(key); };
+  m('btnGold','gold'); m('btnSilver','silver'); m('lHigh','high'); m('lLow','low');
+  m('lAvg','average'); m('lVol','volatility'); m('lBuy','buy'); m('lSell','sell');
+  m('lWeights','weights'); m('lCalc','calc'); m('lWeight','weight'); m('lValue','value');
+  m('lZakat','zakat'); m('lZGold','zGold'); m('lZType','zType'); m('lZDue','zDue');
+  m('zOptKeep','zKeep'); m('zOptWear','zWear');
+  m('lvlLow','lvlLow'); m('lvlMid','lvlMid'); m('lvlHigh','lvlHigh');
+  m('lDisclaimer','disclaimer');
+  document.getElementById('langBtn').textContent = t('langLabel');
+  document.getElementById('badgeText').textContent = S.isLive ? t('live') : t('demo');
+  updateEvents();
+}
+
+/* ══════════════════ EVENTS DATA ══════════════════ */
+const EVENTS = [
+  { ts: Date.parse('2026-06-09'), en:'US CPI Data Release', bm:'Data CPI AS Dikeluarkan', type:'up' },
+  { ts: Date.parse('2026-06-04'), en:'ECB Rate Decision', bm:'Keputusan Kadar ECB', type:'down' },
+  { ts: Date.parse('2026-05-28'), en:'FOMC Meeting Minutes', bm:'Minit Mesyuarat FOMC', type:'neutral' },
+  { ts: Date.parse('2026-05-20'), en:'US-China Trade Talks', bm:'Rundingan Dagang AS-China', type:'up' },
+  { ts: Date.parse('2026-05-14'), en:'Fed Rate Hold 4.5%', bm:'Fed Kekal Kadar 4.5%', type:'up' },
+  { ts: Date.parse('2026-05-01'), en:'US Jobs Report Miss', bm:'Laporan Kerja AS Lemah', type:'up' },
+  { ts: Date.parse('2026-04-15'), en:'Middle East Ceasefire', bm:'Gencatan Senjata Timur Tengah', type:'down' },
+  { ts: Date.parse('2026-04-02'), en:'Q1 GDP Contracts', bm:'KDNK S1 Menguncup', type:'up' },
+  { ts: Date.parse('2026-03-18'), en:'Fed Rate Cut 25bps', bm:'Fed Potong Kadar 25bps', type:'up' },
+  { ts: Date.parse('2026-02-25'), en:'Ukraine Peace Deal', bm:'Perjanjian Damai Ukraine', type:'down' },
+  { ts: Date.parse('2026-01-20'), en:'Global Bank Stress', bm:'Tekanan Bank Global', type:'up' },
+  { ts: Date.parse('2025-12-15'), en:'Year-End Rally', bm:'Kenaikan Akhir Tahun', type:'up' },
+  { ts: Date.parse('2025-10-01'), en:'Recession Fears', bm:'Kebimbangan Kemelesetan', type:'up' },
+  { ts: Date.parse('2025-07-15'), en:'US Debt Ceiling Crisis', bm:'Krisis Had Hutang AS', type:'up' },
+];
+
+function getVisibleEvents() {
+  const days = TF_DAYS[S.tf];
+  const cutoff = Date.now() - days * 86400000;
+  return EVENTS.filter(e => e.ts >= cutoff).sort((a,b) => b.ts - a.ts);
+}
+
+function updateEvents() {
+  const evs = getVisibleEvents();
+  const row = document.getElementById('eventsRow');
+  if (!evs.length) { row.innerHTML = ''; return; }
+  row.innerHTML = evs.map(e => {
+    const d = new Date(e.ts);
+    const dateStr = d.toLocaleDateString(S.lang === 'bm' ? 'ms-MY' : 'en-MY', { day:'numeric', month:'short' });
+    const label = S.lang === 'bm' ? e.bm : e.en;
+    return `<div class="ev-chip"><span class="ev-dot ${e.type}"></span><span class="ev-date">${dateStr}</span> ${label}</div>`;
+  }).join('');
+}
+
+/* ══════════════════ API ══════════════════ */
+async function fetchPrices() {
+  try {
+    const r = await fetch('/api/prices');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (!d.live) throw new Error('not live');
+    S.liveData = d; S.isLive = true;
+    setBadge(true); return d;
+  } catch(e) {
+    console.warn('API unavailable:', e.message);
+    S.isLive = false; setBadge(false); return null;
+  }
+}
+
+function getLiveEntry() {
+  if (!S.liveData) return null;
+  return S.liveData[S.metal]?.[S.purity] || null;
+}
+
+function setBadge(live) {
+  const b = document.getElementById('liveBadge');
+  b.classList.toggle('demo', !live);
+  document.getElementById('badgeText').textContent = live ? t('live') : t('demo');
+}
+
+/* ══════════════════ FORMAT ══════════════════ */
+function fmtRM(v) {
+  return 'RM ' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+/* ══════════════════ SEEDED RNG ══════════════════ */
+function srand(seed) { let s = seed; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
+
+/* ══════════════════ CHART HISTORY ══════════════════ */
+function genHistory(endPrice, days) {
+  const vol = S.metal === 'gold' ? 0.004 : 0.008;
+  const ppd = days <= 1 ? 24 : days <= 7 ? 6 : 1;
+  const total = days * ppd;
+  const now = Date.now();
+  const step = (days * 86400000) / total;
+  const rng = srand(Math.floor(now / 86400000) * 7 + S.purity + (S.metal === 'silver' ? 9999 : 0));
+  const raw = [];
+  let p = endPrice * (0.97 + rng() * 0.06);
+  for (let i = total; i >= 0; i--) { p += (rng() - 0.505) * endPrice * vol; p = Math.max(endPrice * 0.88, Math.min(endPrice * 1.12, p)); raw.push(p); }
+  const offset = endPrice - raw[raw.length - 1];
+  return raw.map((v, i) => ({ x: now - (raw.length - 1 - i) * step, y: +(v + offset * (i / (raw.length - 1))).toFixed(2) }));
+}
+
+/* ══════════════════ CHART PLUGIN ══════════════════ */
+const eventPlugin = {
+  id: 'eventMarkers',
+  afterDatasetsDraw(chart) {
+    const evs = getVisibleEvents();
+    if (!evs.length) return;
+    const { ctx, chartArea: ca, scales: { x: xScale } } = chart;
+    evs.forEach(e => {
+      const px = xScale.getPixelForValue(e.ts);
+      if (px < ca.left || px > ca.right) return;
+      ctx.save();
+      ctx.setLineDash([3, 4]);
+      ctx.strokeStyle = e.type === 'up' ? '#00d68f' : e.type === 'down' ? '#ff4757' : '#5a5a70';
+      ctx.lineWidth = 1; ctx.globalAlpha = 0.35;
+      ctx.beginPath(); ctx.moveTo(px, ca.top); ctx.lineTo(px, ca.bottom); ctx.stroke();
+      ctx.globalAlpha = 0.9; ctx.setLineDash([]);
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.beginPath(); ctx.arc(px, ca.bottom - 6, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+  }
+};
+Chart.register(eventPlugin);
+
+/* ══════════════════ CHART ══════════════════ */
+function initChart() {
+  const ctx = document.getElementById('chart').getContext('2d');
+  const accent = S.metal === 'gold' ? '#FFD700' : '#C0C0C0';
+  S.chart = new Chart(ctx, {
+    type: 'line',
+    data: { datasets: [{ data: S.history, borderColor: accent, borderWidth: 2, fill: true,
+      backgroundColor: (c) => { const g = c.chart.ctx.createLinearGradient(0, 0, 0, c.chart.height); g.addColorStop(0, S.metal === 'gold' ? 'rgba(255,215,0,0.25)' : 'rgba(192,192,192,0.2)'); g.addColorStop(1, 'transparent'); return g; },
+      tension: 0.35, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: accent, pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+      animation: { duration: 600, easing: 'easeOutQuart' },
+      scales: { x: { type: 'time', display: false }, y: { display: false, grace: '5%' } },
+      plugins: { legend: { display: false }, eventMarkers: {},
+        tooltip: { backgroundColor: 'rgba(14,14,26,0.95)', titleColor: '#9090a8', bodyColor: accent,
+          bodyFont: { size: 15, weight: '700' }, titleFont: { size: 11 },
+          borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1, padding: 10, cornerRadius: 10, displayColors: false,
+          callbacks: {
+            title: (i) => new Date(i[0].parsed.x).toLocaleDateString(S.lang === 'bm' ? 'ms-MY' : 'en-MY', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }),
+            label: (i) => fmtRM(i.parsed.y)
+          }
+        }
+      }
+    }
+  });
+}
+
+function updateChart() {
+  if (!S.chart) { initChart(); return; }
+  const accent = S.metal === 'gold' ? '#FFD700' : '#C0C0C0';
+  const ds = S.chart.data.datasets[0];
+  ds.data = S.history; ds.borderColor = accent; ds.pointHoverBackgroundColor = accent;
+  S.chart.options.plugins.tooltip.bodyColor = accent;
+  S.chart.update('none');
+  requestAnimationFrame(() => S.chart.update());
+}
+
+/* ══════════════════ STATS ══════════════════ */
+function updateStats() {
+  const prices = S.history.map(p => p.y);
+  const high = Math.max(...prices), low = Math.min(...prices);
+  const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+  const rets = prices.slice(1).map((p, i) => (p - prices[i]) / prices[i]);
+  const vol = Math.sqrt(rets.reduce((a, r) => a + r * r, 0) / rets.length) * 100;
+  document.getElementById('statHigh').textContent = fmtRM(high);
+  document.getElementById('statLow').textContent = fmtRM(low);
+  document.getElementById('statAvg').textContent = fmtRM(avg);
+  const vE = document.getElementById('statVol');
+  vE.textContent = vol.toFixed(2) + '%'; vE.className = 'stat-val ' + (vol > 0.5 ? 'red' : 'green');
+
+  const range = high - low;
+  const pct = range > 0 ? ((S.price - low) / range) * 100 : 50;
+  document.getElementById('levelDot').style.left = Math.max(4, Math.min(96, pct)) + '%';
+}
+
+/* ══════════════════ SPREAD ══════════════════ */
+function updateSpread() {
+  const sp = S.metal === 'gold' ? 0.015 : 0.025;
+  document.getElementById('buyPrice').textContent = fmtRM(S.price * (1 + sp / 2));
+  document.getElementById('sellPrice').textContent = fmtRM(S.price * (1 - sp / 2));
+}
+
+/* ══════════════════ WEIGHTS ══════════════════ */
+function updateWeights() {
+  const sil = S.metal === 'silver';
+  document.getElementById('weightsScroll').innerHTML = WEIGHTS.map(w =>
+    `<div class="weight-chip${sil ? ' sil-chip' : ''}"><div class="grams">${w}g</div><div class="wprice">${fmtRM(S.price * w)}</div></div>`
+  ).join('');
+}
+
+/* ══════════════════ PRICE DISPLAY ══════════════════ */
+function updatePriceDisplay() {
+  const el = document.getElementById('priceValue');
+  const old = S.prevPrice, target = S.price;
+  el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 150);
+  const start = performance.now(), dur = 500;
+  function tick(now) {
+    const p = Math.min((now - start) / dur, 1);
+    el.textContent = (old + (target - old) * (1 - Math.pow(1 - p, 3))).toFixed(2);
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  if (old > 0) requestAnimationFrame(tick); else el.textContent = target.toFixed(2);
+
+  const up = S.change >= 0;
+  const cE = document.getElementById('priceChange');
+  cE.className = `price-change ${up ? 'up' : 'down'}`;
+  document.getElementById('changeText').textContent = `RM ${Math.abs(S.change).toFixed(2)} (${up ? '+' : ''}${S.changePct.toFixed(2)}%)`;
+  cE.querySelector('.arrow').innerHTML = up ? '&#9650;' : '&#9660;';
+
+  const timeStr = new Date().toLocaleTimeString(S.lang === 'bm' ? 'ms-MY' : 'en-MY', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('lastUpdated').textContent = `${t('updated')} ${timeStr}`;
+  document.getElementById('spotLabel').textContent = S.spot > 0 ? `${t('spot')}: ${fmtRM(S.spot)}${t('perG')}` : '';
+}
+
+/* ══════════════════ THEME ══════════════════ */
+function applyTheme() {
+  const sil = S.metal === 'silver';
+  document.getElementById('ambient').className = `ambient${sil ? ' silver' : ''}`;
+  document.getElementById('priceValue').className = `price-value${sil ? ' sil-text' : ''}`;
+  document.querySelectorAll('.purity-btn.active').forEach(b => b.classList.toggle('sil', sil));
+  document.querySelectorAll('.tf-btn.active').forEach(b => b.classList.toggle('sil', sil));
+}
+
+/* ══════════════════ ZAKAT ══════════════════ */
+function updateZakat() {
+  const grams = parseFloat(document.getElementById('zakatGrams').value);
+  const type = document.getElementById('zakatType').value;
+  const vE = document.getElementById('zakatValue');
+  const nE = document.getElementById('zakatNote');
+
+  if (isNaN(grams) || grams <= 0) {
+    vE.textContent = '—'; vE.className = 'zr-value exempt'; nE.textContent = ''; return;
+  }
+
+  const price999 = S.liveData?.gold?.[999]?.price || FALLBACK.gold[999];
+  const nisabValue = NISAB_GRAMS * price999;
+  const goldValue = grams * S.price;
+
+  if (type === 'pakai') {
+    if (grams <= URUF_GRAMS) {
+      vE.textContent = t('zExempt'); vE.className = 'zr-value exempt';
+      nE.textContent = `Uruf: ${URUF_GRAMS}g`;
+      return;
+    }
+    const excess = grams - URUF_GRAMS;
+    const excessValue = excess * S.price;
+    const zakat = excessValue * ZAKAT_RATE;
+    vE.textContent = fmtRM(zakat); vE.className = 'zr-value';
+    nE.textContent = `${excess.toFixed(1)}g × ${fmtRM(S.price)} × 2.5%`;
+    return;
+  }
+
+  if (goldValue < nisabValue) {
+    vE.textContent = t('zExempt'); vE.className = 'zr-value exempt';
+    nE.textContent = `${t('zNisab')} = ${fmtRM(nisabValue)}`;
+    return;
+  }
+
+  const zakat = goldValue * ZAKAT_RATE;
+  vE.textContent = fmtRM(zakat); vE.className = 'zr-value';
+  nE.textContent = `${grams}g × ${fmtRM(S.price)} × 2.5%`;
+}
+
+/* ══════════════════ CALCULATOR ══════════════════ */
+function setupCalc() {
+  const gE = document.getElementById('calcGrams'), vE = document.getElementById('calcValue');
+  gE.addEventListener('input', () => { const g = parseFloat(gE.value); vE.value = (!isNaN(g) && g >= 0) ? (g * S.price).toFixed(2) : ''; });
+  vE.addEventListener('input', () => { const v = parseFloat(vE.value); gE.value = (!isNaN(v) && v >= 0 && S.price > 0) ? (v / S.price).toFixed(2) : ''; });
+  document.getElementById('calcSwap').addEventListener('click', () => { [gE.value, vE.value] = [vE.value, gE.value]; });
+}
+
+/* ══════════════════ REFRESH ══════════════════ */
+async function refresh(fetchNew) {
+  if (fetchNew) await fetchPrices();
+  const entry = getLiveEntry();
+  S.prevPrice = S.price;
+  if (entry) {
+    S.price = entry.price; S.change = entry.change; S.changePct = entry.pct; S.spot = entry.spot;
+  } else {
+    const base = FALLBACK[S.metal]?.[S.purity] || 480;
+    if (S.price === 0) S.price = base;
+    const jitter = (Math.random() - 0.48) * base * 0.001;
+    S.price = +(base + jitter).toFixed(2);
+    S.change = +(S.price - base).toFixed(2);
+    S.changePct = +((S.change / base) * 100).toFixed(2);
+    S.spot = 0;
+  }
+  S.history = genHistory(S.price, TF_DAYS[S.tf]);
+  updatePriceDisplay(); updateChart(); updateStats(); updateSpread(); updateWeights(); updateEvents(); updateZakat(); applyTheme();
+  S.countdown = 30;
+}
+
+/* ══════════════════ TIMER ══════════════════ */
+function startTimer() {
+  clearInterval(S.timer);
+  S.timer = setInterval(async () => {
+    S.countdown--;
+    document.getElementById('timer').textContent = S.countdown + 's';
+    if (S.countdown <= 0) await refresh(true);
+  }, 1000);
+}
+
+/* ══════════════════ LISTENERS ══════════════════ */
+document.querySelectorAll('.metal-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.metal-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const m = btn.dataset.metal;
+    document.getElementById('metalToggle').className = 'mt-inner' + (m === 'silver' ? ' silver' : '');
+    S.metal = m;
+    const purities = m === 'silver' ? [999] : [999, 916, 750];
+    document.getElementById('purityRow').innerHTML = purities.map((p, i) =>
+      `<button class="purity-btn${i === 0 ? ' active' : ''}" data-purity="${p}">${p}</button>`
+    ).join('');
+    S.purity = purities[0]; bindPurity(); refresh(false);
+  });
+});
+
+function bindPurity() {
+  document.querySelectorAll('.purity-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.purity-btn').forEach(b => b.classList.remove('active', 'sil'));
+      btn.classList.add('active');
+      if (S.metal === 'silver') btn.classList.add('sil');
+      S.purity = +btn.dataset.purity; refresh(false);
+    });
+  });
+}
+
+document.querySelectorAll('.tf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active', 'sil'));
+    btn.classList.add('active');
+    if (S.metal === 'silver') btn.classList.add('sil');
+    S.tf = btn.dataset.tf; refresh(false);
+  });
+});
+
+document.getElementById('langBtn').addEventListener('click', () => {
+  S.lang = S.lang === 'en' ? 'bm' : 'en';
+  try { localStorage.setItem('gr_lang', S.lang); } catch(e) {}
+  applyLang();
+});
+
+document.getElementById('zakatGrams').addEventListener('input', updateZakat);
+document.getElementById('zakatType').addEventListener('change', updateZakat);
+
+/* ══════════════════ INIT ══════════════════ */
+try { S.lang = localStorage.getItem('gr_lang') || 'en'; } catch(e) {}
+bindPurity(); setupCalc(); applyLang();
+refresh(true).then(() => { initChart(); updateChart(); startTimer(); });
+</script>
+</body>
+</html>
