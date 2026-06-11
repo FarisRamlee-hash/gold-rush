@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#050510">
 <meta name="description" content="Live gold and silver price tracker for Malaysia with real-time updates, zakat calculator, and price alerts.">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <title>Gold Rush — Live Gold & Silver Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -604,6 +607,9 @@ function initModals(){
 try{S.lang=localStorage.getItem('gr_lang')||'en'}catch(e){}
 bindPurity();setupCalc();applyLang();initTilt();initModals();
 refresh(true).then(()=>{initChart();updateChart();startTimer()});
+
+/* ══════════════════ SERVICE WORKER ══════════════════ */
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
