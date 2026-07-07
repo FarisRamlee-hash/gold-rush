@@ -150,6 +150,11 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .dealer-filters::-webkit-scrollbar{display:none}
 .df-btn{padding:6px 14px;font-size:11px;font-weight:600;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(8px);color:var(--text3);border-radius:var(--pill);cursor:pointer;transition:all .3s;white-space:nowrap;flex-shrink:0}
 .df-btn.active{border-color:rgba(255,215,0,0.3);color:var(--gold);background:rgba(255,215,0,0.06)}
+.sort-row{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 2px}
+.sort-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.sort-toggle{display:flex;background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--pill);padding:2px}
+.sort-btn{padding:5px 14px;font-size:11px;font-weight:600;border:none;background:none;color:var(--text3);border-radius:var(--pill);cursor:pointer;transition:all .3s}
+.sort-btn.active{background:rgba(255,215,0,0.1);color:var(--gold);border:1px solid rgba(255,215,0,0.2)}
 .dealer-count{font-size:11px;color:var(--text3);padding:2px 16px 6px;font-variant-numeric:tabular-nums}
 .dealer-list{display:flex;flex-direction:column;gap:10px;padding:4px 16px}
 .dealer-card{padding:14px 16px;position:relative;overflow:hidden}
@@ -318,6 +323,13 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <button class="df-btn" data-cat="digital" id="dfDigital">Digital</button>
       <button class="df-btn" data-cat="bank" id="dfBank">Banks</button>
     </div>
+    <div class="sort-row">
+      <div class="sort-label" id="lSortBy">Sort by</div>
+      <div class="sort-toggle" id="sortToggle">
+        <button class="sort-btn active" data-sort="popularity" id="sortPop">Popular</button>
+        <button class="sort-btn" data-sort="price" id="sortPrice">Cheapest</button>
+      </div>
+    </div>
     <div class="dealer-count" id="dealerCount"></div>
     <div class="dealer-list" id="dealerList"></div>
     <div style="padding:12px 16px;font-size:10px;color:var(--text3);text-align:center" id="lCompareNote">Estimated prices based on typical dealer premiums. Actual prices may vary.</div>
@@ -416,7 +428,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 function initTilt(){if(window.matchMedia('(hover:none)').matches)return;document.querySelectorAll('.tilt').forEach(el=>{el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(600px) rotateY(${x*10}deg) rotateX(${-y*10}deg) scale(1.02)`;el.style.boxShadow=`${-x*15}px ${-y*15}px 30px rgba(255,215,0,0.04),0 0 0 1px rgba(255,215,0,0.06)`});el.addEventListener('mouseleave',()=>{el.style.transform='';el.style.boxShadow=''})})}
 
 /* ═══ STATE ═══ */
-const S={metal:'gold',purity:999,tf:'7D',price:0,prevPrice:0,spot:0,change:0,changePct:0,liveData:null,isLive:false,history:[],chart:null,countdown:30,timer:null,lang:'en',tab:'Live',dealerCat:'all'};
+const S={metal:'gold',purity:999,tf:'7D',price:0,prevPrice:0,spot:0,change:0,changePct:0,liveData:null,isLive:false,history:[],chart:null,countdown:30,timer:null,lang:'en',tab:'Live',dealerCat:'all',dealerSort:'popularity'};
 const FALLBACK={gold:{999:576,916:543,750:458},silver:{999:7.20}};
 const WEIGHTS=[1,5,10,20,50,100];
 const TF_DAYS={'1D':1,'7D':7,'1M':30,'3M':90,'6M':180,'1Y':365};
@@ -424,59 +436,59 @@ const NISAB_GRAMS=85,URUF_GRAMS=850,ZAKAT_RATE=0.025;
 
 /* ═══ DEALERS ═══ */
 const DEALERS=[
-  {id:'publicGold',name:'Public Gold',cat:'dealer',
+  {id:'publicGold',name:'Public Gold',cat:'dealer',pop:1,
    en:'Largest private gold dealer',bm:'Peniaga emas swasta terbesar',
    buy:{999:1.12,916:1.15,750:1.18},sell:{999:0.98,916:0.97,750:0.96}},
-  {id:'quantumMetal',name:'Quantum Metal',cat:'dealer',
+  {id:'quantumMetal',name:'Quantum Metal',cat:'dealer',pop:9,
    en:'Online gold investment',bm:'Pelaburan emas dalam talian',
    buy:{999:1.08,916:1.11,750:1.14},sell:{999:0.97,916:0.96,750:0.95}},
-  {id:'pohKong',name:'Poh Kong',cat:'jeweller',
+  {id:'pohKong',name:'Poh Kong',cat:'jeweller',pop:2,
    en:'Bursa-listed jewellery chain',bm:'Rangkaian barang kemas tersenarai Bursa',
    buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.96,750:0.95}},
-  {id:'habib',name:'Habib Jewels',cat:'jeweller',
+  {id:'habib',name:'Habib Jewels',cat:'jeweller',pop:3,
    en:'Premium jewellery retailer',bm:'Peruncit barang kemas premium',
    buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.97,916:0.95,750:0.94}},
-  {id:'tomei',name:'Tomei',cat:'jeweller',
+  {id:'tomei',name:'Tomei',cat:'jeweller',pop:6,
    en:'Bursa-listed gold & jewellery',bm:'Emas & barang kemas tersenarai Bursa',
    buy:{999:1.09,916:1.12,750:1.15},sell:{999:0.97,916:0.96,750:0.95}},
-  {id:'wahChan',name:'Wah Chan',cat:'jeweller',
+  {id:'wahChan',name:'Wah Chan',cat:'jeweller',pop:8,
    en:'Established gold retailer',bm:'Peruncit emas lama bertapak',
    buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.95,750:0.94}},
-  {id:'zhulian',name:'Zhulian',cat:'jeweller',
+  {id:'zhulian',name:'Zhulian',cat:'jeweller',pop:10,
    en:'Direct-selling jeweller',bm:'Barang kemas jualan langsung',
    buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.96,916:0.95,750:0.94}},
-  {id:'helloGold',name:'HelloGold',cat:'digital',
+  {id:'helloGold',name:'HelloGold',cat:'digital',pop:5,
    en:'Digital gold savings app',bm:'Aplikasi simpanan emas digital',
    buy:{999:1.03},sell:{999:0.99}},
-  {id:'goldSilverCentral',name:'GoldSilver Central',cat:'digital',
+  {id:'goldSilverCentral',name:'GoldSilver Central',cat:'digital',pop:13,
    en:'Online bullion marketplace',bm:'Pasaran jongkong emas dalam talian',
    buy:{999:1.04,916:1.08},sell:{999:0.99,916:0.97}},
-  {id:'mygold',name:'MyGold (Maybank)',cat:'digital',
+  {id:'mygold',name:'MyGold (Maybank)',cat:'digital',pop:11,
    en:'Maybank digital gold',bm:'Emas digital Maybank',
    buy:{999:1.05},sell:{999:0.98}},
-  {id:'maybank',name:'Maybank Gold Account-i',cat:'bank',
+  {id:'maybank',name:'Maybank Gold Account-i',cat:'bank',pop:4,
    en:'Gold savings passbook',bm:'Buku simpanan emas',
    buy:{999:1.08},sell:{999:0.97}},
-  {id:'cimb',name:'CIMB Gold',cat:'bank',
+  {id:'cimb',name:'CIMB Gold',cat:'bank',pop:7,
    en:'Gold investment account',bm:'Akaun pelaburan emas',
    buy:{999:1.08},sell:{999:0.97}},
-  {id:'kfh',name:'KFH Gold Account-i',cat:'bank',
+  {id:'kfh',name:'KFH Gold Account-i',cat:'bank',pop:12,
    en:'Islamic gold savings',bm:'Simpanan emas Islamik',
    buy:{999:1.07},sell:{999:0.97}},
-  {id:'uob',name:'UOB Gold Account',cat:'bank',
+  {id:'uob',name:'UOB Gold Account',cat:'bank',pop:14,
    en:'Gold savings account',bm:'Akaun simpanan emas',
    buy:{999:1.08},sell:{999:0.97}},
 ];
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
   const m=(id,k)=>{const el=document.getElementById(id);if(el)el.textContent=t(k)};
-  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');
+  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');
   document.getElementById('langBtn').textContent=t('langLabel');
   document.getElementById('badgeText').textContent=S.isLive?t('live'):t('demo');
   updateEvents();updateDealers();
@@ -539,13 +551,13 @@ function updateDealers(){
     return{...d,buyP,sellP,spread};
   }).filter(Boolean);
   const filtered=S.dealerCat==='all'?all:all.filter(d=>d.cat===S.dealerCat);
-  const sorted=filtered.sort((a,b)=>a.buyP-b.buyP);
-  const cheapestP=sorted[0]?.buyP||0;
+  const sorted=S.dealerSort==='price'?filtered.sort((a,b)=>a.buyP-b.buyP):filtered.sort((a,b)=>a.pop-b.pop);
+  const cheapestP=Math.min(...filtered.map(d=>d.buyP));
   const bestSellP=Math.max(...sorted.map(d=>d.sellP||0));
   const countEl=document.getElementById('dealerCount');
   countEl.textContent=S.lang==='bm'?`${sorted.length} peniaga tersedia`:`${sorted.length} dealers available`;
   document.getElementById('dealerList').innerHTML=sorted.map((d,i)=>{
-    const isCheap=i===0;
+    const isCheap=d.buyP===cheapestP;
     const isBestSell=d.sellP===bestSellP&&d.sellP>0;
     const diff=d.buyP-cheapestP;
     const desc=S.lang==='bm'?d.bm:d.en;
@@ -569,6 +581,13 @@ document.getElementById('dealerFilters').addEventListener('click',e=>{
   const btn=e.target.closest('.df-btn');if(!btn)return;
   S.dealerCat=btn.dataset.cat;
   document.querySelectorAll('.df-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  updateDealers();
+});
+document.getElementById('sortToggle').addEventListener('click',e=>{
+  const btn=e.target.closest('.sort-btn');if(!btn)return;
+  S.dealerSort=btn.dataset.sort;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   updateDealers();
 });
