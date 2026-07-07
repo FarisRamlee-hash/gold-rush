@@ -17,76 +17,35 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-
 :root{
-  --gold:#FFD700;--gold-l:#FFE55C;--gold-d:#B8860B;
-  --glow:rgba(255,215,0,0.12);--glow-s:rgba(255,215,0,0.06);
-  --sil:#C0C0C0;--sil-l:#E8E8E8;
-  --bg:#050510;--bg1:#0a0a1a;--bg2:#10102a;
+  --gold:#FFD700;--gold-l:#FFE55C;--gold-d:#B8860B;--glow:rgba(255,215,0,0.12);--glow-s:rgba(255,215,0,0.06);
+  --sil:#C0C0C0;--sil-l:#E8E8E8;--bg:#050510;--bg1:#0a0a1a;--bg2:#10102a;
   --glass:rgba(255,255,255,0.025);--glass-b:rgba(255,255,255,0.055);
   --text1:#fff;--text2:#8a8aaa;--text3:#4a4a68;
-  --grn:#00d68f;--grn-bg:rgba(0,214,143,0.08);
-  --red:#ff4757;--red-bg:rgba(255,71,87,0.08);
+  --grn:#00d68f;--grn-bg:rgba(0,214,143,0.08);--red:#ff4757;--red-bg:rgba(255,71,87,0.08);
   --orange:#ffa502;--orange-bg:rgba(255,165,2,0.08);
-  --r:20px;--r-sm:12px;--pill:100px;
-  --ease:cubic-bezier(.2,0,0,1);
+  --r:20px;--r-sm:12px;--pill:100px;--ease:cubic-bezier(.2,0,0,1);
   --safe-b:env(safe-area-inset-bottom,0px);
 }
-
 html{background:var(--bg)}
-
-body{
-  font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text1);
-  min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;
-}
-
-/* ─── Grid background ─── */
-body::before{
-  content:'';position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(255,215,0,0.04),transparent),
-    linear-gradient(rgba(255,215,0,0.012) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,215,0,0.012) 1px,transparent 1px);
-  background-size:100% 100%,50px 50px,50px 50px;
-  pointer-events:none;z-index:0;
-}
-
-/* ─── Noise overlay ─── */
-body::after{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:9999;opacity:.4;
-}
-
-.app{max-width:480px;margin:0 auto;padding-bottom:calc(40px + var(--safe-b));position:relative;z-index:1}
-
-/* ─── Ambient orbs ─── */
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text1);min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(255,215,0,0.04),transparent),linear-gradient(rgba(255,215,0,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,215,0,0.012) 1px,transparent 1px);background-size:100% 100%,50px 50px,50px 50px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
+.app{max-width:480px;margin:0 auto;padding-bottom:calc(72px + var(--safe-b));position:relative;z-index:1}
 .orb{position:fixed;border-radius:50%;pointer-events:none;filter:blur(80px);z-index:0;animation:drift 12s ease-in-out infinite alternate}
 .orb-1{width:300px;height:300px;top:-80px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,215,0,0.12),transparent 70%)}
 .orb-2{width:200px;height:200px;bottom:10%;right:-60px;background:radial-gradient(circle,rgba(255,165,0,0.06),transparent 70%);animation-delay:-5s}
-.orb.silver .orb-1{background:radial-gradient(circle,rgba(192,192,192,0.08),transparent 70%)}
 @keyframes drift{0%{transform:translateX(-50%) translateY(0)}100%{transform:translateX(-50%) translateY(20px)}}
+.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border:1px solid var(--glass-b);border-radius:var(--r);transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .4s;will-change:transform}
+.glass:hover{border-color:rgba(255,215,0,0.12);box-shadow:0 8px 40px rgba(255,215,0,0.04)}
 
-/* ─── Glass card ─── */
-.glass{
-  background:var(--glass);
-  backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);
-  border:1px solid var(--glass-b);border-radius:var(--r);
-  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .4s;
-  will-change:transform;
-}
-.glass:hover{
-  border-color:rgba(255,215,0,0.12);
-  box-shadow:0 8px 40px rgba(255,215,0,0.04),0 0 0 1px rgba(255,215,0,0.04);
-}
-
-/* ─── Header ─── */
+/* Header */
 .header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;position:relative;z-index:2}
 .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;letter-spacing:-.3px}
 .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--gold-d));border-radius:8px;display:grid;place-items:center;font-size:14px;color:#000;font-weight:800;box-shadow:0 0 20px rgba(255,215,0,0.2)}
 .header-right{display:flex;align-items:center;gap:8px}
 .lang-btn{padding:4px 10px;font-size:11px;font-weight:700;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(12px);color:var(--text2);border-radius:var(--pill);cursor:pointer;transition:all .3s;letter-spacing:.5px}
-.lang-btn:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 16px var(--glow-s)}
+.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
 .update-timer{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
 .live-badge{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--grn);background:var(--grn-bg);padding:4px 10px;border-radius:var(--pill);backdrop-filter:blur(8px);border:1px solid rgba(0,214,143,0.1)}
 .pulse-dot{width:6px;height:6px;background:var(--grn);border-radius:50%;box-shadow:0 0 8px var(--grn);animation:pulse 2s ease-in-out infinite}
@@ -94,21 +53,19 @@ body::after{
 .live-badge.demo{color:var(--orange);background:var(--orange-bg);border-color:rgba(255,165,2,0.1)}
 .live-badge.demo .pulse-dot{background:var(--orange);box-shadow:0 0 8px var(--orange);animation:none}
 
-/* ─── Metal Toggle ─── */
+/* Controls */
 .metal-toggle{display:flex;justify-content:center;padding:12px 20px 4px;position:relative;z-index:2}
 .mt-inner{display:flex;background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-b);border-radius:var(--pill);padding:3px;position:relative}
 .mt-inner::before{content:'';position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);background:linear-gradient(135deg,var(--gold),var(--gold-d));border-radius:var(--pill);transition:transform .35s var(--ease);z-index:0;box-shadow:0 0 20px rgba(255,215,0,0.25)}
 .mt-inner.silver::before{transform:translateX(100%);background:linear-gradient(135deg,var(--sil),#888);box-shadow:0 0 20px rgba(192,192,192,0.15)}
 .metal-btn{padding:8px 28px;font-size:13px;font-weight:600;border:none;background:none;color:var(--text2);cursor:pointer;position:relative;z-index:1;border-radius:var(--pill);transition:color .3s}
 .metal-btn.active{color:#000}
-
-/* ─── Purity ─── */
 .purity-row{display:flex;justify-content:center;gap:8px;padding:12px 20px 0;position:relative;z-index:2}
 .purity-btn{padding:6px 16px;font-size:12px;font-weight:600;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(8px);color:var(--text2);border-radius:var(--pill);cursor:pointer;transition:all .3s}
 .purity-btn.active{border-color:rgba(255,215,0,0.35);color:var(--gold);background:rgba(255,215,0,0.06);box-shadow:0 0 24px var(--glow-s),inset 0 0 16px rgba(255,215,0,0.03)}
-.purity-btn.active.sil{border-color:rgba(192,192,192,0.3);color:var(--sil);background:rgba(192,192,192,0.06);box-shadow:0 0 24px rgba(192,192,192,0.04)}
+.purity-btn.active.sil{border-color:rgba(192,192,192,0.3);color:var(--sil);background:rgba(192,192,192,0.06)}
 
-/* ─── Price ─── */
+/* Price */
 .price-section{text-align:center;padding:24px 20px 4px;position:relative;z-index:2}
 .price-row{display:flex;align-items:baseline;justify-content:center;gap:4px}
 .price-currency{font-size:20px;font-weight:500;color:var(--text2)}
@@ -122,14 +79,11 @@ body::after{
 .price-change .arrow{font-size:10px}
 .last-updated{margin-top:5px;font-size:11px;color:var(--text3)}
 .spot-label{font-size:11px;color:var(--text3);margin-top:2px}
-
-/* ─── Price Level (integrated) ─── */
 .level-section{padding:0 60px;position:relative;z-index:2;margin-top:2px;margin-bottom:6px}
 .level-bar{height:2px;background:linear-gradient(90deg,var(--grn) 0%,rgba(255,255,255,0.06) 50%,var(--red) 100%);border-radius:1px;position:relative;opacity:.5}
 .level-dot{position:absolute;top:50%;width:8px;height:8px;background:var(--text1);border-radius:50%;transform:translate(-50%,-50%);transition:left .6s ease;box-shadow:0 0 6px rgba(255,255,255,0.4)}
-.level-labels{display:none}
 
-/* ─── Chart ─── */
+/* Chart */
 .chart-section{padding:12px 12px 4px;position:relative;z-index:2}
 .tf-row{display:flex;justify-content:center;gap:4px;margin-bottom:10px}
 .tf-btn{padding:6px 14px;font-size:12px;font-weight:600;border:none;background:transparent;color:var(--text3);border-radius:var(--pill);cursor:pointer;transition:all .3s}
@@ -139,26 +93,24 @@ body::after{
 .chart-wrap::before{content:'';position:absolute;inset:0;border-radius:var(--r);border:1px solid var(--glass-b);pointer-events:none;z-index:2}
 .chart-wrap canvas{border-radius:var(--r)}
 
-/* ─── Events ─── */
+/* Events */
 .events-row{display:flex;gap:6px;overflow-x:auto;padding:6px 16px 2px;scrollbar-width:none}
 .events-row::-webkit-scrollbar{display:none}
 .ev-chip{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:5px 10px;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--glass-b);border-radius:var(--r-sm);font-size:10px;color:var(--text2);white-space:nowrap;transition:border-color .3s}
-.ev-chip:hover{border-color:rgba(255,215,0,0.15)}
 .ev-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .ev-dot.up{background:var(--grn);box-shadow:0 0 6px var(--grn)}
 .ev-dot.down{background:var(--red);box-shadow:0 0 6px var(--red)}
 .ev-dot.neutral{background:var(--text3)}
 .ev-date{color:var(--text3)}
 
-/* ─── Stats ─── */
+/* Stats */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 16px;position:relative;z-index:2}
 .stat-card{padding:16px 18px}
 .stat-label{display:block;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
 .stat-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
-.stat-val.green{color:var(--grn)}
-.stat-val.red{color:var(--red)}
+.stat-val.green{color:var(--grn)}.stat-val.red{color:var(--red)}
 
-/* ─── Spread ─── */
+/* Spread */
 .spread-section{display:flex;gap:10px;padding:8px 16px;position:relative;z-index:2}
 .spread-card{flex:1;padding:16px;text-align:center}
 .spread-card .label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
@@ -166,7 +118,7 @@ body::after{
 .spread-card.buy .val{color:var(--grn);filter:drop-shadow(0 0 8px rgba(0,214,143,0.2))}
 .spread-card.sell .val{color:var(--red);filter:drop-shadow(0 0 8px rgba(255,71,87,0.2))}
 
-/* ─── Weights ─── */
+/* Weights */
 .weights-section{padding:8px 16px;position:relative;z-index:2}
 .section-title{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
 .weights-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
@@ -176,36 +128,121 @@ body::after{
 .weight-chip.sil-chip .grams{color:var(--sil)}
 .weight-chip .wprice{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 
-/* ─── Zakat ─── */
-.zakat-section{padding:8px 16px;position:relative;z-index:2}
-.zakat-card{padding:20px}
-.zakat-inputs{display:flex;gap:12px;margin-bottom:14px}
-.zakat-field{flex:1;display:flex;flex-direction:column;gap:6px}
-.zakat-field label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-.zakat-field input,.zakat-field select{width:100%;padding:10px 12px;font-size:15px;font-weight:600;font-family:inherit;background:rgba(255,255,255,0.02);border:1px solid var(--glass-b);border-radius:var(--r-sm);color:var(--text1);outline:none;transition:all .3s;-webkit-appearance:none}
-.zakat-field input:focus,.zakat-field select:focus{border-color:rgba(255,215,0,0.3);box-shadow:0 0 20px var(--glow-s)}
-.zakat-field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8aaa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
-.zakat-field select option{background:var(--bg1);color:var(--text1)}
+/* Shared form styles */
+.form-input{width:100%;padding:10px 12px;font-size:15px;font-weight:600;font-family:inherit;background:rgba(255,255,255,0.02);border:1px solid var(--glass-b);border-radius:var(--r-sm);color:var(--text1);outline:none;transition:all .3s;-webkit-appearance:none}
+.form-input:focus{border-color:rgba(255,215,0,0.3);box-shadow:0 0 20px var(--glow-s)}
+.form-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+.form-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8aaa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+.form-select option{background:var(--bg1);color:var(--text1)}
+.btn{padding:10px 20px;font-size:13px;font-weight:700;font-family:inherit;border:none;border-radius:var(--pill);cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:.5px}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#000;box-shadow:0 0 20px rgba(255,215,0,0.2)}
+.btn-gold:hover{box-shadow:0 0 30px rgba(255,215,0,0.3)}
+.btn-ghost{background:var(--glass);border:1px solid var(--glass-b);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-sm{padding:6px 14px;font-size:11px}
+.btn-danger{background:var(--red-bg);border:1px solid rgba(255,71,87,0.15);color:var(--red)}
+
+/* ─── Views ─── */
+.view{display:block}.view.hidden{display:none}
+
+/* ─── Compare ─── */
+.dealer-filters{display:flex;gap:6px;padding:8px 16px 4px;overflow-x:auto;scrollbar-width:none}
+.dealer-filters::-webkit-scrollbar{display:none}
+.df-btn{padding:6px 14px;font-size:11px;font-weight:600;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(8px);color:var(--text3);border-radius:var(--pill);cursor:pointer;transition:all .3s;white-space:nowrap;flex-shrink:0}
+.df-btn.active{border-color:rgba(255,215,0,0.3);color:var(--gold);background:rgba(255,215,0,0.06)}
+.dealer-count{font-size:11px;color:var(--text3);padding:2px 16px 6px;font-variant-numeric:tabular-nums}
+.dealer-list{display:flex;flex-direction:column;gap:10px;padding:4px 16px}
+.dealer-card{padding:14px 16px;position:relative;overflow:hidden}
+.dealer-card.cheapest{border-color:rgba(0,214,143,0.2)}
+.dealer-card.cheapest::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grn)}
+.dealer-card.best-sell{border-color:rgba(255,165,2,0.15)}
+.dealer-top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 8px;margin-bottom:8px}
+.dealer-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.dealer-cat{font-size:9px;font-weight:600;padding:2px 7px;border-radius:var(--pill);letter-spacing:.3px;text-transform:uppercase}
+.dealer-cat.cat-dealer{color:#60a5fa;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.15)}
+.dealer-cat.cat-jeweller{color:#f472b6;background:rgba(244,114,182,0.1);border:1px solid rgba(244,114,182,0.15)}
+.dealer-cat.cat-digital{color:#a78bfa;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.15)}
+.dealer-cat.cat-bank{color:#34d399;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.15)}
+.dealer-sub{font-size:10px;color:var(--text3)}
+.dealer-prices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dp-col{text-align:center;padding:8px 4px;background:rgba(255,255,255,0.015);border-radius:var(--r-sm)}
+.dp-col .dp-label{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.dp-col .dp-val{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.dp-col.buy-col .dp-val{color:var(--text1)}
+.dp-col.sell-col .dp-val{color:var(--text2)}
+.dp-col.spread-col .dp-val{font-size:13px;font-weight:700}
+.dp-col.spread-col .dp-val.tight{color:var(--grn)}
+.dp-col.spread-col .dp-val.wide{color:var(--orange)}
+.dp-col.spread-col .dp-val.very-wide{color:var(--red)}
+.dp-col.na .dp-val{color:var(--text3);font-size:12px;font-weight:500}
+.dealer-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.dp-diff{font-size:11px;font-weight:600}
+.dp-diff.cheapest{color:var(--grn)}
+.dp-diff.more{color:var(--text3)}
+.cheapest-badge{font-size:9px;font-weight:700;color:var(--grn);background:var(--grn-bg);padding:2px 8px;border-radius:var(--pill);letter-spacing:.5px}
+.best-sell-badge{font-size:9px;font-weight:700;color:var(--orange);background:var(--orange-bg);padding:2px 8px;border-radius:var(--pill);letter-spacing:.5px}
+
+/* ─── Portfolio ─── */
+.port-summary{padding:16px;margin:8px 16px;text-align:center}
+.port-total{font-size:28px;font-weight:900;color:var(--gold);filter:drop-shadow(0 0 15px rgba(255,215,0,0.15));font-variant-numeric:tabular-nums}
+.port-pl{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:4px 12px;border-radius:var(--pill);font-size:13px;font-weight:600}
+.port-pl.up{color:var(--grn);background:var(--grn-bg)}.port-pl.down{color:var(--red);background:var(--red-bg)}
+.port-meta{font-size:11px;color:var(--text3);margin-top:4px}
+.holding-list{display:flex;flex-direction:column;gap:8px;padding:0 16px}
+.holding-card{display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+.holding-info .h-label{font-size:13px;font-weight:700}
+.holding-info .h-detail{font-size:11px;color:var(--text3);margin-top:2px}
+.holding-val{text-align:right}
+.holding-val .hv-now{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.holding-val .hv-pl{font-size:11px;margin-top:2px;font-weight:600}
+.hv-pl.up{color:var(--grn)}.hv-pl.down{color:var(--red)}
+.port-add-form{padding:0 16px;margin-top:10px}
+.port-add-form .glass{padding:18px}
+.port-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.port-form-grid .full{grid-column:1/-1}
+.port-actions{display:flex;gap:8px;margin-top:12px}
+.port-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+
+/* ─── Alerts ─── */
+.alert-list{display:flex;flex-direction:column;gap:8px;padding:0 16px}
+.alert-card{display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+.alert-info{font-size:13px;font-weight:600}
+.alert-info .a-target{color:var(--gold);font-weight:800}
+.alert-info .a-detail{font-size:11px;color:var(--text3);margin-top:2px}
+.alert-add-form{padding:0 16px;margin-top:10px}
+.alert-add-form .glass{padding:18px}
+.alert-form-row{display:flex;gap:10px;align-items:flex-end}
+.alert-form-row>*{flex:1}
+.alert-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+
+/* ─── Zakat & Calc ─── */
+.tools-section{padding:8px 16px;position:relative;z-index:2}
+.tools-card{padding:20px}
+.zakat-inputs,.calc-row{display:flex;gap:12px}
+.zakat-inputs{margin-bottom:14px}
+.zakat-field,.calc-field{flex:1;display:flex;flex-direction:column;gap:6px}
 .zakat-result{padding:14px;background:rgba(255,255,255,0.015);border-radius:var(--r-sm);text-align:center;border:1px solid rgba(255,255,255,0.03)}
 .zr-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
 .zr-value{font-size:22px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;filter:drop-shadow(0 0 12px rgba(255,215,0,0.15))}
 .zr-note{font-size:11px;color:var(--text3);margin-top:4px}
 .zr-value.exempt{color:var(--grn);font-size:16px;filter:none}
+.calc-swap{display:grid;place-items:center;align-self:flex-end;width:40px;height:44px;background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r-sm);color:var(--gold);font-size:18px;cursor:pointer;transition:all .3s;flex-shrink:0}
 
-/* ─── Calculator ─── */
-.calc-section{padding:8px 16px 20px;position:relative;z-index:2}
-.calc-card{padding:20px}
-.calc-row{display:flex;gap:12px;align-items:stretch}
-.calc-field{flex:1;display:flex;flex-direction:column;gap:6px}
-.calc-field label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-.calc-field input{width:100%;padding:12px 14px;font-size:16px;font-weight:600;font-family:inherit;background:rgba(255,255,255,0.02);border:1px solid var(--glass-b);border-radius:var(--r-sm);color:var(--text1);outline:none;font-variant-numeric:tabular-nums;transition:all .3s}
-.calc-field input:focus{border-color:rgba(255,215,0,0.3);box-shadow:0 0 20px var(--glow-s)}
-.calc-swap{display:grid;place-items:center;align-self:flex-end;width:40px;height:44px;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--glass-b);border-radius:var(--r-sm);color:var(--gold);font-size:18px;cursor:pointer;transition:all .3s;flex-shrink:0}
-.calc-swap:hover{border-color:rgba(255,215,0,0.3);box-shadow:0 0 20px var(--glow-s)}
+/* ─── Toast ─── */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:rgba(10,10,26,0.95);backdrop-filter:blur(16px);border:1px solid rgba(255,215,0,0.2);border-radius:var(--r);padding:14px 20px;z-index:10001;transition:transform .4s var(--ease);max-width:360px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-title{font-size:13px;font-weight:700;color:var(--gold)}
+.toast-body{font-size:12px;color:var(--text2);margin-top:4px}
 
-/* ─── Footer ─── */
-.footer{text-align:center;padding:24px 20px 16px;position:relative;z-index:2;border-top:1px solid var(--glass-b);margin:16px 16px 0;border-radius:0}
-.footer-brand{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:-.2px}
+/* ─── Tab Bar ─── */
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;background:rgba(8,8,20,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--glass-b);padding:6px 0 calc(6px + var(--safe-b));z-index:100}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;background:none;border:none;color:var(--text3);font-size:10px;font-weight:600;font-family:inherit;cursor:pointer;transition:color .2s;letter-spacing:.3px}
+.tab.active{color:var(--gold)}
+.tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Footer */
+.footer{text-align:center;padding:24px 20px 16px;position:relative;z-index:2;border-top:1px solid var(--glass-b);margin:16px 16px 0}
+.footer-brand{font-size:13px;font-weight:700;color:var(--text2)}
 .footer-copy{font-size:10px;color:var(--text3);margin-top:4px}
 .footer-links{display:flex;justify-content:center;gap:8px;margin-top:8px;align-items:center}
 .footer-links a{font-size:11px;color:var(--text2);text-decoration:none;transition:color .2s}
@@ -213,11 +250,11 @@ body::after{
 .footer-dot{color:var(--text3);font-size:8px}
 .footer-disclaimer{font-size:9px;color:var(--text3);margin-top:10px;line-height:1.5;max-width:360px;margin-left:auto;margin-right:auto}
 
-/* ─── Modal ─── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:10000;display:none;align-items:center;justify-content:center;padding:20px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:10000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
 .modal{max-width:440px;width:100%;max-height:80vh;border-radius:var(--r);padding:28px;overflow-y:auto;position:relative;border:1px solid var(--glass-b);background:rgba(10,10,26,0.95);backdrop-filter:blur(24px)}
-.modal h2{font-size:18px;font-weight:800;margin-bottom:16px;color:var(--text1)}
+.modal h2{font-size:18px;font-weight:800;margin-bottom:16px}
 .modal h3{font-size:13px;font-weight:700;color:var(--text2);margin-top:16px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
 .modal p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:8px}
 .modal ul{font-size:13px;color:var(--text2);line-height:1.7;margin:0 0 8px 18px}
@@ -225,19 +262,12 @@ body::after{
 .modal strong{color:var(--text1)}
 .modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border:1px solid var(--glass-b);background:var(--glass);color:var(--text2);font-size:18px;border-radius:50%;cursor:pointer;display:grid;place-items:center;transition:all .2s}
 .modal-close:hover{border-color:var(--gold);color:var(--gold)}
-.modal-body{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.05) transparent}
-.modal-body::-webkit-scrollbar{width:4px}
-.modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.05);border-radius:2px}
-
-/* ─── Scrollbar ─── */
 ::-webkit-scrollbar{width:0;height:0}
 @media(min-width:520px){.app{padding-left:12px;padding-right:12px}}
 </style>
 </head>
 <body>
-<div class="orb orb-1" id="orb1"></div>
-<div class="orb orb-2"></div>
-
+<div class="orb orb-1"></div><div class="orb orb-2"></div>
 <div class="app">
   <header class="header">
     <div class="logo"><div class="logo-icon">Au</div><span>Gold Rush</span></div>
@@ -248,90 +278,110 @@ body::after{
     </div>
   </header>
 
-  <div class="metal-toggle">
-    <div class="mt-inner" id="metalToggle">
-      <button class="metal-btn active" data-metal="gold" id="btnGold">Gold</button>
-      <button class="metal-btn" data-metal="silver" id="btnSilver">Silver</button>
+  <div class="metal-toggle"><div class="mt-inner" id="metalToggle"><button class="metal-btn active" data-metal="gold" id="btnGold">Gold</button><button class="metal-btn" data-metal="silver" id="btnSilver">Silver</button></div></div>
+  <div class="purity-row" id="purityRow"><button class="purity-btn active" data-purity="999">999</button><button class="purity-btn" data-purity="916">916</button><button class="purity-btn" data-purity="750">750</button></div>
+
+  <!-- ═══ VIEW: LIVE ═══ -->
+  <div class="view" id="viewLive">
+    <section class="price-section">
+      <div class="price-row"><span class="price-currency">RM</span><span class="price-value" id="priceValue">—</span><span class="price-unit">/g</span></div>
+      <div class="price-change up" id="priceChange"><span class="arrow">&#9650;</span><span id="changeText">RM 0.00</span></div>
+      <div class="last-updated" id="lastUpdated">Loading...</div>
+      <div class="spot-label" id="spotLabel"></div>
+    </section>
+    <div class="level-section"><div class="level-bar"><div class="level-dot" id="levelDot" style="left:50%"></div></div></div>
+    <section class="chart-section">
+      <div class="tf-row" id="tfRow"><button class="tf-btn" data-tf="1D">24H</button><button class="tf-btn active" data-tf="7D">7D</button><button class="tf-btn" data-tf="1M">1M</button><button class="tf-btn" data-tf="3M">3M</button><button class="tf-btn" data-tf="6M">6M</button><button class="tf-btn" data-tf="1Y">1Y</button></div>
+      <div class="chart-wrap"><canvas id="chart"></canvas></div>
+    </section>
+    <div class="events-row" id="eventsRow"></div>
+    <div class="stats-grid">
+      <div class="stat-card glass tilt"><span class="stat-label" id="lHigh">High</span><span class="stat-val" id="statHigh">—</span></div>
+      <div class="stat-card glass tilt"><span class="stat-label" id="lLow">Low</span><span class="stat-val" id="statLow">—</span></div>
+      <div class="stat-card glass tilt"><span class="stat-label" id="lAvg">Average</span><span class="stat-val" id="statAvg">—</span></div>
+      <div class="stat-card glass tilt"><span class="stat-label" id="lVol">Volatility</span><span class="stat-val" id="statVol">—</span></div>
+    </div>
+    <div class="spread-section">
+      <div class="spread-card glass tilt buy"><span class="label" id="lBuy">Buy</span><div class="val" id="buyPrice">—</div></div>
+      <div class="spread-card glass tilt sell"><span class="label" id="lSell">Sell</span><div class="val" id="sellPrice">—</div></div>
+    </div>
+    <div class="weights-section"><div class="section-title" id="lWeights">Quick Prices</div><div class="weights-scroll" id="weightsScroll"></div></div>
+  </div>
+
+  <!-- ═══ VIEW: COMPARE ═══ -->
+  <div class="view hidden" id="viewCompare">
+    <div style="padding:16px 16px 6px"><div class="section-title" id="lCompare">Dealer Comparison</div></div>
+    <div class="dealer-filters" id="dealerFilters">
+      <button class="df-btn active" data-cat="all" id="dfAll">All</button>
+      <button class="df-btn" data-cat="dealer" id="dfDealer">Dealers</button>
+      <button class="df-btn" data-cat="jeweller" id="dfJeweller">Jewellers</button>
+      <button class="df-btn" data-cat="digital" id="dfDigital">Digital</button>
+      <button class="df-btn" data-cat="bank" id="dfBank">Banks</button>
+    </div>
+    <div class="dealer-count" id="dealerCount"></div>
+    <div class="dealer-list" id="dealerList"></div>
+    <div style="padding:12px 16px;font-size:10px;color:var(--text3);text-align:center" id="lCompareNote">Estimated prices based on typical dealer premiums. Actual prices may vary.</div>
+  </div>
+
+  <!-- ═══ VIEW: PORTFOLIO ═══ -->
+  <div class="view hidden" id="viewPortfolio">
+    <div class="port-summary glass" id="portSummary">
+      <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px" id="lPortTotal">Total Value</div>
+      <div class="port-total" id="portTotal">RM 0.00</div>
+      <div class="port-pl up" id="portPL" style="display:none"><span id="portPLText"></span></div>
+      <div class="port-meta" id="portMeta"></div>
+    </div>
+    <div style="padding:10px 16px 6px"><div class="section-title" id="lHoldings">Holdings</div></div>
+    <div id="holdingsList"></div>
+    <div style="padding:8px 16px"><button class="btn btn-gold btn-sm" id="addHoldingBtn" style="width:100%">+ Add Holding</button></div>
+    <div class="port-add-form" id="portForm" style="display:none">
+      <div class="glass">
+        <div class="port-form-grid">
+          <div><label class="form-label" id="lPfLabel">Label</label><input class="form-input" id="pfLabel" placeholder="e.g. Public Gold bar"></div>
+          <div><label class="form-label" id="lPfPurity">Purity</label><select class="form-input form-select" id="pfPurity"><option value="999">999</option><option value="916" selected>916</option><option value="750">750</option></select></div>
+          <div><label class="form-label" id="lPfGrams">Weight (g)</label><input class="form-input" id="pfGrams" type="number" placeholder="50" inputmode="decimal"></div>
+          <div><label class="form-label" id="lPfBuyPrice">Buy price/g (RM)</label><input class="form-input" id="pfBuyPrice" type="number" placeholder="540" inputmode="decimal"></div>
+          <div class="full"><label class="form-label" id="lPfDate">Purchase date</label><input class="form-input" id="pfDate" type="date"></div>
+        </div>
+        <div class="port-actions"><button class="btn btn-gold btn-sm" id="pfSave" style="flex:1">Save</button><button class="btn btn-ghost btn-sm" id="pfCancel">Cancel</button></div>
+      </div>
     </div>
   </div>
 
-  <div class="purity-row" id="purityRow">
-    <button class="purity-btn active" data-purity="999">999</button>
-    <button class="purity-btn" data-purity="916">916</button>
-    <button class="purity-btn" data-purity="750">750</button>
-  </div>
-
-  <section class="price-section">
-    <div class="price-row">
-      <span class="price-currency">RM</span>
-      <span class="price-value" id="priceValue">—</span>
-      <span class="price-unit">/g</span>
-    </div>
-    <div class="price-change up" id="priceChange">
-      <span class="arrow">&#9650;</span>
-      <span id="changeText">RM 0.00 (0.00%)</span>
-    </div>
-    <div class="last-updated" id="lastUpdated">Loading...</div>
-    <div class="spot-label" id="spotLabel"></div>
-  </section>
-
-  <div class="level-section"><div class="level-bar"><div class="level-dot" id="levelDot" style="left:50%"></div></div></div>
-
-  <section class="chart-section">
-    <div class="tf-row" id="tfRow">
-      <button class="tf-btn" data-tf="1D">24H</button>
-      <button class="tf-btn active" data-tf="7D">7D</button>
-      <button class="tf-btn" data-tf="1M">1M</button>
-      <button class="tf-btn" data-tf="3M">3M</button>
-      <button class="tf-btn" data-tf="6M">6M</button>
-      <button class="tf-btn" data-tf="1Y">1Y</button>
-    </div>
-    <div class="chart-wrap"><canvas id="chart"></canvas></div>
-  </section>
-
-  <div class="events-row" id="eventsRow"></div>
-
-  <div class="stats-grid">
-    <div class="stat-card glass tilt"><span class="stat-label" id="lHigh">High</span><span class="stat-val" id="statHigh">—</span></div>
-    <div class="stat-card glass tilt"><span class="stat-label" id="lLow">Low</span><span class="stat-val" id="statLow">—</span></div>
-    <div class="stat-card glass tilt"><span class="stat-label" id="lAvg">Average</span><span class="stat-val" id="statAvg">—</span></div>
-    <div class="stat-card glass tilt"><span class="stat-label" id="lVol">Volatility</span><span class="stat-val" id="statVol">—</span></div>
-  </div>
-
-  <div class="spread-section">
-    <div class="spread-card glass tilt buy"><span class="label" id="lBuy">Buy</span><div class="val" id="buyPrice">—</div></div>
-    <div class="spread-card glass tilt sell"><span class="label" id="lSell">Sell</span><div class="val" id="sellPrice">—</div></div>
-  </div>
-
-  <div class="weights-section">
-    <div class="section-title" id="lWeights">Quick Prices</div>
-    <div class="weights-scroll" id="weightsScroll"></div>
-  </div>
-
-  <div class="zakat-section">
-    <div class="section-title" id="lZakat">Zakat Calculator</div>
-    <div class="zakat-card glass tilt">
-      <div class="zakat-inputs">
-        <div class="zakat-field"><label id="lZGold">Gold held (g)</label><input type="number" id="zakatGrams" placeholder="100" inputmode="decimal"></div>
-        <div class="zakat-field"><label id="lZType">Type</label>
-          <select id="zakatType"><option value="simpan" id="zOptKeep">Kept / Investment</option><option value="pakai" id="zOptWear">Worn (uruf: 850g)</option></select>
+  <!-- ═══ VIEW: TOOLS ═══ -->
+  <div class="view hidden" id="viewTools">
+    <div style="padding:12px 16px 6px"><div class="section-title" id="lAlerts">Price Alerts</div></div>
+    <div id="alertsList"></div>
+    <div style="padding:8px 16px"><button class="btn btn-gold btn-sm" id="addAlertBtn" style="width:100%">+ Add Alert</button></div>
+    <div class="alert-add-form" id="alertForm" style="display:none">
+      <div class="glass" style="padding:18px">
+        <div class="alert-form-row">
+          <div><label class="form-label">Target (RM)</label><input class="form-input" id="alTarget" type="number" placeholder="500" inputmode="decimal"></div>
+          <div><label class="form-label">Direction</label><select class="form-input form-select" id="alDir"><option value="below">Below</option><option value="above">Above</option></select></div>
+          <div><button class="btn btn-gold btn-sm" id="alSave" style="margin-top:20px;width:100%">Set</button></div>
         </div>
       </div>
-      <div class="zakat-result" id="zakatResult">
-        <div class="zr-label" id="lZDue">Zakat due</div>
-        <div class="zr-value exempt" id="zakatValue">—</div>
-        <div class="zr-note" id="zakatNote"></div>
+    </div>
+
+    <div class="tools-section" style="margin-top:12px">
+      <div class="section-title" id="lZakat">Zakat Calculator</div>
+      <div class="tools-card glass tilt">
+        <div class="zakat-inputs">
+          <div class="zakat-field"><label class="form-label" id="lZGold">Gold held (g)</label><input class="form-input" id="zakatGrams" type="number" placeholder="100" inputmode="decimal"></div>
+          <div class="zakat-field"><label class="form-label" id="lZType">Type</label><select class="form-input form-select" id="zakatType"><option value="simpan" id="zOptKeep">Kept / Investment</option><option value="pakai" id="zOptWear">Worn (uruf: 850g)</option></select></div>
+        </div>
+        <div class="zakat-result"><div class="zr-label" id="lZDue">Zakat due</div><div class="zr-value exempt" id="zakatValue">—</div><div class="zr-note" id="zakatNote"></div></div>
       </div>
     </div>
-  </div>
 
-  <div class="calc-section">
-    <div class="section-title" id="lCalc">Calculator</div>
-    <div class="calc-card glass tilt">
-      <div class="calc-row">
-        <div class="calc-field"><label id="lWeight">Weight (g)</label><input type="number" id="calcGrams" placeholder="10" inputmode="decimal"></div>
-        <button class="calc-swap" id="calcSwap">&#8644;</button>
-        <div class="calc-field"><label id="lValue">Value (RM)</label><input type="number" id="calcValue" placeholder="5,000" inputmode="decimal"></div>
+    <div class="tools-section">
+      <div class="section-title" id="lCalc">Calculator</div>
+      <div class="tools-card glass tilt">
+        <div class="calc-row">
+          <div class="calc-field"><label class="form-label" id="lWeight">Weight (g)</label><input class="form-input" id="calcGrams" type="number" placeholder="10" inputmode="decimal"></div>
+          <button class="calc-swap" id="calcSwap">&#8644;</button>
+          <div class="calc-field"><label class="form-label" id="lValue">Value (RM)</label><input class="form-input" id="calcValue" type="number" placeholder="5,000" inputmode="decimal"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -339,136 +389,100 @@ body::after{
   <footer class="footer">
     <div class="footer-brand">Gold Rush</div>
     <div class="footer-copy">&copy; 2026 FR Ventures. All rights reserved.</div>
-    <div class="footer-links">
-      <a href="#privacy" id="privacyLink">Privacy Policy</a>
-      <span class="footer-dot">&middot;</span>
-      <a href="#terms" id="termsLink">Terms & Conditions</a>
-    </div>
-    <div class="footer-disclaimer" id="lDisclaimer">Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice. FR Ventures is not liable for any trading decisions made based on this data.</div>
+    <div class="footer-links"><a href="#privacy" id="privacyLink">Privacy Policy</a><span class="footer-dot">&middot;</span><a href="#terms" id="termsLink">Terms & Conditions</a></div>
+    <div class="footer-disclaimer" id="lDisclaimer">Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.</div>
   </footer>
 
-  <!-- Privacy Policy Modal -->
-  <div class="modal-overlay" id="privacyModal">
-    <div class="modal glass">
-      <button class="modal-close" id="privacyClose">&times;</button>
-      <h2>Privacy Policy</h2>
-      <div class="modal-body">
-        <p><strong>Last updated:</strong> June 2026</p>
-        <p>Gold Rush by FR Ventures ("we", "our", "us") is committed to protecting your privacy. This policy explains how we handle information when you use our website.</p>
+  <!-- Tab Bar -->
+  <nav class="tab-bar">
+    <button class="tab active" data-tab="Live"><svg viewBox="0 0 24 24"><path d="M3 12l4-8 4 6 4-4 6 10"/><path d="M3 20h18"/></svg><span>Live</span></button>
+    <button class="tab" data-tab="Compare"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="2"/><circle cx="17" cy="12" r="2"/><circle cx="11" cy="18" r="2"/></svg><span id="lTabCompare">Compare</span></button>
+    <button class="tab" data-tab="Portfolio"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/><circle cx="12" cy="14" r="2"/></svg><span id="lTabPortfolio">Portfolio</span></button>
+    <button class="tab" data-tab="Tools"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83"/></svg><span id="lTabTools">Tools</span></button>
+  </nav>
 
-        <h3>Information We Collect</h3>
-        <p>We do <strong>not</strong> collect, store, or process any personal data. Specifically:</p>
-        <ul>
-          <li>No account registration or login is required</li>
-          <li>No names, emails, phone numbers, or addresses are collected</li>
-          <li>No cookies are used for tracking or advertising</li>
-          <li>No analytics or third-party tracking scripts are embedded</li>
-        </ul>
-
-        <h3>Local Storage</h3>
-        <p>We store only your language preference (English or Bahasa Melayu) in your browser's local storage. This data never leaves your device and can be cleared at any time through your browser settings.</p>
-
-        <h3>Third-Party Services</h3>
-        <p>We fetch gold and silver price data from publicly available financial data APIs. These requests are made server-side through our API and do not expose your IP address or any personal information to third-party data providers.</p>
-
-        <h3>Data Security</h3>
-        <p>All connections are encrypted via HTTPS. We enforce strict Content Security Policy (CSP) headers, HSTS, and other security measures to protect the integrity of the service.</p>
-
-        <h3>Children's Privacy</h3>
-        <p>This service is informational and does not knowingly collect data from anyone, including children under 13.</p>
-
-        <h3>Changes</h3>
-        <p>We may update this policy from time to time. Changes will be reflected on this page with an updated date.</p>
-
-        <h3>Contact</h3>
-        <p>For questions about this policy, contact FR Ventures at <strong>farisncorps@gmail.com</strong>.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Terms & Conditions Modal -->
-  <div class="modal-overlay" id="termsModal">
-    <div class="modal glass">
-      <button class="modal-close" id="termsClose">&times;</button>
-      <h2>Terms & Conditions</h2>
-      <div class="modal-body">
-        <p><strong>Last updated:</strong> June 2026</p>
-        <p>By accessing Gold Rush ("the Service"), operated by FR Ventures, you agree to these terms.</p>
-
-        <h3>1. Nature of Service</h3>
-        <p>Gold Rush provides indicative gold and silver price information for the Malaysian market. Prices displayed are estimated retail dealer rates derived from international spot prices with applied premiums. They are <strong>not</strong> live dealer quotes and may differ from actual prices offered by any specific gold dealer or financial institution.</p>
-
-        <h3>2. Not Financial Advice</h3>
-        <p>Nothing on this website constitutes financial, investment, or trading advice. The information is provided for general informational purposes only. You should consult a qualified financial advisor before making any investment decisions. Past performance does not guarantee future results.</p>
-
-        <h3>3. No Warranty</h3>
-        <p>The Service is provided "as is" without warranties of any kind, express or implied. FR Ventures does not guarantee the accuracy, completeness, or timeliness of price data. Data may be delayed, interrupted, or contain errors.</p>
-
-        <h3>4. Limitation of Liability</h3>
-        <p>FR Ventures shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use of or inability to use this Service, including but not limited to financial losses from trading decisions.</p>
-
-        <h3>5. Zakat Calculator</h3>
-        <p>The zakat calculator is provided as a general estimation tool based on commonly referenced nisab and uruf thresholds. It is not a substitute for consultation with a qualified religious authority. Zakat obligations may vary based on individual circumstances and scholarly interpretation.</p>
-
-        <h3>6. Intellectual Property</h3>
-        <p>All content, design, and code of Gold Rush are the property of FR Ventures. Unauthorised reproduction, distribution, or modification is prohibited without prior written consent.</p>
-
-        <h3>7. Modifications</h3>
-        <p>FR Ventures reserves the right to modify, suspend, or discontinue the Service at any time without notice. These terms may be updated periodically.</p>
-
-        <h3>8. Governing Law</h3>
-        <p>These terms are governed by the laws of Malaysia.</p>
-
-        <h3>Contact</h3>
-        <p>For questions, contact FR Ventures at <strong>farisncorps@gmail.com</strong>.</p>
-      </div>
-    </div>
-  </div>
+  <!-- Modals -->
+  <div class="modal-overlay" id="privacyModal"><div class="modal glass"><button class="modal-close" id="privacyClose">&times;</button><h2>Privacy Policy</h2><div class="modal-body"><p><strong>Last updated:</strong> June 2026</p><p>Gold Rush by FR Ventures ("we","our","us") is committed to protecting your privacy.</p><h3>Information We Collect</h3><p>We do <strong>not</strong> collect, store, or process any personal data.</p><ul><li>No account registration or login required</li><li>No names, emails, or addresses collected</li><li>No cookies for tracking or advertising</li><li>No analytics or third-party tracking scripts</li></ul><h3>Local Storage</h3><p>We store your language preference, portfolio holdings, and price alerts in your browser's local storage. This data never leaves your device.</p><h3>Third-Party Services</h3><p>Price data is fetched server-side and does not expose your information to data providers.</p><h3>Security</h3><p>All connections use HTTPS with strict CSP headers, HSTS, and security best practices.</p><h3>Contact</h3><p>FR Ventures — <strong>farisncorps@gmail.com</strong></p></div></div></div>
+  <div class="modal-overlay" id="termsModal"><div class="modal glass"><button class="modal-close" id="termsClose">&times;</button><h2>Terms & Conditions</h2><div class="modal-body"><p><strong>Last updated:</strong> June 2026</p><p>By using Gold Rush, operated by FR Ventures, you agree to these terms.</p><h3>1. Nature of Service</h3><p>Gold Rush provides indicative gold and silver price information for the Malaysian market. Prices are estimated retail rates derived from international spot prices. They are <strong>not</strong> live dealer quotes.</p><h3>2. Not Financial Advice</h3><p>Nothing on this website constitutes financial or investment advice. Consult a qualified advisor before making investment decisions.</p><h3>3. No Warranty</h3><p>The Service is provided "as is" without warranties. FR Ventures does not guarantee accuracy or timeliness of data.</p><h3>4. Limitation of Liability</h3><p>FR Ventures shall not be liable for any damages arising from use of this Service, including financial losses.</p><h3>5. Zakat Calculator</h3><p>The zakat calculator is a general estimation tool, not a substitute for consultation with a religious authority.</p><h3>6. Intellectual Property</h3><p>All content and design are property of FR Ventures. Unauthorised reproduction is prohibited.</p><h3>7. Governing Law</h3><p>These terms are governed by the laws of Malaysia.</p><h3>Contact</h3><p>FR Ventures — <strong>farisncorps@gmail.com</strong></p></div></div></div>
 </div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><div class="toast-title" id="toastTitle"></div><div class="toast-body" id="toastBody"></div></div>
 
 <script>
 "use strict";
 
-/* ══════════════════ 3D TILT ══════════════════ */
-function initTilt(){
-  if(window.matchMedia('(hover:none)').matches) return;
-  document.querySelectorAll('.tilt').forEach(el=>{
-    el.addEventListener('mousemove',e=>{
-      const r=el.getBoundingClientRect();
-      const x=(e.clientX-r.left)/r.width-.5;
-      const y=(e.clientY-r.top)/r.height-.5;
-      el.style.transform=`perspective(600px) rotateY(${x*10}deg) rotateX(${-y*10}deg) scale(1.02)`;
-      el.style.boxShadow=`${-x*15}px ${-y*15}px 30px rgba(255,215,0,0.04), 0 0 0 1px rgba(255,215,0,0.06)`;
-    });
-    el.addEventListener('mouseleave',()=>{
-      el.style.transform='';el.style.boxShadow='';
-    });
-  });
-}
+/* ═══ 3D TILT ═══ */
+function initTilt(){if(window.matchMedia('(hover:none)').matches)return;document.querySelectorAll('.tilt').forEach(el=>{el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(600px) rotateY(${x*10}deg) rotateX(${-y*10}deg) scale(1.02)`;el.style.boxShadow=`${-x*15}px ${-y*15}px 30px rgba(255,215,0,0.04),0 0 0 1px rgba(255,215,0,0.06)`});el.addEventListener('mouseleave',()=>{el.style.transform='';el.style.boxShadow=''})})}
 
-/* ══════════════════ STATE ══════════════════ */
-const S={metal:'gold',purity:999,tf:'7D',price:0,prevPrice:0,spot:0,change:0,changePct:0,liveData:null,isLive:false,history:[],chart:null,countdown:30,timer:null,lang:'en'};
-
+/* ═══ STATE ═══ */
+const S={metal:'gold',purity:999,tf:'7D',price:0,prevPrice:0,spot:0,change:0,changePct:0,liveData:null,isLive:false,history:[],chart:null,countdown:30,timer:null,lang:'en',tab:'Live',dealerCat:'all'};
 const FALLBACK={gold:{999:576,916:543,750:458},silver:{999:7.20}};
 const WEIGHTS=[1,5,10,20,50,100];
 const TF_DAYS={'1D':1,'7D':7,'1M':30,'3M':90,'6M':180,'1Y':365};
 const NISAB_GRAMS=85,URUF_GRAMS=850,ZAKAT_RATE=0.025;
 
-/* ══════════════════ i18n ══════════════════ */
+/* ═══ DEALERS ═══ */
+const DEALERS=[
+  {id:'publicGold',name:'Public Gold',cat:'dealer',
+   en:'Largest private gold dealer',bm:'Peniaga emas swasta terbesar',
+   buy:{999:1.12,916:1.15,750:1.18},sell:{999:0.98,916:0.97,750:0.96}},
+  {id:'quantumMetal',name:'Quantum Metal',cat:'dealer',
+   en:'Online gold investment',bm:'Pelaburan emas dalam talian',
+   buy:{999:1.08,916:1.11,750:1.14},sell:{999:0.97,916:0.96,750:0.95}},
+  {id:'pohKong',name:'Poh Kong',cat:'jeweller',
+   en:'Bursa-listed jewellery chain',bm:'Rangkaian barang kemas tersenarai Bursa',
+   buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.96,750:0.95}},
+  {id:'habib',name:'Habib Jewels',cat:'jeweller',
+   en:'Premium jewellery retailer',bm:'Peruncit barang kemas premium',
+   buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.97,916:0.95,750:0.94}},
+  {id:'tomei',name:'Tomei',cat:'jeweller',
+   en:'Bursa-listed gold & jewellery',bm:'Emas & barang kemas tersenarai Bursa',
+   buy:{999:1.09,916:1.12,750:1.15},sell:{999:0.97,916:0.96,750:0.95}},
+  {id:'wahChan',name:'Wah Chan',cat:'jeweller',
+   en:'Established gold retailer',bm:'Peruncit emas lama bertapak',
+   buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.95,750:0.94}},
+  {id:'zhulian',name:'Zhulian',cat:'jeweller',
+   en:'Direct-selling jeweller',bm:'Barang kemas jualan langsung',
+   buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.96,916:0.95,750:0.94}},
+  {id:'helloGold',name:'HelloGold',cat:'digital',
+   en:'Digital gold savings app',bm:'Aplikasi simpanan emas digital',
+   buy:{999:1.03},sell:{999:0.99}},
+  {id:'goldSilverCentral',name:'GoldSilver Central',cat:'digital',
+   en:'Online bullion marketplace',bm:'Pasaran jongkong emas dalam talian',
+   buy:{999:1.04,916:1.08},sell:{999:0.99,916:0.97}},
+  {id:'mygold',name:'MyGold (Maybank)',cat:'digital',
+   en:'Maybank digital gold',bm:'Emas digital Maybank',
+   buy:{999:1.05},sell:{999:0.98}},
+  {id:'maybank',name:'Maybank Gold Account-i',cat:'bank',
+   en:'Gold savings passbook',bm:'Buku simpanan emas',
+   buy:{999:1.08},sell:{999:0.97}},
+  {id:'cimb',name:'CIMB Gold',cat:'bank',
+   en:'Gold investment account',bm:'Akaun pelaburan emas',
+   buy:{999:1.08},sell:{999:0.97}},
+  {id:'kfh',name:'KFH Gold Account-i',cat:'bank',
+   en:'Islamic gold savings',bm:'Simpanan emas Islamik',
+   buy:{999:1.07},sell:{999:0.97}},
+  {id:'uob',name:'UOB Gold Account',cat:'bank',
+   en:'Gold savings account',bm:'Akaun simpanan emas',
+   buy:{999:1.08},sell:{999:0.97}},
+];
+
+/* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',lvlLow:'Low',lvlMid:'Mid-range',lvlHigh:'High',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates. Not financial advice.',langLabel:'BM'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',lvlLow:'Rendah',lvlMid:'Sederhana',lvlHigh:'Tinggi',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank'}
 };
-function t(k){return L[S.lang][k]||L.en[k]||k}
+function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
   const m=(id,k)=>{const el=document.getElementById(id);if(el)el.textContent=t(k)};
-  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');
+  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');
   document.getElementById('langBtn').textContent=t('langLabel');
   document.getElementById('badgeText').textContent=S.isLive?t('live'):t('demo');
-  updateEvents();
+  updateEvents();updateDealers();
 }
 
-/* ══════════════════ EVENTS DATA ══════════════════ */
+/* ═══ EVENTS ═══ */
 const EVENTS=[
   {ts:Date.parse('2026-06-09'),en:'US CPI Data Release',bm:'Data CPI AS Dikeluarkan',type:'up'},
   {ts:Date.parse('2026-06-04'),en:'ECB Rate Decision',bm:'Keputusan Kadar ECB',type:'down'},
@@ -482,133 +496,186 @@ const EVENTS=[
   {ts:Date.parse('2026-02-25'),en:'Ukraine Peace Deal',bm:'Perjanjian Damai Ukraine',type:'down'},
   {ts:Date.parse('2026-01-20'),en:'Global Bank Stress',bm:'Tekanan Bank Global',type:'up'},
   {ts:Date.parse('2025-12-15'),en:'Year-End Rally',bm:'Kenaikan Akhir Tahun',type:'up'},
-  {ts:Date.parse('2025-10-01'),en:'Recession Fears',bm:'Kebimbangan Kemelesetan',type:'up'},
-  {ts:Date.parse('2025-07-15'),en:'US Debt Ceiling Crisis',bm:'Krisis Had Hutang AS',type:'up'},
 ];
 function getVisibleEvents(){const d=TF_DAYS[S.tf],c=Date.now()-d*864e5;return EVENTS.filter(e=>e.ts>=c).sort((a,b)=>b.ts-a.ts)}
-function updateEvents(){
-  const evs=getVisibleEvents(),row=document.getElementById('eventsRow');
-  if(!evs.length){row.innerHTML='';return}
-  row.innerHTML=evs.map(e=>{const d=new Date(e.ts),ds=d.toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{day:'numeric',month:'short'}),lb=S.lang==='bm'?e.bm:e.en;return`<div class="ev-chip"><span class="ev-dot ${e.type}"></span><span class="ev-date">${ds}</span> ${lb}</div>`}).join('');
-}
+function updateEvents(){const evs=getVisibleEvents(),row=document.getElementById('eventsRow');if(!evs.length){row.innerHTML='';return}row.innerHTML=evs.map(e=>{const d=new Date(e.ts),ds=d.toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{day:'numeric',month:'short'}),lb=S.lang==='bm'?e.bm:e.en;return`<div class="ev-chip"><span class="ev-dot ${e.type}"></span><span class="ev-date">${ds}</span> ${lb}</div>`}).join('')}
 
-/* ══════════════════ API ══════════════════ */
-async function fetchPrices(){try{const r=await fetch('/api/prices');if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(!d.live)throw new Error('not live');S.liveData=d;S.isLive=true;setBadge(true);return d}catch(e){console.warn('API unavailable:',e.message);S.isLive=false;setBadge(false);return null}}
-function getLiveEntry(){if(!S.liveData)return null;return S.liveData[S.metal]?.[S.purity]||null}
+/* ═══ API ═══ */
+async function fetchPrices(){try{const r=await fetch('/api/prices');if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(!d.live)throw new Error('not live');S.liveData=d;S.isLive=true;setBadge(true);return d}catch(e){S.isLive=false;setBadge(false);return null}}
+function getLiveEntry(){return S.liveData?.[S.metal]?.[S.purity]||null}
 function setBadge(live){document.getElementById('liveBadge').classList.toggle('demo',!live);document.getElementById('badgeText').textContent=live?t('live'):t('demo')}
-
-/* ══════════════════ FORMAT ══════════════════ */
 function fmtRM(v){return'RM '+v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
 
-/* ══════════════════ RNG + HISTORY ══════════════════ */
+/* ═══ RNG + HISTORY ═══ */
 function srand(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
-function genHistory(endPrice,days){
-  const vol=S.metal==='gold'?.004:.008,ppd=days<=1?24:days<=7?6:1,total=days*ppd,now=Date.now(),step=(days*864e5)/total,rng=srand(Math.floor(now/864e5)*7+S.purity+(S.metal==='silver'?9999:0));
-  const raw=[];let p=endPrice*(.97+rng()*.06);
-  for(let i=total;i>=0;i--){p+=(rng()-.505)*endPrice*vol;p=Math.max(endPrice*.88,Math.min(endPrice*1.12,p));raw.push(p)}
-  const offset=endPrice-raw[raw.length-1];
-  return raw.map((v,i)=>({x:now-(raw.length-1-i)*step,y:+(v+offset*(i/(raw.length-1))).toFixed(2)}));
-}
+function genHistory(endPrice,days){const vol=S.metal==='gold'?.004:.008,ppd=days<=1?24:days<=7?6:1,total=days*ppd,now=Date.now(),step=(days*864e5)/total,rng=srand(Math.floor(now/864e5)*7+S.purity+(S.metal==='silver'?9999:0));const raw=[];let p=endPrice*(.97+rng()*.06);for(let i=total;i>=0;i--){p+=(rng()-.505)*endPrice*vol;p=Math.max(endPrice*.88,Math.min(endPrice*1.12,p));raw.push(p)}const offset=endPrice-raw[raw.length-1];return raw.map((v,i)=>({x:now-(raw.length-1-i)*step,y:+(v+offset*(i/(raw.length-1))).toFixed(2)}))}
 
-/* ══════════════════ CHART PLUGIN ══════════════════ */
+/* ═══ CHART ═══ */
 const eventPlugin={id:'eventMarkers',afterDatasetsDraw(chart){const evs=getVisibleEvents();if(!evs.length)return;const{ctx,chartArea:ca,scales:{x:xS}}=chart;evs.forEach(e=>{const px=xS.getPixelForValue(e.ts);if(px<ca.left||px>ca.right)return;ctx.save();ctx.setLineDash([3,4]);ctx.strokeStyle=e.type==='up'?'#00d68f':e.type==='down'?'#ff4757':'#4a4a68';ctx.lineWidth=1;ctx.globalAlpha=.3;ctx.beginPath();ctx.moveTo(px,ca.top);ctx.lineTo(px,ca.bottom);ctx.stroke();ctx.globalAlpha=.9;ctx.setLineDash([]);ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(px,ca.bottom-6,3.5,0,Math.PI*2);ctx.fill();ctx.restore()})}};
 Chart.register(eventPlugin);
-
-/* ══════════════════ CHART ══════════════════ */
-function initChart(){
-  const ctx=document.getElementById('chart').getContext('2d'),accent=S.metal==='gold'?'#FFD700':'#C0C0C0';
-  S.chart=new Chart(ctx,{type:'line',data:{datasets:[{data:S.history,borderColor:accent,borderWidth:2,fill:true,
-    backgroundColor:c=>{const g=c.chart.ctx.createLinearGradient(0,0,0,c.chart.height);g.addColorStop(0,S.metal==='gold'?'rgba(255,215,0,0.2)':'rgba(192,192,192,0.15)');g.addColorStop(1,'transparent');return g},
-    tension:.35,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:accent,pointHoverBorderColor:'#fff',pointHoverBorderWidth:2}]},
-  options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},animation:{duration:600,easing:'easeOutQuart'},
-    scales:{x:{type:'time',display:false},y:{display:false,grace:'5%'}},
-    plugins:{legend:{display:false},eventMarkers:{},
-      tooltip:{backgroundColor:'rgba(8,8,20,0.95)',titleColor:'#8a8aaa',bodyColor:accent,bodyFont:{size:15,weight:'700'},titleFont:{size:11},borderColor:'rgba(255,255,255,0.06)',borderWidth:1,padding:12,cornerRadius:12,displayColors:false,
-        callbacks:{title:i=>new Date(i[0].parsed.x).toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),label:i=>fmtRM(i.parsed.y)}}}}});
-}
+function initChart(){const ctx=document.getElementById('chart').getContext('2d'),a=S.metal==='gold'?'#FFD700':'#C0C0C0';S.chart=new Chart(ctx,{type:'line',data:{datasets:[{data:S.history,borderColor:a,borderWidth:2,fill:true,backgroundColor:c=>{const g=c.chart.ctx.createLinearGradient(0,0,0,c.chart.height);g.addColorStop(0,S.metal==='gold'?'rgba(255,215,0,0.2)':'rgba(192,192,192,0.15)');g.addColorStop(1,'transparent');return g},tension:.35,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:a,pointHoverBorderColor:'#fff',pointHoverBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},animation:{duration:600,easing:'easeOutQuart'},scales:{x:{type:'time',display:false},y:{display:false,grace:'5%'}},plugins:{legend:{display:false},eventMarkers:{},tooltip:{backgroundColor:'rgba(8,8,20,0.95)',titleColor:'#8a8aaa',bodyColor:a,bodyFont:{size:15,weight:'700'},titleFont:{size:11},borderColor:'rgba(255,255,255,0.06)',borderWidth:1,padding:12,cornerRadius:12,displayColors:false,callbacks:{title:i=>new Date(i[0].parsed.x).toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),label:i=>fmtRM(i.parsed.y)}}}}})}
 function updateChart(){if(!S.chart){initChart();return}const a=S.metal==='gold'?'#FFD700':'#C0C0C0',ds=S.chart.data.datasets[0];ds.data=S.history;ds.borderColor=a;ds.pointHoverBackgroundColor=a;S.chart.options.plugins.tooltip.bodyColor=a;S.chart.update('none');requestAnimationFrame(()=>S.chart.update())}
 
-/* ══════════════════ STATS ══════════════════ */
-function updateStats(){
-  const prices=S.history.map(p=>p.y),high=Math.max(...prices),low=Math.min(...prices),avg=prices.reduce((a,b)=>a+b,0)/prices.length;
-  const rets=prices.slice(1).map((p,i)=>(p-prices[i])/prices[i]),vol=Math.sqrt(rets.reduce((a,r)=>a+r*r,0)/rets.length)*100;
-  document.getElementById('statHigh').textContent=fmtRM(high);document.getElementById('statLow').textContent=fmtRM(low);document.getElementById('statAvg').textContent=fmtRM(avg);
-  const vE=document.getElementById('statVol');vE.textContent=vol.toFixed(2)+'%';vE.className='stat-val '+(vol>.5?'red':'green');
-  const range=high-low,pct=range>0?((S.price-low)/range)*100:50;document.getElementById('levelDot').style.left=Math.max(4,Math.min(96,pct))+'%';
-}
-
-/* ══════════════════ SPREAD / WEIGHTS ══════════════════ */
+/* ═══ STATS ═══ */
+function updateStats(){const prices=S.history.map(p=>p.y),high=Math.max(...prices),low=Math.min(...prices),avg=prices.reduce((a,b)=>a+b,0)/prices.length;const rets=prices.slice(1).map((p,i)=>(p-prices[i])/prices[i]),vol=Math.sqrt(rets.reduce((a,r)=>a+r*r,0)/rets.length)*100;document.getElementById('statHigh').textContent=fmtRM(high);document.getElementById('statLow').textContent=fmtRM(low);document.getElementById('statAvg').textContent=fmtRM(avg);const vE=document.getElementById('statVol');vE.textContent=vol.toFixed(2)+'%';vE.className='stat-val '+(vol>.5?'red':'green');const range=high-low,pct=range>0?((S.price-low)/range)*100:50;document.getElementById('levelDot').style.left=Math.max(4,Math.min(96,pct))+'%'}
 function updateSpread(){const sp=S.metal==='gold'?.015:.025;document.getElementById('buyPrice').textContent=fmtRM(S.price*(1+sp/2));document.getElementById('sellPrice').textContent=fmtRM(S.price*(1-sp/2))}
-function updateWeights(){const sil=S.metal==='silver';document.getElementById('weightsScroll').innerHTML=WEIGHTS.map(w=>`<div class="weight-chip glass tilt${sil?' sil-chip':''}"><div class="grams">${w}g</div><div class="wprice">${fmtRM(S.price*w)}</div></div>`).join('');setTimeout(initTilt,50)}
+function updateWeights(){const sil=S.metal==='silver';document.getElementById('weightsScroll').innerHTML=WEIGHTS.map(w=>`<div class="weight-chip glass tilt${sil?' sil-chip':''}"><div class="grams">${w}g</div><div class="wprice">${fmtRM(S.price*w)}</div></div>`).join('');initTilt()}
 
-/* ══════════════════ PRICE DISPLAY ══════════════════ */
-function updatePriceDisplay(){
-  const el=document.getElementById('priceValue'),old=S.prevPrice,target=S.price;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),150);
-  const start=performance.now(),dur=500;function tick(now){const p=Math.min((now-start)/dur,1);el.textContent=(old+(target-old)*(1-Math.pow(1-p,3))).toFixed(2);if(p<1)requestAnimationFrame(tick)}
-  if(old>0)requestAnimationFrame(tick);else el.textContent=target.toFixed(2);
-  const up=S.change>=0,cE=document.getElementById('priceChange');cE.className=`price-change ${up?'up':'down'}`;
-  document.getElementById('changeText').textContent=`RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;cE.querySelector('.arrow').innerHTML=up?'&#9650;':'&#9660;';
-  document.getElementById('lastUpdated').textContent=`${t('updated')} ${new Date().toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'})}`;
-  document.getElementById('spotLabel').textContent=S.spot>0?`${t('spot')}: ${fmtRM(S.spot)}${t('perG')}`:'';
-}
-
-/* ══════════════════ THEME ══════════════════ */
+/* ═══ PRICE DISPLAY ═══ */
+function updatePriceDisplay(){const el=document.getElementById('priceValue'),old=S.prevPrice,target=S.price;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),150);const start=performance.now(),dur=500;function tick(now){const p=Math.min((now-start)/dur,1);el.textContent=(old+(target-old)*(1-Math.pow(1-p,3))).toFixed(2);if(p<1)requestAnimationFrame(tick)}if(old>0)requestAnimationFrame(tick);else el.textContent=target.toFixed(2);const up=S.change>=0,cE=document.getElementById('priceChange');cE.className=`price-change ${up?'up':'down'}`;document.getElementById('changeText').textContent=`RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;cE.querySelector('.arrow').innerHTML=up?'&#9650;':'&#9660;';document.getElementById('lastUpdated').textContent=`${t('updated')} ${new Date().toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'})}`;document.getElementById('spotLabel').textContent=S.spot>0?`${t('spot')}: ${fmtRM(S.spot)}${t('perG')}`:''}
 function applyTheme(){const sil=S.metal==='silver';document.getElementById('priceValue').className=`price-value${sil?' sil-text':''}`;document.querySelectorAll('.purity-btn.active').forEach(b=>b.classList.toggle('sil',sil));document.querySelectorAll('.tf-btn.active').forEach(b=>b.classList.toggle('sil',sil))}
 
-/* ══════════════════ ZAKAT ══════════════════ */
-function updateZakat(){
-  const grams=parseFloat(document.getElementById('zakatGrams').value),type=document.getElementById('zakatType').value,vE=document.getElementById('zakatValue'),nE=document.getElementById('zakatNote');
-  if(isNaN(grams)||grams<=0){vE.textContent='—';vE.className='zr-value exempt';nE.textContent='';return}
-  const price999=S.liveData?.gold?.[999]?.price||FALLBACK.gold[999],nisabVal=NISAB_GRAMS*price999,goldVal=grams*S.price;
-  if(type==='pakai'){if(grams<=URUF_GRAMS){vE.textContent=t('zExempt');vE.className='zr-value exempt';nE.textContent=`Uruf: ${URUF_GRAMS}g`;return}const exc=grams-URUF_GRAMS,zk=exc*S.price*ZAKAT_RATE;vE.textContent=fmtRM(zk);vE.className='zr-value';nE.textContent=`${exc.toFixed(1)}g × ${fmtRM(S.price)} × 2.5%`;return}
-  if(goldVal<nisabVal){vE.textContent=t('zExempt');vE.className='zr-value exempt';nE.textContent=`${t('zNisab')} = ${fmtRM(nisabVal)}`;return}
-  vE.textContent=fmtRM(goldVal*ZAKAT_RATE);vE.className='zr-value';nE.textContent=`${grams}g × ${fmtRM(S.price)} × 2.5%`;
+/* ═══ DEALER COMPARISON ═══ */
+const CAT_LABELS={all:{en:'All',bm:'Semua'},dealer:{en:'Dealers',bm:'Peniaga'},jeweller:{en:'Jewellers',bm:'Pengemas'},digital:{en:'Digital',bm:'Digital'},bank:{en:'Banks',bm:'Bank'}};
+function updateDealers(){
+  const rawSpot=S.spot>0?S.spot:(S.price>0?S.price/1.08:0);
+  if(rawSpot<=0)return;
+  const spotG=rawSpot*(S.purity/1000);
+  const all=DEALERS.map(d=>{
+    const bm=d.buy[S.purity],sm=d.sell?.[S.purity];
+    if(!bm)return null;
+    const buyP=+(spotG*bm).toFixed(2),sellP=sm?+(spotG*sm).toFixed(2):null;
+    const spread=sellP?+(((buyP-sellP)/buyP)*100).toFixed(1):null;
+    return{...d,buyP,sellP,spread};
+  }).filter(Boolean);
+  const filtered=S.dealerCat==='all'?all:all.filter(d=>d.cat===S.dealerCat);
+  const sorted=filtered.sort((a,b)=>a.buyP-b.buyP);
+  const cheapestP=sorted[0]?.buyP||0;
+  const bestSellP=Math.max(...sorted.map(d=>d.sellP||0));
+  const countEl=document.getElementById('dealerCount');
+  countEl.textContent=S.lang==='bm'?`${sorted.length} peniaga tersedia`:`${sorted.length} dealers available`;
+  document.getElementById('dealerList').innerHTML=sorted.map((d,i)=>{
+    const isCheap=i===0;
+    const isBestSell=d.sellP===bestSellP&&d.sellP>0;
+    const diff=d.buyP-cheapestP;
+    const desc=S.lang==='bm'?d.bm:d.en;
+    const catLabel=CAT_LABELS[d.cat]?.[S.lang]||d.cat;
+    const spreadClass=d.spread===null?'':d.spread<=4?'tight':d.spread<=8?'wide':'very-wide';
+    let badges='';
+    if(isCheap)badges+=`<span class="cheapest-badge">${t('cheapest')}</span>`;
+    if(isBestSell&&!isCheap)badges+=`<span class="best-sell-badge">${t('bestSell')}</span>`;
+    return`<div class="dealer-card glass${isCheap?' cheapest':''}${isBestSell&&!isCheap?' best-sell':''}">
+      <div class="dealer-top"><div class="dealer-name">${d.name}<span class="dealer-cat cat-${d.cat}">${catLabel}</span></div><div class="dealer-sub">${desc}</div></div>
+      <div class="dealer-prices">
+        <div class="dp-col buy-col"><div class="dp-label">${t('buy')}</div><div class="dp-val">${fmtRM(d.buyP)}</div></div>
+        <div class="dp-col sell-col${d.sellP?'':' na'}"><div class="dp-label">${t('sell')}</div><div class="dp-val">${d.sellP?fmtRM(d.sellP):'—'}</div></div>
+        <div class="dp-col spread-col${d.spread!==null?'':' na'}"><div class="dp-label">${t('spread')}</div><div class="dp-val ${spreadClass}">${d.spread!==null?d.spread+'%':'—'}</div></div>
+      </div>
+      <div class="dealer-foot"><div class="dp-diff ${isCheap?'cheapest':'more'}">${isCheap?t('cheapest'):`+${fmtRM(diff)} vs ${t('cheapest').toLowerCase()}`}</div>${badges}</div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('dealerFilters').addEventListener('click',e=>{
+  const btn=e.target.closest('.df-btn');if(!btn)return;
+  S.dealerCat=btn.dataset.cat;
+  document.querySelectorAll('.df-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  updateDealers();
+});
+
+/* ═══ PORTFOLIO ═══ */
+function getHoldings(){try{return JSON.parse(localStorage.getItem('gr_holdings'))||[]}catch(e){return[]}}
+function saveHoldings(h){try{localStorage.setItem('gr_holdings',JSON.stringify(h))}catch(e){}}
+function updatePortfolio(){
+  const holdings=getHoldings();
+  const list=document.getElementById('holdingsList');
+  if(!holdings.length){list.innerHTML=`<div class="port-empty">No holdings yet. Add your first gold holding to track its value.</div>`;document.getElementById('portTotal').textContent='RM 0.00';document.getElementById('portPL').style.display='none';document.getElementById('portMeta').textContent='';return}
+  let totalCost=0,totalVal=0,totalG=0;
+  list.innerHTML='<div class="holding-list">'+holdings.map(h=>{
+    const curPrice=S.liveData?.[S.metal]?.[h.purity]?.price||FALLBACK.gold[h.purity]||S.price;
+    const val=h.grams*curPrice;const cost=h.grams*h.buyPrice;
+    totalCost+=cost;totalVal+=val;totalG+=h.grams;
+    const pl=val-cost;const plPct=cost>0?(pl/cost*100):0;const up=pl>=0;
+    return`<div class="holding-card glass"><div class="holding-info"><div class="h-label">${h.label||h.purity+' Gold'}</div><div class="h-detail">${h.grams}g ${h.purity} &middot; ${t('buy')}: ${fmtRM(h.buyPrice)}/g</div></div><div class="holding-val"><div class="hv-now">${fmtRM(val)}</div><div class="hv-pl ${up?'up':'down'}">${up?'+':''}${fmtRM(pl)} (${up?'+':''}${plPct.toFixed(1)}%)</div></div><button class="btn btn-danger btn-sm" onclick="deleteHolding(${h.id})" style="margin-left:8px;padding:4px 8px;font-size:10px">&times;</button></div>`;
+  }).join('')+'</div>';
+  const totalPL=totalVal-totalCost;const up=totalPL>=0;
+  document.getElementById('portTotal').textContent=fmtRM(totalVal);
+  const plEl=document.getElementById('portPL');plEl.style.display='';plEl.className=`port-pl ${up?'up':'down'}`;
+  document.getElementById('portPLText').textContent=`${up?'+':''}${fmtRM(totalPL)} (${up?'+':''}${(totalPL/totalCost*100).toFixed(1)}%)`;
+  document.getElementById('portMeta').textContent=`${totalG.toFixed(1)}g total &middot; Cost: ${fmtRM(totalCost)}`;
+}
+function deleteHolding(id){const h=getHoldings().filter(x=>x.id!==id);saveHoldings(h);updatePortfolio()}
+
+/* ═══ PRICE ALERTS ═══ */
+function getAlerts(){try{return JSON.parse(localStorage.getItem('gr_alerts'))||[]}catch(e){return[]}}
+function saveAlerts(a){try{localStorage.setItem('gr_alerts',JSON.stringify(a))}catch(e){}}
+function updateAlertsList(){
+  const alerts=getAlerts();
+  const list=document.getElementById('alertsList');
+  if(!alerts.length){list.innerHTML=`<div class="alert-empty">No alerts set. Get notified when gold hits your target price.</div>`;return}
+  list.innerHTML='<div class="alert-list">'+alerts.map(a=>`<div class="alert-card glass"><div class="alert-info"><div>${a.purity} ${S.metal==='silver'?t('silver'):t('gold')} ${a.direction==='below'?'&#9660;':'&#9650;'} <span class="a-target">${fmtRM(a.target)}</span></div><div class="a-detail">${a.direction==='below'?'Notify when below':'Notify when above'} ${fmtRM(a.target)}</div></div><button class="btn btn-danger btn-sm" onclick="deleteAlert(${a.id})">&times;</button></div>`).join('')+'</div>';
+}
+function deleteAlert(id){const a=getAlerts().filter(x=>x.id!==id);saveAlerts(a);updateAlertsList()}
+function checkAlerts(){
+  const alerts=getAlerts();if(!alerts.length)return;
+  alerts.forEach(a=>{
+    if(a.triggered)return;
+    const curPrice=S.liveData?.[S.metal]?.[a.purity]?.price||S.price;
+    const hit=(a.direction==='below'&&curPrice<=a.target)||(a.direction==='above'&&curPrice>=a.target);
+    if(hit){
+      a.triggered=true;
+      showToast(`${a.purity} ${t('gold')} Alert`,`Price ${a.direction==='below'?'dropped below':'rose above'} ${fmtRM(a.target)} — now at ${fmtRM(curPrice)}`);
+      if('Notification' in window && Notification.permission==='granted'){new Notification('Gold Rush Alert',{body:`${a.purity} gold: ${fmtRM(curPrice)}`,icon:'/icon-192.png'})}
+    }
+  });
+  saveAlerts(alerts);
+}
+function showToast(title,body){const el=document.getElementById('toast');document.getElementById('toastTitle').textContent=title;document.getElementById('toastBody').textContent=body;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),5000)}
+
+/* ═══ ZAKAT ═══ */
+function updateZakat(){const grams=parseFloat(document.getElementById('zakatGrams').value),type=document.getElementById('zakatType').value,vE=document.getElementById('zakatValue'),nE=document.getElementById('zakatNote');if(isNaN(grams)||grams<=0){vE.textContent='—';vE.className='zr-value exempt';nE.textContent='';return}const price999=S.liveData?.gold?.[999]?.price||FALLBACK.gold[999],nisabVal=NISAB_GRAMS*price999,goldVal=grams*S.price;if(type==='pakai'){if(grams<=URUF_GRAMS){vE.textContent=t('zExempt');vE.className='zr-value exempt';nE.textContent=`Uruf: ${URUF_GRAMS}g`;return}const exc=grams-URUF_GRAMS,zk=exc*S.price*ZAKAT_RATE;vE.textContent=fmtRM(zk);vE.className='zr-value';nE.textContent=`${exc.toFixed(1)}g x ${fmtRM(S.price)} x 2.5%`;return}if(goldVal<nisabVal){vE.textContent=t('zExempt');vE.className='zr-value exempt';nE.textContent=`${t('zNisab')} = ${fmtRM(nisabVal)}`;return}vE.textContent=fmtRM(goldVal*ZAKAT_RATE);vE.className='zr-value';nE.textContent=`${grams}g x ${fmtRM(S.price)} x 2.5%`}
+
+/* ═══ CALCULATOR ═══ */
+function setupCalc(){const gE=document.getElementById('calcGrams'),vE=document.getElementById('calcValue');gE.addEventListener('input',()=>{const g=parseFloat(gE.value);vE.value=(!isNaN(g)&&g>=0)?(g*S.price).toFixed(2):''});vE.addEventListener('input',()=>{const v=parseFloat(vE.value);gE.value=(!isNaN(v)&&v>=0&&S.price>0)?(v/S.price).toFixed(2):''});document.getElementById('calcSwap').addEventListener('click',()=>{[gE.value,vE.value]=[vE.value,gE.value]})}
+
+/* ═══ TABS ═══ */
+function switchTab(tab){
+  S.tab=tab;
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+  document.getElementById('view'+tab)?.classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  window.scrollTo(0,0);
+  if(tab==='Compare')updateDealers();
+  if(tab==='Portfolio')updatePortfolio();
+  if(tab==='Tools')updateAlertsList();
 }
 
-/* ══════════════════ CALCULATOR ══════════════════ */
-function setupCalc(){
-  const gE=document.getElementById('calcGrams'),vE=document.getElementById('calcValue');
-  gE.addEventListener('input',()=>{const g=parseFloat(gE.value);vE.value=(!isNaN(g)&&g>=0)?(g*S.price).toFixed(2):''});
-  vE.addEventListener('input',()=>{const v=parseFloat(vE.value);gE.value=(!isNaN(v)&&v>=0&&S.price>0)?(v/S.price).toFixed(2):''});
-  document.getElementById('calcSwap').addEventListener('click',()=>{[gE.value,vE.value]=[vE.value,gE.value]});
-}
-
-/* ══════════════════ REFRESH ══════════════════ */
+/* ═══ REFRESH ═══ */
 async function refresh(fetchNew){
   if(fetchNew)await fetchPrices();const entry=getLiveEntry();S.prevPrice=S.price;
   if(entry){S.price=entry.price;S.change=entry.change;S.changePct=entry.pct;S.spot=entry.spot}
-  else{const base=FALLBACK[S.metal]?.[S.purity]||576;if(S.price===0)S.price=base;const j=(Math.random()-.48)*base*.001;S.price=+(base+j).toFixed(2);S.change=+(S.price-base).toFixed(2);S.changePct=+((S.change/base)*100).toFixed(2);S.spot=0}
-  S.history=genHistory(S.price,TF_DAYS[S.tf]);updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();applyTheme();S.countdown=30;
+  else{const base=FALLBACK[S.metal]?.[S.purity]||576;if(S.price===0)S.price=base;S.price=+(base+(Math.random()-.48)*base*.001).toFixed(2);S.change=+(S.price-base).toFixed(2);S.changePct=+((S.change/base)*100).toFixed(2);S.spot=0}
+  S.history=genHistory(S.price,TF_DAYS[S.tf]);
+  updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();applyTheme();updateDealers();updatePortfolio();checkAlerts();
+  S.countdown=30;
 }
-
-/* ══════════════════ TIMER ══════════════════ */
 function startTimer(){clearInterval(S.timer);S.timer=setInterval(async()=>{S.countdown--;document.getElementById('timer').textContent=S.countdown+'s';if(S.countdown<=0)await refresh(true)},1000)}
 
-/* ══════════════════ LISTENERS ══════════════════ */
+/* ═══ LISTENERS ═══ */
 document.querySelectorAll('.metal-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.metal-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const m=btn.dataset.metal;document.getElementById('metalToggle').className='mt-inner'+(m==='silver'?' silver':'');S.metal=m;const purities=m==='silver'?[999]:[999,916,750];document.getElementById('purityRow').innerHTML=purities.map((p,i)=>`<button class="purity-btn${i===0?' active':''}" data-purity="${p}">${p}</button>`).join('');S.purity=purities[0];bindPurity();refresh(false)})});
 function bindPurity(){document.querySelectorAll('.purity-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.purity-btn').forEach(b=>b.classList.remove('active','sil'));btn.classList.add('active');if(S.metal==='silver')btn.classList.add('sil');S.purity=+btn.dataset.purity;refresh(false)})})}
 document.querySelectorAll('.tf-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active','sil'));btn.classList.add('active');if(S.metal==='silver')btn.classList.add('sil');S.tf=btn.dataset.tf;refresh(false)})});
+document.querySelectorAll('.tab').forEach(btn=>{btn.addEventListener('click',()=>switchTab(btn.dataset.tab))});
 document.getElementById('langBtn').addEventListener('click',()=>{S.lang=S.lang==='en'?'bm':'en';try{localStorage.setItem('gr_lang',S.lang)}catch(e){}applyLang()});
 document.getElementById('zakatGrams').addEventListener('input',updateZakat);
 document.getElementById('zakatType').addEventListener('change',updateZakat);
 
-/* ══════════════════ MODALS ══════════════════ */
-function initModals(){
-  const pairs=[['privacyLink','privacyModal','privacyClose'],['termsLink','termsModal','termsClose']];
-  pairs.forEach(([linkId,modalId,closeId])=>{
-    const link=document.getElementById(linkId),modal=document.getElementById(modalId),close=document.getElementById(closeId);
-    link.addEventListener('click',e=>{e.preventDefault();modal.classList.add('open')});
-    close.addEventListener('click',()=>modal.classList.remove('open'));
-    modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
-  });
-}
+// Portfolio form
+document.getElementById('addHoldingBtn').addEventListener('click',()=>{document.getElementById('portForm').style.display='';document.getElementById('pfDate').value=new Date().toISOString().split('T')[0]});
+document.getElementById('pfCancel').addEventListener('click',()=>{document.getElementById('portForm').style.display='none'});
+document.getElementById('pfSave').addEventListener('click',()=>{const h=getHoldings();h.push({id:Date.now(),label:document.getElementById('pfLabel').value||'Gold',purity:+document.getElementById('pfPurity').value,grams:parseFloat(document.getElementById('pfGrams').value)||0,buyPrice:parseFloat(document.getElementById('pfBuyPrice').value)||0,date:document.getElementById('pfDate').value});saveHoldings(h);document.getElementById('portForm').style.display='none';['pfLabel','pfGrams','pfBuyPrice'].forEach(id=>{document.getElementById(id).value=''});updatePortfolio()});
 
-/* ══════════════════ INIT ══════════════════ */
+// Alert form
+document.getElementById('addAlertBtn').addEventListener('click',()=>{document.getElementById('alertForm').style.display=''});
+document.getElementById('alSave').addEventListener('click',()=>{const target=parseFloat(document.getElementById('alTarget').value);if(!target||target<=0)return;const a=getAlerts();a.push({id:Date.now(),metal:S.metal,purity:S.purity,target,direction:document.getElementById('alDir').value,triggered:false});saveAlerts(a);document.getElementById('alertForm').style.display='none';document.getElementById('alTarget').value='';updateAlertsList();if('Notification' in window&&Notification.permission==='default'){Notification.requestPermission()}});
+
+/* ═══ MODALS ═══ */
+function initModals(){[['privacyLink','privacyModal','privacyClose'],['termsLink','termsModal','termsClose']].forEach(([l,m,c])=>{const link=document.getElementById(l),modal=document.getElementById(m),close=document.getElementById(c);link.addEventListener('click',e=>{e.preventDefault();modal.classList.add('open')});close.addEventListener('click',()=>modal.classList.remove('open'));modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')})})}
+
+/* ═══ INIT ═══ */
 try{S.lang=localStorage.getItem('gr_lang')||'en'}catch(e){}
 bindPurity();setupCalc();applyLang();initTilt();initModals();
 refresh(true).then(()=>{initChart();updateChart();startTimer()});
-
-/* ══════════════════ SERVICE WORKER ══════════════════ */
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
