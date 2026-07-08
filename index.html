@@ -191,6 +191,13 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .dp-diff.more{color:var(--text3)}
 .cheapest-badge{font-size:9px;font-weight:700;color:var(--grn);background:var(--grn-bg);padding:2px 8px;border-radius:var(--pill);letter-spacing:.5px}
 .best-sell-badge{font-size:9px;font-weight:700;color:var(--orange);background:var(--orange-bg);padding:2px 8px;border-radius:var(--pill);letter-spacing:.5px}
+.dealer-links{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--glass-b)}
+.dl-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;font-size:10px;font-weight:600;border-radius:var(--pill);text-decoration:none;transition:all .3s;letter-spacing:.3px}
+.dl-btn.dl-site{color:var(--text2);background:var(--glass);border:1px solid var(--glass-b)}
+.dl-btn.dl-site:hover{border-color:var(--gold);color:var(--gold)}
+.dl-btn.dl-shopee{color:#fff;background:linear-gradient(135deg,#ee4d2d,#ff6633);border:1px solid rgba(238,77,45,0.3)}
+.dl-btn.dl-shopee:hover{box-shadow:0 0 16px rgba(238,77,45,0.25)}
+.dl-btn svg{width:12px;height:12px;fill:currentColor}
 
 /* ─── Portfolio ─── */
 .port-summary{padding:16px;margin:8px 16px;text-align:center}
@@ -445,52 +452,66 @@ const NISAB_GRAMS=85,URUF_GRAMS=850,ZAKAT_RATE=0.025;
 const DEALERS=[
   {id:'publicGold',name:'Public Gold',cat:'dealer',pop:1,
    en:'Largest private gold dealer',bm:'Peniaga emas swasta terbesar',
+   url:'https://publicgold.com.my',shopee:'https://shopee.com.my/search?keyword=public%20gold%20gold%20bar',
    buy:{999:1.12,916:1.15,750:1.18},sell:{999:0.98,916:0.97,750:0.96}},
   {id:'quantumMetal',name:'Quantum Metal',cat:'dealer',pop:9,
    en:'Online gold investment',bm:'Pelaburan emas dalam talian',
+   url:'https://quantummetal.com.my',shopee:'https://shopee.com.my/search?keyword=quantum%20metal%20gold',
    buy:{999:1.08,916:1.11,750:1.14},sell:{999:0.97,916:0.96,750:0.95}},
   {id:'pohKong',name:'Poh Kong',cat:'jeweller',pop:2,
    en:'Bursa-listed jewellery chain',bm:'Rangkaian barang kemas tersenarai Bursa',
+   url:'https://pohkong.com.my',shopee:'https://shopee.com.my/search?keyword=poh%20kong%20gold',
    buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.96,750:0.95}},
   {id:'habib',name:'Habib Jewels',cat:'jeweller',pop:3,
    en:'Premium jewellery retailer',bm:'Peruncit barang kemas premium',
+   url:'https://habib.my',shopee:'https://shopee.com.my/search?keyword=habib%20jewels%20gold',
    buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.97,916:0.95,750:0.94}},
   {id:'tomei',name:'Tomei',cat:'jeweller',pop:6,
    en:'Bursa-listed gold & jewellery',bm:'Emas & barang kemas tersenarai Bursa',
+   url:'https://tomei.com.my',shopee:'https://shopee.com.my/search?keyword=tomei%20gold',
    buy:{999:1.09,916:1.12,750:1.15},sell:{999:0.97,916:0.96,750:0.95}},
   {id:'wahChan',name:'Wah Chan',cat:'jeweller',pop:8,
    en:'Established gold retailer',bm:'Peruncit emas lama bertapak',
+   url:'https://wahchan.com.my',shopee:'https://shopee.com.my/search?keyword=wah%20chan%20gold',
    buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.95,750:0.94}},
   {id:'zhulian',name:'Zhulian',cat:'jeweller',pop:10,
    en:'Direct-selling jeweller',bm:'Barang kemas jualan langsung',
+   url:'https://zhulian.com.my',shopee:'https://shopee.com.my/search?keyword=zhulian%20gold',
    buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.96,916:0.95,750:0.94}},
   {id:'helloGold',name:'HelloGold',cat:'digital',pop:5,
    en:'Digital gold savings app',bm:'Aplikasi simpanan emas digital',
+   url:'https://hellogold.com',
    buy:{999:1.03},sell:{999:0.99}},
   {id:'goldSilverCentral',name:'GoldSilver Central',cat:'digital',pop:13,
    en:'Online bullion marketplace',bm:'Pasaran jongkong emas dalam talian',
+   url:'https://goldsilvercentral.com.sg',shopee:'https://shopee.com.my/search?keyword=gold%20silver%20central',
    buy:{999:1.04,916:1.08},sell:{999:0.99,916:0.97}},
   {id:'mygold',name:'MyGold (Maybank)',cat:'digital',pop:11,
    en:'Maybank digital gold',bm:'Emas digital Maybank',
+   url:'https://www.maybank2u.com.my',
    buy:{999:1.05},sell:{999:0.98}},
   {id:'maybank',name:'Maybank Gold Account-i',cat:'bank',pop:4,
    en:'Gold savings passbook',bm:'Buku simpanan emas',
+   url:'https://www.maybank2u.com.my',
    buy:{999:1.08},sell:{999:0.97}},
   {id:'cimb',name:'CIMB Gold',cat:'bank',pop:7,
    en:'Gold investment account',bm:'Akaun pelaburan emas',
+   url:'https://www.cimb.com.my',
    buy:{999:1.08},sell:{999:0.97}},
   {id:'kfh',name:'KFH Gold Account-i',cat:'bank',pop:12,
    en:'Islamic gold savings',bm:'Simpanan emas Islamik',
+   url:'https://www.kfh.com.my',
    buy:{999:1.07},sell:{999:0.97}},
   {id:'uob',name:'UOB Gold Account',cat:'bank',pop:14,
    en:'Gold savings account',bm:'Akaun simpanan emas',
+   url:'https://www.uob.com.my',
    buy:{999:1.08},sell:{999:0.97}},
 ];
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
@@ -581,6 +602,7 @@ function updateDealers(){
         <div class="dp-col spread-col${d.spread!==null?'':' na'}"><div class="dp-label">${t('spread')}</div><div class="dp-val ${spreadClass}">${d.spread!==null?d.spread+'%':'—'}</div></div>
       </div>
       <div class="dealer-foot"><div class="dp-diff ${isCheap?'cheapest':'more'}">${isCheap?t('cheapest'):`+${fmtRM(diff)} vs ${t('cheapest').toLowerCase()}`}</div>${badges}</div>
+      <div class="dealer-links">${d.url?`<a class="dl-btn dl-site" href="${d.url}" target="_blank" rel="noopener">${t('visitSite')}</a>`:''}${d.shopee?`<a class="dl-btn dl-shopee" href="${d.shopee}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>Shopee</a>`:''}</div>
     </div>`;
   }).join('');
 }
