@@ -230,6 +230,20 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .nl-success p{font-size:12px;color:var(--grn);font-weight:600}
 .nl-success .nl-sub-text{font-size:10px;color:var(--text3);margin-top:4px;font-weight:400}
 
+/* ─── Share Card ─── */
+.share-btn-row{display:flex;justify-content:center;padding:4px 16px 0}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;font-size:12px;font-weight:700;color:var(--gold);background:var(--glass);border:1px solid rgba(255,215,0,0.15);border-radius:var(--pill);cursor:pointer;transition:all .3s;font-family:inherit;letter-spacing:.3px}
+.share-btn:hover{background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.3);box-shadow:0 0 20px rgba(255,215,0,0.08)}
+.share-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:10001;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.share-modal.open{display:flex}
+.share-preview{max-width:320px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.share-preview canvas{width:100%;height:auto;display:block}
+.share-actions{display:flex;gap:10px;margin-top:16px}
+.share-actions .btn{font-size:12px;padding:10px 24px}
+.share-close{position:absolute;top:20px;right:20px;width:36px;height:36px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;font-size:20px;border-radius:50%;cursor:pointer;display:grid;place-items:center;transition:all .2s}
+.share-close:hover{border-color:var(--gold);color:var(--gold)}
+
 /* ─── Portfolio ─── */
 .port-summary{padding:16px;margin:8px 16px;text-align:center}
 .port-total{font-size:28px;font-weight:900;color:var(--gold);filter:drop-shadow(0 0 15px rgba(255,215,0,0.15));font-variant-numeric:tabular-nums}
@@ -337,6 +351,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="last-updated" id="lastUpdated">Loading...</div>
       <div class="spot-label" id="spotLabel"></div>
     </section>
+    <div class="share-btn-row"><button class="share-btn" id="shareBtn"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg><span id="lShare">Share Price</span></button></div>
     <div class="level-section"><div class="level-bar"><div class="level-dot" id="levelDot" style="left:50%"></div></div></div>
     <section class="chart-section">
       <div class="tf-row" id="tfRow"><button class="tf-btn" data-tf="1D">24H</button><button class="tf-btn active" data-tf="7D">7D</button><button class="tf-btn" data-tf="1M">1M</button><button class="tf-btn" data-tf="3M">3M</button><button class="tf-btn" data-tf="6M">6M</button><button class="tf-btn" data-tf="1Y">1Y</button></div>
@@ -488,6 +503,16 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="modal-overlay" id="termsModal"><div class="modal glass"><button class="modal-close" id="termsClose">&times;</button><h2>Terms & Conditions</h2><div class="modal-body"><p><strong>Last updated:</strong> June 2026</p><p>By using Gold Rush, operated by FR Ventures, you agree to these terms.</p><h3>1. Nature of Service</h3><p>Gold Rush provides indicative gold and silver price information for the Malaysian market. Prices are estimated retail rates derived from international spot prices. They are <strong>not</strong> live dealer quotes.</p><h3>2. Not Financial Advice</h3><p>Nothing on this website constitutes financial or investment advice. Consult a qualified advisor before making investment decisions.</p><h3>3. No Warranty</h3><p>The Service is provided "as is" without warranties. FR Ventures does not guarantee accuracy or timeliness of data.</p><h3>4. Limitation of Liability</h3><p>FR Ventures shall not be liable for any damages arising from use of this Service, including financial losses.</p><h3>5. Zakat Calculator</h3><p>The zakat calculator is a general estimation tool, not a substitute for consultation with a religious authority.</p><h3>6. Intellectual Property</h3><p>All content and design are property of FR Ventures. Unauthorised reproduction is prohibited.</p><h3>7. Governing Law</h3><p>These terms are governed by the laws of Malaysia.</p><h3>Contact</h3><p>FR Ventures — <strong>farisncorps@gmail.com</strong></p></div></div></div>
 </div>
 
+<!-- Share Modal -->
+<div class="share-modal" id="shareModal">
+  <button class="share-close" id="shareClose">&times;</button>
+  <div class="share-preview"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>
+  <div class="share-actions">
+    <button class="btn btn-gold btn-sm" id="shareDownload">Download</button>
+    <button class="btn btn-ghost btn-sm" id="shareNative" style="display:none">Share</button>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"><div class="toast-title" id="toastTitle"></div><div class="toast-body" id="toastBody"></div></div>
 
@@ -566,13 +591,13 @@ const DEALERS=[
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigPrice:'Price',sigMA:'7D Avg',sigDiff:'vs Avg',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigPrice:'Harga',sigMA:'Purata 7H',sigDiff:'vs Purata',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigPrice:'Price',sigMA:'7D Avg',sigDiff:'vs Avg',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigPrice:'Harga',sigMA:'Purata 7H',sigDiff:'vs Purata',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
   const m=(id,k)=>{const el=document.getElementById(id);if(el)el.textContent=t(k)};
-  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');m('lSignal','signal');m('lSigPrice','sigPrice');m('lSigMA','sigMA');m('lSigDiff','sigDiff');m('sigDisclaimer','sigDisclaimer');m('nlTitle','nlTitle');m('nlDesc','nlDesc');m('nlSuccessTitle','nlSuccess');m('nlSuccessDesc','nlSuccessDesc');
+  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');m('lSignal','signal');m('lSigPrice','sigPrice');m('lSigMA','sigMA');m('lSigDiff','sigDiff');m('sigDisclaimer','sigDisclaimer');m('nlTitle','nlTitle');m('nlDesc','nlDesc');m('nlSuccessTitle','nlSuccess');m('nlSuccessDesc','nlSuccessDesc');m('lShare','sharePrice');
   document.getElementById('langBtn').textContent=t('langLabel');
   document.getElementById('badgeText').textContent=S.isLive?t('live'):t('demo');
   document.getElementById('nlSubmit').textContent=t('nlSubscribe');
@@ -644,6 +669,142 @@ function updateSignal(){
   sigDiffEl.textContent=(diff>=0?'+':'')+diff.toFixed(2)+'%';
   sigDiffEl.style.color=diff<-1?'var(--grn)':diff>1?'var(--red)':'var(--text2)';
   document.getElementById('sigReason').textContent=reason;
+}
+
+/* ═══ SHARE CARD ═══ */
+function generateShareCard(){
+  const c=document.getElementById('shareCanvas'),ctx=c.getContext('2d');
+  const W=1080,H=1920;c.width=W;c.height=H;
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0a0a1e');bg.addColorStop(0.3,'#080818');bg.addColorStop(0.7,'#060614');bg.addColorStop(1,'#04040e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const glow=ctx.createRadialGradient(W/2,400,0,W/2,400,500);
+  glow.addColorStop(0,'rgba(255,215,0,0.08)');glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+  for(let i=0;i<60;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.5+0.5,a=Math.random()*0.3+0.05;ctx.fillStyle=`rgba(255,215,0,${a})`;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+  ctx.strokeStyle='rgba(255,215,0,0.04)';ctx.lineWidth=1;
+  for(let i=0;i<W;i+=60){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke()}
+  for(let i=0;i<H;i+=60){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke()}
+  const logoY=160;
+  ctx.fillStyle='#FFD700';ctx.beginPath();
+  const lx=W/2-36,ly=logoY-36;const lr=12;
+  ctx.moveTo(lx+lr,ly);ctx.lineTo(lx+72-lr,ly);ctx.quadraticCurveTo(lx+72,ly,lx+72,ly+lr);
+  ctx.lineTo(lx+72,ly+72-lr);ctx.quadraticCurveTo(lx+72,ly+72,lx+72-lr,ly+72);
+  ctx.lineTo(lx+lr,ly+72);ctx.quadraticCurveTo(lx,ly+72,lx,ly+72-lr);
+  ctx.lineTo(lx,ly+lr);ctx.quadraticCurveTo(lx,ly,lx+lr,ly);ctx.fill();
+  ctx.fillStyle='#000';ctx.font='bold 32px Inter,-apple-system,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Au',W/2,logoY+8);
+  ctx.fillStyle='#fff';ctx.font='900 48px Inter,-apple-system,sans-serif';
+  ctx.fillText('Gold Rush',W/2,logoY+100);
+  ctx.fillStyle='rgba(255,215,0,0.5)';ctx.font='600 22px Inter,-apple-system,sans-serif';
+  ctx.fillText('LIVE GOLD PRICE',W/2,logoY+145);
+  const now=new Date();
+  const dateStr=now.toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 26px Inter,-apple-system,sans-serif';
+  ctx.fillText(dateStr,W/2,logoY+195);
+  const timeStr=now.toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'});
+  ctx.fillText(timeStr,W/2,logoY+235);
+  const purityY=530;
+  const pLabel=S.purity+' '+t(S.metal==='silver'?'silver':'gold').toUpperCase();
+  ctx.font='700 28px Inter,-apple-system,sans-serif';const pw=ctx.measureText(pLabel).width;
+  const px=W/2-pw/2-24,py=purityY-22;
+  ctx.strokeStyle='rgba(255,215,0,0.3)';ctx.lineWidth=2;ctx.fillStyle='rgba(255,215,0,0.06)';
+  ctx.beginPath();ctx.roundRect(px,py,pw+48,48,24);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#FFD700';ctx.textAlign='center';ctx.fillText(pLabel,W/2,purityY+6);
+  const priceY=720;
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='500 40px Inter,-apple-system,sans-serif';
+  ctx.fillText('RM',W/2,priceY-80);
+  ctx.fillStyle='#fff';ctx.font='900 140px Inter,-apple-system,sans-serif';
+  ctx.fillText(S.price.toFixed(2),W/2,priceY+30);
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 36px Inter,-apple-system,sans-serif';
+  ctx.fillText(S.lang==='bm'?'per gram':'per gram',W/2,priceY+80);
+  const up=S.change>=0;
+  const changeY=priceY+150;
+  const arrow=up?'▲':'▼';
+  const changeStr=`${arrow} RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;
+  ctx.font='700 34px Inter,-apple-system,sans-serif';const cw=ctx.measureText(changeStr).width;
+  const cBg=up?'rgba(0,214,143,0.1)':'rgba(255,71,87,0.1)';
+  const cBorder=up?'rgba(0,214,143,0.25)':'rgba(255,71,87,0.25)';
+  ctx.fillStyle=cBg;ctx.strokeStyle=cBorder;ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(W/2-cw/2-30,changeY-28,cw+60,56,28);ctx.fill();ctx.stroke();
+  ctx.fillStyle=up?'#00d68f':'#ff4757';ctx.fillText(changeStr,W/2,changeY+7);
+  const cardY=1050;const cardH=360;const cardM=80;
+  ctx.fillStyle='rgba(255,255,255,0.02)';ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(cardM,cardY,W-cardM*2,cardH,24);ctx.fill();ctx.stroke();
+  const colW=(W-cardM*2)/3;
+  const prices=S.history.map(p=>p.y);
+  const high=Math.max(...prices),low=Math.min(...prices),avg=prices.reduce((a,b)=>a+b,0)/prices.length;
+  const metrics=[{label:t('high').toUpperCase(),val:fmtRM(high)},{label:t('low').toUpperCase(),val:fmtRM(low)},{label:t('average').toUpperCase(),val:fmtRM(avg)}];
+  metrics.forEach((m,i)=>{
+    const cx=cardM+colW*i+colW/2;
+    ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='600 22px Inter,-apple-system,sans-serif';
+    ctx.fillText(m.label,cx,cardY+60);
+    ctx.fillStyle='#fff';ctx.font='800 36px Inter,-apple-system,sans-serif';
+    ctx.fillText(m.val,cx,cardY+110);
+    if(i<2){ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cardM+colW*(i+1),cardY+30);ctx.lineTo(cardM+colW*(i+1),cardY+cardH-30);ctx.stroke()}
+  });
+  const sp=S.metal==='gold'?.015:.025;const buyP=S.price*(1+sp/2),sellP=S.price*(1-sp/2);
+  const bsY=cardY+200;
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='600 22px Inter,-apple-system,sans-serif';
+  ctx.fillText(t('buy').toUpperCase(),cardM+colW*0.75,bsY+20);
+  ctx.fillText(t('sell').toUpperCase(),cardM+colW*2.25,bsY+20);
+  ctx.fillStyle='#fff';ctx.font='800 36px Inter,-apple-system,sans-serif';
+  ctx.fillText(fmtRM(buyP),cardM+colW*0.75,bsY+70);
+  ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.fillText(fmtRM(sellP),cardM+colW*2.25,bsY+70);
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W/2,bsY-10);ctx.lineTo(W/2,bsY+90);ctx.stroke();
+  const sigY=1500;
+  const ma=avg;const diff=((S.price-ma)/ma)*100;
+  let signal;
+  if(diff<-1.5)signal='BUY';else if(diff>1.5)signal='SELL';else signal='HOLD';
+  const sigColor=signal==='BUY'?'#00d68f':signal==='SELL'?'#ff4757':'#ffa502';
+  const sigBg=signal==='BUY'?'rgba(0,214,143,0.1)':signal==='SELL'?'rgba(255,71,87,0.1)':'rgba(255,165,2,0.1)';
+  const sigBorder=signal==='BUY'?'rgba(0,214,143,0.25)':signal==='SELL'?'rgba(255,71,87,0.25)':'rgba(255,165,2,0.25)';
+  ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font='600 22px Inter,-apple-system,sans-serif';
+  ctx.fillText(t('signal').toUpperCase(),W/2,sigY);
+  const sigLabel=signal==='BUY'?t('sigBuy'):signal==='SELL'?t('sigSell'):t('sigHold');
+  ctx.font='900 52px Inter,-apple-system,sans-serif';const sw=ctx.measureText(sigLabel).width;
+  ctx.fillStyle=sigBg;ctx.strokeStyle=sigBorder;ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(W/2-sw/2-40,sigY+15,sw+80,68,34);ctx.fill();ctx.stroke();
+  ctx.fillStyle=sigColor;ctx.fillText(sigLabel,W/2,sigY+62);
+  const miniH=120;const miniY=1620;const miniW=W-160;const miniX=80;
+  ctx.strokeStyle='rgba(255,215,0,0.3)';ctx.lineWidth=3;ctx.beginPath();
+  const pts=S.history;const minP=Math.min(...pts.map(p=>p.y)),maxP=Math.max(...pts.map(p=>p.y)),rangeP=maxP-minP||1;
+  pts.forEach((p,i)=>{const x=miniX+(i/(pts.length-1))*miniW,y=miniY+miniH-(((p.y-minP)/rangeP)*miniH);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+  ctx.stroke();
+  const grad=ctx.createLinearGradient(0,miniY,0,miniY+miniH);
+  grad.addColorStop(0,'rgba(255,215,0,0.12)');grad.addColorStop(1,'transparent');
+  ctx.lineTo(miniX+miniW,miniY+miniH);ctx.lineTo(miniX,miniY+miniH);ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+  const footY=H-80;
+  ctx.fillStyle='rgba(255,215,0,0.6)';ctx.font='700 28px Inter,-apple-system,sans-serif';
+  ctx.fillText('gold-rush-tau.vercel.app',W/2,footY);
+  ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='500 20px Inter,-apple-system,sans-serif';
+  ctx.fillText('© FR Ventures',W/2,footY+35);
+}
+function initShare(){
+  document.getElementById('shareBtn').addEventListener('click',()=>{
+    generateShareCard();
+    document.getElementById('shareModal').classList.add('open');
+    if(navigator.canShare)document.getElementById('shareNative').style.display='';
+  });
+  document.getElementById('shareClose').addEventListener('click',()=>document.getElementById('shareModal').classList.remove('open'));
+  document.getElementById('shareModal').addEventListener('click',e=>{if(e.target.id==='shareModal')document.getElementById('shareModal').classList.remove('open')});
+  document.getElementById('shareDownload').addEventListener('click',()=>{
+    const link=document.createElement('a');
+    link.download=`gold-rush-${S.purity}-${new Date().toISOString().split('T')[0]}.png`;
+    link.href=document.getElementById('shareCanvas').toDataURL('image/png');
+    link.click();
+  });
+  document.getElementById('shareNative').addEventListener('click',async()=>{
+    const canvas=document.getElementById('shareCanvas');
+    try{
+      const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
+      const file=new File([blob],`gold-rush-${S.purity}.png`,{type:'image/png'});
+      await navigator.share({title:'Gold Rush — '+t('gold')+' Price',text:`${S.purity} ${t('gold')}: ${fmtRM(S.price)}/g`,files:[file]});
+    }catch(e){}
+  });
 }
 
 /* ═══ NEWSLETTER ═══ */
@@ -825,7 +986,7 @@ function initModals(){[['privacyLink','privacyModal','privacyClose'],['termsLink
 
 /* ═══ INIT ═══ */
 try{S.lang=localStorage.getItem('gr_lang')||'en'}catch(e){}
-bindPurity();setupCalc();applyLang();initTilt();initModals();initNewsletter();
+bindPurity();setupCalc();applyLang();initTilt();initModals();initNewsletter();initShare();
 refresh(true).then(()=>{initChart();updateChart();startTimer()});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
