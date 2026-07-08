@@ -195,9 +195,40 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .dl-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;font-size:10px;font-weight:600;border-radius:var(--pill);text-decoration:none;transition:all .3s;letter-spacing:.3px}
 .dl-btn.dl-site{color:var(--text2);background:var(--glass);border:1px solid var(--glass-b)}
 .dl-btn.dl-site:hover{border-color:var(--gold);color:var(--gold)}
-.dl-btn.dl-shopee{color:#fff;background:linear-gradient(135deg,#ee4d2d,#ff6633);border:1px solid rgba(238,77,45,0.3)}
-.dl-btn.dl-shopee:hover{box-shadow:0 0 16px rgba(238,77,45,0.25)}
 .dl-btn svg{width:12px;height:12px;fill:currentColor}
+
+/* ─── Signal Card ─── */
+.signal-card{margin:12px 16px;padding:18px;position:relative;overflow:hidden}
+.signal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.signal-card.signal-buy::before{background:var(--grn)}
+.signal-card.signal-sell::before{background:var(--red)}
+.signal-card.signal-hold::before{background:var(--orange)}
+.signal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.signal-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+.signal-badge{font-size:11px;font-weight:800;padding:4px 14px;border-radius:var(--pill);letter-spacing:.5px;text-transform:uppercase}
+.signal-buy .signal-badge{color:var(--grn);background:var(--grn-bg);border:1px solid rgba(0,214,143,0.2)}
+.signal-sell .signal-badge{color:var(--red);background:var(--red-bg);border:1px solid rgba(255,71,87,0.2)}
+.signal-hold .signal-badge{color:var(--orange);background:var(--orange-bg);border:1px solid rgba(255,165,2,0.2)}
+.signal-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.signal-metric{text-align:center;padding:8px 4px;background:rgba(255,255,255,0.015);border-radius:var(--r-sm)}
+.signal-metric .sm-label{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.signal-metric .sm-val{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.signal-reason{font-size:11px;color:var(--text2);line-height:1.6}
+.signal-disclaimer{font-size:9px;color:var(--text3);margin-top:8px;font-style:italic}
+
+/* ─── Newsletter ─── */
+.newsletter-section{margin:16px;padding:22px;text-align:center;position:relative;overflow:hidden}
+.newsletter-section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-d))}
+.nl-icon{font-size:28px;margin-bottom:8px}
+.nl-title{font-size:16px;font-weight:800;margin-bottom:4px}
+.nl-desc{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.6}
+.nl-form{display:flex;gap:8px}
+.nl-form .form-input{flex:1;font-size:13px}
+.nl-form .btn{white-space:nowrap}
+.nl-success{display:none;padding:12px;background:var(--grn-bg);border-radius:var(--r-sm);border:1px solid rgba(0,214,143,0.15)}
+.nl-success .nl-check{font-size:24px;color:var(--grn);margin-bottom:4px}
+.nl-success p{font-size:12px;color:var(--grn);font-weight:600}
+.nl-success .nl-sub-text{font-size:10px;color:var(--text3);margin-top:4px;font-weight:400}
 
 /* ─── Portfolio ─── */
 .port-summary{padding:16px;margin:8px 16px;text-align:center}
@@ -323,6 +354,16 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="spread-card glass tilt sell"><span class="label" id="lSell">Sell</span><div class="val" id="sellPrice">—</div></div>
     </div>
     <div class="weights-section"><div class="section-title" id="lWeights">Quick Prices</div><div class="weights-scroll" id="weightsScroll"></div></div>
+    <div class="signal-card glass" id="signalCard">
+      <div class="signal-header"><span class="signal-label" id="lSignal">Signal</span><span class="signal-badge" id="signalBadge">—</span></div>
+      <div class="signal-body">
+        <div class="signal-metric"><div class="sm-label" id="lSigPrice">Price</div><div class="sm-val" id="sigPrice">—</div></div>
+        <div class="signal-metric"><div class="sm-label" id="lSigMA">7D Avg</div><div class="sm-val" id="sigMA">—</div></div>
+        <div class="signal-metric"><div class="sm-label" id="lSigDiff">vs Avg</div><div class="sm-val" id="sigDiff">—</div></div>
+      </div>
+      <div class="signal-reason" id="sigReason"></div>
+      <div class="signal-disclaimer" id="sigDisclaimer">Not financial advice. Always do your own research.</div>
+    </div>
     <div class="ad-slot"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7616860998471661" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>
   </div>
 
@@ -412,6 +453,21 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </div>
   </div>
 
+  <div class="newsletter-section glass" id="newsletterSection">
+    <div class="nl-icon">&#9993;</div>
+    <div class="nl-title" id="nlTitle">Daily Gold Signals</div>
+    <div class="nl-desc" id="nlDesc">Get buy/sell signals and market analysis delivered to your inbox every morning.</div>
+    <div class="nl-form" id="nlForm">
+      <input class="form-input" type="email" id="nlEmail" placeholder="your@email.com" inputmode="email">
+      <button class="btn btn-gold btn-sm" id="nlSubmit">Subscribe</button>
+    </div>
+    <div class="nl-success" id="nlSuccess">
+      <div class="nl-check">&#10003;</div>
+      <p id="nlSuccessTitle">You're in!</p>
+      <div class="nl-sub-text" id="nlSuccessDesc">Daily gold signals will be sent to your inbox.</div>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-brand">Gold Rush</div>
     <div class="footer-copy">&copy; 2026 FR Ventures. All rights reserved.</div>
@@ -428,7 +484,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   </nav>
 
   <!-- Modals -->
-  <div class="modal-overlay" id="privacyModal"><div class="modal glass"><button class="modal-close" id="privacyClose">&times;</button><h2>Privacy Policy</h2><div class="modal-body"><p><strong>Last updated:</strong> June 2026</p><p>Gold Rush by FR Ventures ("we","our","us") is committed to protecting your privacy.</p><h3>Information We Collect</h3><p>We do <strong>not</strong> collect, store, or process any personal data.</p><ul><li>No account registration or login required</li><li>No names, emails, or addresses collected</li><li>No cookies for tracking or advertising</li><li>No analytics or third-party tracking scripts</li></ul><h3>Local Storage</h3><p>We store your language preference, portfolio holdings, and price alerts in your browser's local storage. This data never leaves your device.</p><h3>Third-Party Services</h3><p>Price data is fetched server-side and does not expose your information to data providers.</p><h3>Security</h3><p>All connections use HTTPS with strict CSP headers, HSTS, and security best practices.</p><h3>Contact</h3><p>FR Ventures — <strong>farisncorps@gmail.com</strong></p></div></div></div>
+  <div class="modal-overlay" id="privacyModal"><div class="modal glass"><button class="modal-close" id="privacyClose">&times;</button><h2>Privacy Policy</h2><div class="modal-body"><p><strong>Last updated:</strong> June 2026</p><p>Gold Rush by FR Ventures ("we","our","us") is committed to protecting your privacy.</p><h3>Information We Collect</h3><p>We collect minimal data to provide our services.</p><ul><li>No account registration or login required</li><li><strong>Newsletter:</strong> If you subscribe, your email address is collected solely for sending daily gold signals. You can unsubscribe at any time.</li><li>No cookies for tracking or advertising</li><li>No analytics or third-party tracking scripts</li></ul><h3>Local Storage</h3><p>We store your language preference, portfolio holdings, and price alerts in your browser's local storage. This data never leaves your device.</p><h3>Third-Party Services</h3><p>Price data is fetched server-side and does not expose your information to data providers.</p><h3>Security</h3><p>All connections use HTTPS with strict CSP headers, HSTS, and security best practices.</p><h3>Contact</h3><p>FR Ventures — <strong>farisncorps@gmail.com</strong></p></div></div></div>
   <div class="modal-overlay" id="termsModal"><div class="modal glass"><button class="modal-close" id="termsClose">&times;</button><h2>Terms & Conditions</h2><div class="modal-body"><p><strong>Last updated:</strong> June 2026</p><p>By using Gold Rush, operated by FR Ventures, you agree to these terms.</p><h3>1. Nature of Service</h3><p>Gold Rush provides indicative gold and silver price information for the Malaysian market. Prices are estimated retail rates derived from international spot prices. They are <strong>not</strong> live dealer quotes.</p><h3>2. Not Financial Advice</h3><p>Nothing on this website constitutes financial or investment advice. Consult a qualified advisor before making investment decisions.</p><h3>3. No Warranty</h3><p>The Service is provided "as is" without warranties. FR Ventures does not guarantee accuracy or timeliness of data.</p><h3>4. Limitation of Liability</h3><p>FR Ventures shall not be liable for any damages arising from use of this Service, including financial losses.</p><h3>5. Zakat Calculator</h3><p>The zakat calculator is a general estimation tool, not a substitute for consultation with a religious authority.</p><h3>6. Intellectual Property</h3><p>All content and design are property of FR Ventures. Unauthorised reproduction is prohibited.</p><h3>7. Governing Law</h3><p>These terms are governed by the laws of Malaysia.</p><h3>Contact</h3><p>FR Ventures — <strong>farisncorps@gmail.com</strong></p></div></div></div>
 </div>
 
@@ -452,31 +508,31 @@ const NISAB_GRAMS=85,URUF_GRAMS=850,ZAKAT_RATE=0.025;
 const DEALERS=[
   {id:'publicGold',name:'Public Gold',cat:'dealer',pop:1,
    en:'Largest private gold dealer',bm:'Peniaga emas swasta terbesar',
-   url:'https://publicgold.com.my',shopee:'https://shopee.com.my/search?keyword=public%20gold%20gold%20bar',
+   url:'https://publicgold.com.my',
    buy:{999:1.12,916:1.15,750:1.18},sell:{999:0.98,916:0.97,750:0.96}},
   {id:'quantumMetal',name:'Quantum Metal',cat:'dealer',pop:9,
    en:'Online gold investment',bm:'Pelaburan emas dalam talian',
-   url:'https://quantummetal.com.my',shopee:'https://shopee.com.my/search?keyword=quantum%20metal%20gold',
+   url:'https://quantummetal.com.my',
    buy:{999:1.08,916:1.11,750:1.14},sell:{999:0.97,916:0.96,750:0.95}},
   {id:'pohKong',name:'Poh Kong',cat:'jeweller',pop:2,
    en:'Bursa-listed jewellery chain',bm:'Rangkaian barang kemas tersenarai Bursa',
-   url:'https://pohkong.com.my',shopee:'https://shopee.com.my/search?keyword=poh%20kong%20gold',
+   url:'https://pohkong.com.my',
    buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.96,750:0.95}},
   {id:'habib',name:'Habib Jewels',cat:'jeweller',pop:3,
    en:'Premium jewellery retailer',bm:'Peruncit barang kemas premium',
-   url:'https://habib.my',shopee:'https://shopee.com.my/search?keyword=habib%20jewels%20gold',
+   url:'https://habib.my',
    buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.97,916:0.95,750:0.94}},
   {id:'tomei',name:'Tomei',cat:'jeweller',pop:6,
    en:'Bursa-listed gold & jewellery',bm:'Emas & barang kemas tersenarai Bursa',
-   url:'https://tomei.com.my',shopee:'https://shopee.com.my/search?keyword=tomei%20gold',
+   url:'https://tomei.com.my',
    buy:{999:1.09,916:1.12,750:1.15},sell:{999:0.97,916:0.96,750:0.95}},
   {id:'wahChan',name:'Wah Chan',cat:'jeweller',pop:8,
    en:'Established gold retailer',bm:'Peruncit emas lama bertapak',
-   url:'https://wahchan.com.my',shopee:'https://shopee.com.my/search?keyword=wah%20chan%20gold',
+   url:'https://wahchan.com.my',
    buy:{999:1.09,916:1.13,750:1.16},sell:{999:0.97,916:0.95,750:0.94}},
   {id:'zhulian',name:'Zhulian',cat:'jeweller',pop:10,
    en:'Direct-selling jeweller',bm:'Barang kemas jualan langsung',
-   url:'https://zhulian.com.my',shopee:'https://shopee.com.my/search?keyword=zhulian%20gold',
+   url:'https://zhulian.com.my',
    buy:{999:1.10,916:1.14,750:1.17},sell:{999:0.96,916:0.95,750:0.94}},
   {id:'helloGold',name:'HelloGold',cat:'digital',pop:5,
    en:'Digital gold savings app',bm:'Aplikasi simpanan emas digital',
@@ -484,7 +540,7 @@ const DEALERS=[
    buy:{999:1.03},sell:{999:0.99}},
   {id:'goldSilverCentral',name:'GoldSilver Central',cat:'digital',pop:13,
    en:'Online bullion marketplace',bm:'Pasaran jongkong emas dalam talian',
-   url:'https://goldsilvercentral.com.sg',shopee:'https://shopee.com.my/search?keyword=gold%20silver%20central',
+   url:'https://goldsilvercentral.com.sg',
    buy:{999:1.04,916:1.08},sell:{999:0.99,916:0.97}},
   {id:'mygold',name:'MyGold (Maybank)',cat:'digital',pop:11,
    en:'Maybank digital gold',bm:'Emas digital Maybank',
@@ -510,16 +566,17 @@ const DEALERS=[
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigPrice:'Price',sigMA:'7D Avg',sigDiff:'vs Avg',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigPrice:'Harga',sigMA:'Purata 7H',sigDiff:'vs Purata',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
   const m=(id,k)=>{const el=document.getElementById(id);if(el)el.textContent=t(k)};
-  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');
+  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');m('lSignal','signal');m('lSigPrice','sigPrice');m('lSigMA','sigMA');m('lSigDiff','sigDiff');m('sigDisclaimer','sigDisclaimer');m('nlTitle','nlTitle');m('nlDesc','nlDesc');m('nlSuccessTitle','nlSuccess');m('nlSuccessDesc','nlSuccessDesc');
   document.getElementById('langBtn').textContent=t('langLabel');
   document.getElementById('badgeText').textContent=S.isLive?t('live'):t('demo');
-  updateEvents();updateDealers();
+  document.getElementById('nlSubmit').textContent=t('nlSubscribe');
+  updateEvents();updateSignal();updateDealers();
 }
 
 /* ═══ EVENTS ═══ */
@@ -565,6 +622,52 @@ function updateWeights(){const sil=S.metal==='silver';document.getElementById('w
 function updatePriceDisplay(){const el=document.getElementById('priceValue'),old=S.prevPrice,target=S.price;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),150);const start=performance.now(),dur=500;function tick(now){const p=Math.min((now-start)/dur,1);el.textContent=(old+(target-old)*(1-Math.pow(1-p,3))).toFixed(2);if(p<1)requestAnimationFrame(tick)}if(old>0)requestAnimationFrame(tick);else el.textContent=target.toFixed(2);const up=S.change>=0,cE=document.getElementById('priceChange');cE.className=`price-change ${up?'up':'down'}`;document.getElementById('changeText').textContent=`RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;cE.querySelector('.arrow').innerHTML=up?'&#9650;':'&#9660;';document.getElementById('lastUpdated').textContent=`${t('updated')} ${new Date().toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'})}`;document.getElementById('spotLabel').textContent=S.spot>0?`${t('spot')}: ${fmtRM(S.spot)}${t('perG')}`:''}
 function applyTheme(){const sil=S.metal==='silver';document.getElementById('priceValue').className=`price-value${sil?' sil-text':''}`;document.querySelectorAll('.purity-btn.active').forEach(b=>b.classList.toggle('sil',sil));document.querySelectorAll('.tf-btn.active').forEach(b=>b.classList.toggle('sil',sil))}
 
+/* ═══ SIGNAL ═══ */
+function updateSignal(){
+  if(!S.history.length||S.price<=0)return;
+  const prices=S.history.map(p=>p.y);
+  const ma=prices.reduce((a,b)=>a+b,0)/prices.length;
+  const diff=((S.price-ma)/ma)*100;
+  const recent=prices.slice(-Math.max(1,Math.floor(prices.length/4)));
+  const recentMA=recent.reduce((a,b)=>a+b,0)/recent.length;
+  const momentum=((recentMA-ma)/ma)*100;
+  let signal,reason;
+  if(diff<-1.5&&momentum<0){signal='buy';reason=S.lang==='bm'?'Harga di bawah purata 7 hari — potensi peluang beli.':'Price below 7-day average — potential buying opportunity.';}
+  else if(diff>1.5&&momentum>0){signal='sell';reason=S.lang==='bm'?'Harga di atas purata 7 hari — pertimbangkan ambil untung.':'Price above 7-day average — consider taking profit.';}
+  else{signal='hold';reason=S.lang==='bm'?'Harga berhampiran purata — tiada isyarat kuat.':'Price near average — no strong signal.';}
+  const card=document.getElementById('signalCard');
+  card.className=`signal-card glass signal-${signal}`;
+  document.getElementById('signalBadge').textContent=signal==='buy'?t('sigBuy'):signal==='sell'?t('sigSell'):t('sigHold');
+  document.getElementById('sigPrice').textContent=fmtRM(S.price);
+  document.getElementById('sigMA').textContent=fmtRM(ma);
+  const sigDiffEl=document.getElementById('sigDiff');
+  sigDiffEl.textContent=(diff>=0?'+':'')+diff.toFixed(2)+'%';
+  sigDiffEl.style.color=diff<-1?'var(--grn)':diff>1?'var(--red)':'var(--text2)';
+  document.getElementById('sigReason').textContent=reason;
+}
+
+/* ═══ NEWSLETTER ═══ */
+function initNewsletter(){
+  if(localStorage.getItem('gr_subscribed')){
+    document.getElementById('nlForm').style.display='none';
+    document.getElementById('nlSuccess').style.display='block';
+    return;
+  }
+  document.getElementById('nlSubmit').addEventListener('click',async()=>{
+    const email=document.getElementById('nlEmail').value.trim();
+    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;
+    const btn=document.getElementById('nlSubmit');
+    btn.textContent='...';btn.disabled=true;
+    try{
+      await fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    }catch(e){}
+    localStorage.setItem('gr_subscribed',email);
+    document.getElementById('nlForm').style.display='none';
+    document.getElementById('nlSuccess').style.display='block';
+    showToast(S.lang==='bm'?'Berjaya!':'Subscribed!',S.lang==='bm'?'Isyarat emas harian akan dihantar ke e-mel anda.':'Daily gold signals will be sent to your inbox.');
+  });
+}
+
 /* ═══ DEALER COMPARISON ═══ */
 const CAT_LABELS={all:{en:'All',bm:'Semua'},dealer:{en:'Dealers',bm:'Peniaga'},jeweller:{en:'Jewellers',bm:'Pengemas'},digital:{en:'Digital',bm:'Digital'},bank:{en:'Banks',bm:'Bank'}};
 function updateDealers(){
@@ -602,7 +705,7 @@ function updateDealers(){
         <div class="dp-col spread-col${d.spread!==null?'':' na'}"><div class="dp-label">${t('spread')}</div><div class="dp-val ${spreadClass}">${d.spread!==null?d.spread+'%':'—'}</div></div>
       </div>
       <div class="dealer-foot"><div class="dp-diff ${isCheap?'cheapest':'more'}">${isCheap?t('cheapest'):`+${fmtRM(diff)} vs ${t('cheapest').toLowerCase()}`}</div>${badges}</div>
-      <div class="dealer-links">${d.url?`<a class="dl-btn dl-site" href="${d.url}" target="_blank" rel="noopener">${t('visitSite')}</a>`:''}${d.shopee?`<a class="dl-btn dl-shopee" href="${d.shopee}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>Shopee</a>`:''}</div>
+      <div class="dealer-links">${d.url?`<a class="dl-btn dl-site" href="${d.url}" target="_blank" rel="noopener">${t('visitSite')}</a>`:''}</div>
     </div>`;
   }).join('');
 }
@@ -694,7 +797,7 @@ async function refresh(fetchNew){
   if(entry){S.price=entry.price;S.change=entry.change;S.changePct=entry.pct;S.spot=entry.spot}
   else{const base=FALLBACK[S.metal]?.[S.purity]||576;if(S.price===0)S.price=base;S.price=+(base+(Math.random()-.48)*base*.001).toFixed(2);S.change=+(S.price-base).toFixed(2);S.changePct=+((S.change/base)*100).toFixed(2);S.spot=0}
   S.history=genHistory(S.price,TF_DAYS[S.tf]);
-  updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();applyTheme();updateDealers();updatePortfolio();checkAlerts();
+  updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();applyTheme();updateSignal();updateDealers();updatePortfolio();checkAlerts();
   S.countdown=30;
 }
 function startTimer(){clearInterval(S.timer);S.timer=setInterval(async()=>{S.countdown--;document.getElementById('timer').textContent=S.countdown+'s';if(S.countdown<=0)await refresh(true)},1000)}
@@ -722,7 +825,7 @@ function initModals(){[['privacyLink','privacyModal','privacyClose'],['termsLink
 
 /* ═══ INIT ═══ */
 try{S.lang=localStorage.getItem('gr_lang')||'en'}catch(e){}
-bindPurity();setupCalc();applyLang();initTilt();initModals();
+bindPurity();setupCalc();applyLang();initTilt();initModals();initNewsletter();
 refresh(true).then(()=>{initChart();updateChart();startTimer()});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
