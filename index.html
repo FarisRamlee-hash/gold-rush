@@ -13,6 +13,7 @@
 <title>Gold Rush — Live Gold & Silver Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
 <style>
@@ -141,6 +142,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
 .btn-sm{padding:6px 14px;font-size:11px}
 .btn-danger{background:var(--red-bg);border:1px solid rgba(255,71,87,0.15);color:var(--red)}
+
+/* ─── Ads ─── */
+.ad-slot{margin:12px 16px;padding:0;border-radius:var(--r);overflow:hidden;min-height:50px;text-align:center;position:relative;z-index:2}
+.ad-slot ins{display:block;width:100%}
 
 /* ─── Views ─── */
 .view{display:block}.view.hidden{display:none}
@@ -311,6 +316,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="spread-card glass tilt sell"><span class="label" id="lSell">Sell</span><div class="val" id="sellPrice">—</div></div>
     </div>
     <div class="weights-section"><div class="section-title" id="lWeights">Quick Prices</div><div class="weights-scroll" id="weightsScroll"></div></div>
+    <div class="ad-slot"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>
   </div>
 
   <!-- ═══ VIEW: COMPARE ═══ -->
@@ -332,6 +338,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </div>
     <div class="dealer-count" id="dealerCount"></div>
     <div class="dealer-list" id="dealerList"></div>
+    <div class="ad-slot"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>
     <div style="padding:12px 16px;font-size:10px;color:var(--text3);text-align:center" id="lCompareNote">Estimated prices based on typical dealer premiums. Actual prices may vary.</div>
   </div>
 
