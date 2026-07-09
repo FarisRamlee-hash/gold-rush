@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gold-rush-v3';
+const CACHE_NAME = 'gold-rush-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
