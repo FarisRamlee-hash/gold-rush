@@ -729,6 +729,7 @@ async function fetchPrices(){try{const r=await fetch('/api/prices');if(!r.ok)thr
 function getLiveEntry(){return S.liveData?.[S.metal]?.[S.purity]||null}
 function setBadge(live){document.getElementById('liveBadge').classList.toggle('demo',!live);document.getElementById('badgeText').textContent=live?t('live'):t('demo')}
 function fmtRM(v){return'RM '+v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 /* ═══ RNG + HISTORY ═══ */
 function srand(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
@@ -1211,7 +1212,7 @@ function updatePortfolio(){
     const val=h.grams*curPrice;const cost=h.grams*h.buyPrice;
     totalCost+=cost;totalVal+=val;totalG+=h.grams;
     const pl=val-cost;const plPct=cost>0?(pl/cost*100):0;const up=pl>=0;
-    return`<div class="holding-card glass"><div class="holding-info"><div class="h-label">${h.label||h.purity+' Gold'}</div><div class="h-detail">${h.grams}g ${h.purity} &middot; ${t('buy')}: ${fmtRM(h.buyPrice)}/g</div></div><div class="holding-val"><div class="hv-now">${fmtRM(val)}</div><div class="hv-pl ${up?'up':'down'}">${up?'+':''}${fmtRM(pl)} (${up?'+':''}${plPct.toFixed(1)}%)</div></div><button class="btn btn-danger btn-sm" onclick="deleteHolding(${h.id})" style="margin-left:8px;padding:4px 8px;font-size:10px">&times;</button></div>`;
+    return`<div class="holding-card glass"><div class="holding-info"><div class="h-label">${esc(h.label||h.purity+' Gold')}</div><div class="h-detail">${h.grams}g ${h.purity} &middot; ${t('buy')}: ${fmtRM(h.buyPrice)}/g</div></div><div class="holding-val"><div class="hv-now">${fmtRM(val)}</div><div class="hv-pl ${up?'up':'down'}">${up?'+':''}${fmtRM(pl)} (${up?'+':''}${plPct.toFixed(1)}%)</div></div><button class="btn btn-danger btn-sm" onclick="deleteHolding(${h.id})" style="margin-left:8px;padding:4px 8px;font-size:10px">&times;</button></div>`;
   }).join('')+'</div>';
   const totalPL=totalVal-totalCost;const up=totalPL>=0;
   document.getElementById('portTotal').textContent=fmtRM(totalVal);
@@ -1335,7 +1336,7 @@ document.getElementById('zakatType').addEventListener('change',updateZakat);
 // Portfolio form
 document.getElementById('addHoldingBtn').addEventListener('click',()=>{document.getElementById('portForm').style.display='';document.getElementById('pfDate').value=new Date().toISOString().split('T')[0]});
 document.getElementById('pfCancel').addEventListener('click',()=>{document.getElementById('portForm').style.display='none'});
-document.getElementById('pfSave').addEventListener('click',()=>{const h=getHoldings();h.push({id:Date.now(),label:document.getElementById('pfLabel').value||'Gold',purity:+document.getElementById('pfPurity').value,grams:parseFloat(document.getElementById('pfGrams').value)||0,buyPrice:parseFloat(document.getElementById('pfBuyPrice').value)||0,date:document.getElementById('pfDate').value});saveHoldings(h);document.getElementById('portForm').style.display='none';['pfLabel','pfGrams','pfBuyPrice'].forEach(id=>{document.getElementById(id).value=''});updatePortfolio()});
+document.getElementById('pfSave').addEventListener('click',()=>{const h=getHoldings();h.push({id:Date.now(),label:(document.getElementById('pfLabel').value||'Gold').slice(0,40),purity:+document.getElementById('pfPurity').value,grams:parseFloat(document.getElementById('pfGrams').value)||0,buyPrice:parseFloat(document.getElementById('pfBuyPrice').value)||0,date:document.getElementById('pfDate').value});saveHoldings(h);document.getElementById('portForm').style.display='none';['pfLabel','pfGrams','pfBuyPrice'].forEach(id=>{document.getElementById(id).value=''});updatePortfolio()});
 
 // Alert form
 document.getElementById('addAlertBtn').addEventListener('click',()=>{document.getElementById('alertForm').style.display=''});
