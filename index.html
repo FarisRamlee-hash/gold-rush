@@ -29,6 +29,9 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7616860998471661" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+<!-- Vercel Web Analytics (activates once enabled in Vercel dashboard; same-origin, no CSP change) -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -733,6 +736,19 @@ function setBadge(live){document.getElementById('liveBadge').classList.toggle('d
 function fmtRM(v){return'RM '+v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
+/* ═══ REFERRAL ═══ */
+function myRef(){try{let r=localStorage.getItem('gr_myref');if(!r){r=Math.random().toString(36).slice(2,10);localStorage.setItem('gr_myref',r)}return r}catch(e){return'anon'}}
+function refShareUrl(){return'https://gold-rush-tau.vercel.app/?ref='+myRef()}
+function captureReferral(){
+  try{
+    const ref=new URLSearchParams(location.search).get('ref');
+    if(ref&&/^[a-zA-Z0-9_-]{1,32}$/.test(ref)){
+      if(!localStorage.getItem('gr_ref'))localStorage.setItem('gr_ref',ref);
+      if(typeof window.va==='function')window.va('event',{name:'referral',data:{ref}});
+    }
+  }catch(e){}
+}
+
 /* ═══ RNG + HISTORY ═══ */
 function srand(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
 function genHistory(endPrice,days){const vol=S.metal==='gold'?.004:.008,ppd=days<=1?24:days<=7?6:1,total=days*ppd,now=Date.now(),step=(days*864e5)/total,rng=srand(Math.floor(now/864e5)*7+S.purity+(S.metal==='silver'?9999:0));const raw=[];let p=endPrice*(.97+rng()*.06);for(let i=total;i>=0;i--){p+=(rng()-.505)*endPrice*vol;p=Math.max(endPrice*.88,Math.min(endPrice*1.12,p));raw.push(p)}const offset=endPrice-raw[raw.length-1];return raw.map((v,i)=>({x:now-(raw.length-1-i)*step,y:+(v+offset*(i/(raw.length-1))).toFixed(2)}))}
@@ -1060,9 +1076,10 @@ function initShare(){
       const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
       const file=new File([blob],`gold-rush-${shareKind}.png`,{type:'image/png'});
       const isCmp=shareKind==='compare';
+      const msg=isCmp?(S.lang==='bm'?'Banding harga emas peniaga Malaysia hari ini':'Compare Malaysian gold dealer prices today'):`${S.purity} ${t('gold')}: ${fmtRM(S.price)}/g`;
       await navigator.share({
         title:isCmp?'Gold Rush — '+t('compare'):'Gold Rush — '+t('gold')+' Price',
-        text:isCmp?(S.lang==='bm'?'Banding harga emas peniaga Malaysia hari ini':'Compare Malaysian gold dealer prices today'):`${S.purity} ${t('gold')}: ${fmtRM(S.price)}/g`,
+        text:msg+'\n'+refShareUrl(),
         files:[file]});
     }catch(e){}
   });
@@ -1348,7 +1365,7 @@ function initModals(){[['privacyLink','privacyModal','privacyClose'],['termsLink
 
 /* ═══ INIT ═══ */
 try{S.lang=localStorage.getItem('gr_lang')||'en'}catch(e){}
-bindPurity();setupCalc();applyLang();initTilt();initModals();initNewsletter();initShare();
+captureReferral();bindPurity();setupCalc();applyLang();initTilt();initModals();initNewsletter();initShare();
 refresh(true).then(()=>{initChart();updateChart();startTimer()});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>

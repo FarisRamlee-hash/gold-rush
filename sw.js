@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gold-rush-v10';
+const CACHE_NAME = 'gold-rush-v11';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -31,6 +31,15 @@ self.addEventListener('activate', e => {
 // Fetch — network-first for API, cache-first for static
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
+
+  // Only handle GET; let analytics beacons and other methods pass straight through
+  if (e.request.method !== 'GET') return;
+
+  // Analytics: never cache, always network
+  if (url.pathname.startsWith('/_vercel/')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('', { status: 204 })));
+    return;
+  }
 
   // API calls: always network, no cache
   if (url.pathname.startsWith('/api/')) {
