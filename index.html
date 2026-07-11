@@ -437,6 +437,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       </div>
     </div>
     <div class="dealer-count" id="dealerCount"></div>
+    <div class="share-btn-row" style="padding-bottom:8px"><button class="share-btn" id="shareCompareBtn"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg><span id="lShareCompare">Share Comparison</span></button></div>
     <div class="dealer-list" id="dealerList"></div>
     <div style="padding:12px 16px;font-size:10px;color:var(--text3);text-align:center" id="lCompareNote">Estimated prices based on typical dealer premiums. Actual prices may vary.</div>
   </div>
@@ -663,8 +664,8 @@ const DEALERS=[
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Estimated prices based on typical dealer premiums. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide',shareCompare:'Share Comparison'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Anggaran harga berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas',shareCompare:'Kongsi Perbandingan'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
@@ -676,7 +677,7 @@ function applyLang(){
   document.getElementById('langBtn').textContent=t('langLabel');
   document.getElementById('badgeText').textContent=S.isLive?t('live'):t('demo');
   document.getElementById('nlSubmit').textContent=t('nlSubscribe');
-  m('faqTitle','faqTitle');
+  m('faqTitle','faqTitle');m('lShareCompare','shareCompare');
   updateEvents();updateSignal();updateDealers();updateZakatPortBtn();updateZakatPaid();renderFAQ();
 }
 
@@ -919,17 +920,110 @@ function generateShareCard(){
   ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='500 20px Inter,-apple-system,sans-serif';
   ctx.fillText('© FR Ventures',W/2,footY+35);
 }
-function initShare(){
-  document.getElementById('shareBtn').addEventListener('click',()=>{
-    generateShareCard();
-    document.getElementById('shareModal').classList.add('open');
-    if(navigator.canShare)document.getElementById('shareNative').style.display='';
+function generateCompareCard(){
+  const c=document.getElementById('shareCanvas'),ctx=c.getContext('2d');
+  const W=1080,H=1920;c.width=W;c.height=H;
+  const bm=S.lang==='bm';
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0a0a1e');bg.addColorStop(0.3,'#080818');bg.addColorStop(0.7,'#060614');bg.addColorStop(1,'#04040e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const glow=ctx.createRadialGradient(W/2,300,0,W/2,300,500);
+  glow.addColorStop(0,'rgba(255,215,0,0.08)');glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+  for(let i=0;i<50;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.5+0.5,a=Math.random()*0.3+0.05;ctx.fillStyle=`rgba(255,215,0,${a})`;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+  ctx.strokeStyle='rgba(255,215,0,0.04)';ctx.lineWidth=1;
+  for(let i=0;i<W;i+=60){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke()}
+  for(let i=0;i<H;i+=60){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke()}
+  const logoY=130;
+  ctx.fillStyle='#FFD700';ctx.beginPath();
+  const lx=W/2-32,ly=logoY-32,lr=11;
+  ctx.moveTo(lx+lr,ly);ctx.lineTo(lx+64-lr,ly);ctx.quadraticCurveTo(lx+64,ly,lx+64,ly+lr);
+  ctx.lineTo(lx+64,ly+64-lr);ctx.quadraticCurveTo(lx+64,ly+64,lx+64-lr,ly+64);
+  ctx.lineTo(lx+lr,ly+64);ctx.quadraticCurveTo(lx,ly+64,lx,ly+64-lr);
+  ctx.lineTo(lx,ly+lr);ctx.quadraticCurveTo(lx,ly,lx+lr,ly);ctx.fill();
+  ctx.fillStyle='#000';ctx.font='bold 28px Inter,-apple-system,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Au',W/2,logoY+8);
+  ctx.fillStyle='#fff';ctx.font='900 44px Inter,-apple-system,sans-serif';
+  ctx.fillText('Gold Rush',W/2,logoY+90);
+  ctx.fillStyle='rgba(255,215,0,0.55)';ctx.font='700 24px Inter,-apple-system,sans-serif';
+  ctx.fillText((bm?'PERBANDINGAN PENIAGA EMAS':'GOLD DEALER COMPARISON'),W/2,logoY+132);
+  const now=new Date();
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 24px Inter,-apple-system,sans-serif';
+  ctx.fillText(now.toLocaleDateString(bm?'ms-MY':'en-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · '+now.toLocaleTimeString(bm?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'}),W/2,logoY+175);
+  const rawSpot=S.spot>0?S.spot:(S.price>0?S.price/1.08:0);
+  const spotG=rawSpot*(S.purity/1000);
+  const pillY=400;
+  const pillTxt=`${S.purity} ${t(S.metal==='silver'?'silver':'gold').toUpperCase()} · ${t('sbSpot')}: ${fmtRM(spotG)}/g`;
+  ctx.font='700 26px Inter,-apple-system,sans-serif';const pw=ctx.measureText(pillTxt).width;
+  ctx.strokeStyle='rgba(255,215,0,0.3)';ctx.lineWidth=2;ctx.fillStyle='rgba(255,215,0,0.06)';
+  ctx.beginPath();ctx.roundRect(W/2-pw/2-26,pillY-24,pw+52,50,25);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#FFD700';ctx.fillText(pillTxt,W/2,pillY+9);
+  let list=DEALERS.map(d=>{
+    const bmul=d.buy[S.purity];if(!bmul)return null;
+    const sm=d.sell?.[S.purity];
+    return{name:d.name,type:d.type,cat:d.cat,buyP:+(spotG*bmul).toFixed(2),sellP:sm?+(spotG*sm).toFixed(2):null};
+  }).filter(Boolean);
+  if(S.dealerCat!=='all')list=list.filter(d=>d.cat===S.dealerCat);
+  if(S.dealerType!=='all')list=list.filter(d=>d.type===S.dealerType);
+  list.sort((a,b)=>a.buyP-b.buyP);
+  const top=list.slice(0,12);
+  const tX=70,tW=W-140,rowH=76,headY=500;
+  ctx.textAlign='left';ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='600 22px Inter,-apple-system,sans-serif';
+  ctx.fillText(bm?'PENIAGA':'DEALER',tX+30,headY);
+  ctx.textAlign='right';
+  ctx.fillText(t('buy').toUpperCase(),tX+tW-330,headY);
+  ctx.fillText(t('sell').toUpperCase(),tX+tW-30,headY);
+  top.forEach((d,i)=>{
+    const y=headY+30+i*rowH;
+    const cheap=i===0;
+    ctx.fillStyle=cheap?'rgba(0,214,143,0.07)':(i%2?'rgba(255,255,255,0.015)':'rgba(255,255,255,0.03)');
+    ctx.beginPath();ctx.roundRect(tX,y,tW,rowH-8,14);ctx.fill();
+    if(cheap){ctx.strokeStyle='rgba(0,214,143,0.35)';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(tX,y,tW,rowH-8,14);ctx.stroke()}
+    ctx.fillStyle=d.type==='physical'?'#FFD700':'#22d3ee';
+    ctx.beginPath();ctx.arc(tX+34,y+(rowH-8)/2,7,0,Math.PI*2);ctx.fill();
+    ctx.textAlign='left';ctx.font=`${cheap?'800':'600'} 28px Inter,-apple-system,sans-serif`;
+    ctx.fillStyle=cheap?'#00d68f':'#fff';
+    let nm=d.name;while(ctx.measureText(nm).width>380&&nm.length>3)nm=nm.slice(0,-1);
+    if(nm!==d.name)nm+='…';
+    ctx.fillText(nm,tX+60,y+(rowH-8)/2+10);
+    ctx.textAlign='right';ctx.font=`${cheap?'800':'700'} 28px Inter,-apple-system,sans-serif`;
+    ctx.fillStyle=cheap?'#00d68f':'#fff';
+    ctx.fillText(fmtRM(d.buyP),tX+tW-330,y+(rowH-8)/2+10);
+    ctx.fillStyle='rgba(255,255,255,0.55)';ctx.font='600 28px Inter,-apple-system,sans-serif';
+    ctx.fillText(d.sellP?fmtRM(d.sellP):'—',tX+tW-30,y+(rowH-8)/2+10);
   });
+  const legY=headY+30+top.length*rowH+40;
+  ctx.textAlign='center';ctx.font='600 22px Inter,-apple-system,sans-serif';
+  ctx.fillStyle='#FFD700';ctx.fillText('●',W/2-190,legY);
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillText(t('tPhysical'),W/2-115,legY);
+  ctx.fillStyle='#22d3ee';ctx.fillText('●',W/2+40,legY);
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillText(t('tDigital'),W/2+115,legY);
+  ctx.fillStyle='rgba(0,214,143,0.9)';ctx.font='700 24px Inter,-apple-system,sans-serif';
+  ctx.fillText((bm?'✓ Termurah hari ini: ':'✓ Cheapest today: ')+top[0].name,W/2,legY+50);
+  const footY=H-95;
+  ctx.fillStyle='rgba(255,215,0,0.6)';ctx.font='700 28px Inter,-apple-system,sans-serif';
+  ctx.fillText('gold-rush-tau.vercel.app',W/2,footY);
+  ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='500 20px Inter,-apple-system,sans-serif';
+  ctx.fillText('© FR Ventures',W/2,footY+35);
+  ctx.fillStyle='rgba(255,255,255,0.15)';ctx.font='400 17px Inter,-apple-system,sans-serif';
+  ctx.fillText(bm?'Anggaran berdasarkan premium biasa peniaga. Harga sebenar mungkin berbeza.':'Estimates based on typical dealer premiums. Actual prices may vary.',W/2,footY+68);
+}
+let shareKind='price';
+function openShare(kind){
+  shareKind=kind;
+  if(kind==='compare')generateCompareCard();else generateShareCard();
+  document.getElementById('shareModal').classList.add('open');
+  if(navigator.canShare)document.getElementById('shareNative').style.display='';
+}
+function initShare(){
+  document.getElementById('shareBtn').addEventListener('click',()=>openShare('price'));
+  document.getElementById('shareCompareBtn').addEventListener('click',()=>openShare('compare'));
   document.getElementById('shareClose').addEventListener('click',()=>document.getElementById('shareModal').classList.remove('open'));
   document.getElementById('shareModal').addEventListener('click',e=>{if(e.target.id==='shareModal')document.getElementById('shareModal').classList.remove('open')});
   document.getElementById('shareDownload').addEventListener('click',()=>{
     const link=document.createElement('a');
-    link.download=`gold-rush-${S.purity}-${new Date().toISOString().split('T')[0]}.png`;
+    const date=new Date().toISOString().split('T')[0];
+    link.download=shareKind==='compare'?`gold-rush-dealer-comparison-${date}.png`:`gold-rush-${S.purity}-${date}.png`;
     link.href=document.getElementById('shareCanvas').toDataURL('image/png');
     link.click();
   });
@@ -937,8 +1031,12 @@ function initShare(){
     const canvas=document.getElementById('shareCanvas');
     try{
       const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
-      const file=new File([blob],`gold-rush-${S.purity}.png`,{type:'image/png'});
-      await navigator.share({title:'Gold Rush — '+t('gold')+' Price',text:`${S.purity} ${t('gold')}: ${fmtRM(S.price)}/g`,files:[file]});
+      const file=new File([blob],`gold-rush-${shareKind}.png`,{type:'image/png'});
+      const isCmp=shareKind==='compare';
+      await navigator.share({
+        title:isCmp?'Gold Rush — '+t('compare'):'Gold Rush — '+t('gold')+' Price',
+        text:isCmp?(S.lang==='bm'?'Banding harga emas peniaga Malaysia hari ini':'Compare Malaysian gold dealer prices today'):`${S.purity} ${t('gold')}: ${fmtRM(S.price)}/g`,
+        files:[file]});
     }catch(e){}
   });
 }
