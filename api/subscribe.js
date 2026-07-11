@@ -41,5 +41,13 @@ module.exports = async (req, res) => {
 
   console.log(`[SUBSCRIBE] ${new Date().toISOString()} — ${email}`);
 
+  // Persist to the database if connected (viewable in the admin dashboard).
+  try {
+    const kv = require('../lib/kv');
+    if (kv.configured()) await kv.lpush('subscribers', { email, ts: Date.now() });
+  } catch (e) {
+    console.log('subscriber store failed:', e.message);
+  }
+
   return res.status(200).json({ ok: true, message: 'Subscribed successfully' });
 };

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Gold Rush — Admin</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--gold:#FFD700;--gold-d:#B8860B;--bg:#050510;--bg2:#0d0d1f;--glass:rgba(255,255,255,0.03);--bd:rgba(255,255,255,0.08);--t1:#fff;--t2:#8a8aaa;--t3:#4a4a68;--grn:#00d68f;--red:#ff4757;--r:12px}
+body{font-family:'Inter',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:20px}
+a{color:var(--gold)}
+h1{font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold-d));border-radius:8px;display:grid;place-items:center;color:#000;font-weight:800;font-size:15px}
+.muted{color:var(--t2);font-size:12px}
+.card{background:var(--glass);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px}
+input,select,textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--bd);border-radius:8px;color:#fff;padding:9px 11px;font-size:13px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+textarea{resize:vertical;min-height:60px;line-height:1.5}
+label{display:block;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.btn{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#000;border:none;border-radius:8px;padding:10px 18px;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;transition:.2s}
+.btn:hover{box-shadow:0 0 18px rgba(255,215,0,.25)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:var(--glass);color:var(--t2);border:1px solid var(--bd)}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold);box-shadow:none}
+.btn.danger{background:rgba(255,71,87,.12);color:var(--red);border:1px solid rgba(255,71,87,.25)}
+.btn.sm{padding:6px 12px;font-size:11px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;gap:8px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:640px){.g3,.g4{grid-template-columns:1fr 1fr}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0}
+.tab{padding:8px 14px;border-radius:100px;background:var(--glass);border:1px solid var(--bd);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer}
+.tab.active{background:rgba(255,215,0,.1);border-color:var(--gold);color:var(--gold)}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.hidden{display:none}
+.dealer-card{border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;background:rgba(255,255,255,.015)}
+.dc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.dc-head b{font-size:14px}
+.field{margin-bottom:8px}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--bg2);border:1px solid var(--gold);border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;transition:.3s;z-index:100;opacity:0}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.err{border-color:var(--red);color:var(--red)}
+.login{max-width:360px;margin:12vh auto;text-align:center}
+.login .card{padding:28px}
+.sub-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.sub-item .em{font-family:monospace}
+.warn{background:rgba(255,165,2,.08);border:1px solid rgba(255,165,2,.2);color:#ffa502;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:12px}
+.save-bar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 40%);padding:16px 0 6px;display:flex;gap:8px;justify-content:flex-end}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:4px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div class="wrap login" id="loginView">
+  <h1 style="justify-content:center;margin-bottom:6px"><span class="logo">Au</span> Gold Rush Admin</h1>
+  <p class="muted" style="margin-bottom:18px">Sign in to manage your site</p>
+  <div class="card">
+    <div class="field" style="text-align:left"><label>Password</label><input type="password" id="pw" placeholder="Admin password" autocomplete="current-password"></div>
+    <button class="btn" id="loginBtn" style="width:100%">Sign in</button>
+    <p class="muted" id="loginMsg" style="margin-top:12px"></p>
+  </div>
+  <p class="muted">Set your password as the <b>ADMIN_PASSWORD</b> environment variable in Vercel.</p>
+</div>
+
+<!-- DASHBOARD -->
+<div class="wrap hidden" id="dash">
+  <div class="topbar">
+    <h1><span class="logo">Au</span> Admin Dashboard</h1>
+    <div class="row"><span class="muted" id="dbStatus"></span><button class="btn ghost sm" id="logoutBtn">Log out</button></div>
+  </div>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-s="dealers">Dealers</div>
+    <div class="tab" data-s="subscribers">Subscribers</div>
+    <div class="tab" data-s="faq">FAQ</div>
+    <div class="tab" data-s="events">Events</div>
+  </div>
+  <div id="dbWarn"></div>
+
+  <!-- DEALERS -->
+  <section id="sec-dealers">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <span class="muted" id="dealerCount"></span>
+      <button class="btn ghost sm" id="addDealer">+ Add dealer</button>
+    </div>
+    <div id="dealerList"></div>
+    <div class="save-bar"><button class="btn ghost" id="reloadDealers">Reload</button><button class="btn" id="saveDealers">Save dealers</button></div>
+  </section>
+
+  <!-- SUBSCRIBERS -->
+  <section id="sec-subscribers" class="hidden">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <span class="muted" id="subCount"></span>
+      <button class="btn ghost sm" id="exportSubs">Export CSV</button>
+    </div>
+    <div class="card" id="subList"></div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="sec-faq" class="hidden">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <span class="muted" id="faqCount"></span>
+      <button class="btn ghost sm" id="addFaq">+ Add question</button>
+    </div>
+    <div id="faqList"></div>
+    <div class="save-bar"><button class="btn ghost" id="reloadFaq">Reload</button><button class="btn" id="saveFaq">Save FAQ</button></div>
+  </section>
+
+  <!-- EVENTS -->
+  <section id="sec-events" class="hidden">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <span class="muted" id="eventCount"></span>
+      <button class="btn ghost sm" id="addEvent">+ Add event</button>
+    </div>
+    <div id="eventList"></div>
+    <div class="save-bar"><button class="btn ghost" id="reloadEvents">Reload</button><button class="btn" id="saveEvents">Save events</button></div>
+  </section>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+let TOKEN=localStorage.getItem('gr_admin_token')||'';
+let dbConfigured=false;
+
+function toast(msg,err){const t=$('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',2600);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function api(path,opts){
+  opts=opts||{};
+  opts.headers=Object.assign({'Content-Type':'application/json'},opts.headers||{},TOKEN?{Authorization:'Bearer '+TOKEN}:{});
+  const r=await fetch(path,opts);
+  if(r.status===401){logout();throw new Error('Session expired');}
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.error||('HTTP '+r.status));
+  return d;
+}
+
+/* ---- auth ---- */
+$('loginBtn').addEventListener('click',doLogin);
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+async function doLogin(){
+  const password=$('pw').value;
+  if(!password)return;
+  $('loginBtn').disabled=true;$('loginMsg').textContent='';
+  try{
+    const r=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Login failed');
+    TOKEN=d.token;localStorage.setItem('gr_admin_token',TOKEN);
+    showDash();
+  }catch(e){$('loginMsg').textContent=e.message;}
+  $('loginBtn').disabled=false;
+}
+function logout(){TOKEN='';localStorage.removeItem('gr_admin_token');$('dash').classList.add('hidden');$('loginView').classList.remove('hidden');}
+$('logoutBtn').addEventListener('click',logout);
+
+function showDash(){
+  $('loginView').classList.add('hidden');$('dash').classList.remove('hidden');
+  loadDealers();loadSubs();loadFaq();loadEvents();
+}
+
+/* ---- tabs ---- */
+$('tabs').addEventListener('click',e=>{
+  const tab=e.target.closest('.tab');if(!tab)return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');
+  ['dealers','subscribers','faq','events'].forEach(s=>$('sec-'+s).classList.toggle('hidden',s!==tab.dataset.s));
+});
+
+function setDbStatus(configured){
+  dbConfigured=configured;
+  $('dbStatus').textContent=configured?'● Database connected':'● Database not connected';
+  $('dbStatus').style.color=configured?'var(--grn)':'var(--red)';
+  $('dbWarn').innerHTML=configured?'':'<div class="warn">No database connected yet — you can preview the defaults, but saving is disabled. Add Upstash from the Vercel Marketplace, then reload.</div>';
+}
+
+/* ================= DEALERS ================= */
+const CATS=['dealer','jeweller','digital','bank'],TYPES=['physical','digital'];
+function opt(v,cur){return `<option value="${v}"${v===cur?' selected':''}>${v}</option>`;}
+function pnum(o,k){return o&&o[k]!=null?o[k]:'';}
+function dealerCard(d){
+  d=d||{buy:{},sell:{}};
+  return `<div class="dealer-card" data-dealer>
+    <div class="dc-head"><b>${esc(d.name||'New dealer')}</b><button class="btn danger sm" data-del>Remove</button></div>
+    <div class="grid g3">
+      <div class="field"><label>Name</label><input data-f="name" value="${esc(d.name)}"></div>
+      <div class="field"><label>ID</label><input data-f="id" value="${esc(d.id)}"></div>
+      <div class="field"><label>Popularity rank</label><input data-f="pop" type="number" value="${esc(d.pop)}"></div>
+      <div class="field"><label>Category</label><select data-f="cat">${CATS.map(c=>opt(c,d.cat)).join('')}</select></div>
+      <div class="field"><label>Type</label><select data-f="type">${TYPES.map(c=>opt(c,d.type)).join('')}</select></div>
+      <div class="field"><label>Website URL</label><input data-f="url" value="${esc(d.url)}"></div>
+    </div>
+    <div class="grid g2">
+      <div class="field"><label>Description (EN)</label><input data-f="en" value="${esc(d.en)}"></div>
+      <div class="field"><label>Description (BM)</label><input data-f="bm" value="${esc(d.bm)}"></div>
+    </div>
+    <div class="grid g3">
+      <div class="field"><label>Buy ×999</label><input data-f="b999" type="number" step="0.001" value="${esc(pnum(d.buy,999))}"></div>
+      <div class="field"><label>Buy ×916</label><input data-f="b916" type="number" step="0.001" value="${esc(pnum(d.buy,916))}"></div>
+      <div class="field"><label>Buy ×750</label><input data-f="b750" type="number" step="0.001" value="${esc(pnum(d.buy,750))}"></div>
+      <div class="field"><label>Sell ×999</label><input data-f="s999" type="number" step="0.001" value="${esc(pnum(d.sell,999))}"></div>
+      <div class="field"><label>Sell ×916</label><input data-f="s916" type="number" step="0.001" value="${esc(pnum(d.sell,916))}"></div>
+      <div class="field"><label>Sell ×750</label><input data-f="s750" type="number" step="0.001" value="${esc(pnum(d.sell,750))}"></div>
+    </div>
+    <p class="muted" style="margin-top:4px">Premium multipliers vs spot. Leave a purity blank if not offered (e.g. 1.12 = 12% above spot).</p>
+  </div>`;
+}
+async function loadDealers(){
+  try{const d=await api('/api/admin/data?type=dealers');setDbStatus(d.dbConfigured);
+    $('dealerList').innerHTML=d.items.map(dealerCard).join('');
+    $('dealerCount').textContent=d.items.length+' dealers ('+d.source+')';
+  }catch(e){toast(e.message,true);}
+}
+$('addDealer').addEventListener('click',()=>{$('dealerList').insertAdjacentHTML('afterbegin',dealerCard());});
+$('reloadDealers').addEventListener('click',loadDealers);
+$('dealerList').addEventListener('click',e=>{if(e.target.matches('[data-del]'))e.target.closest('[data-dealer]').remove();});
+function collectDealers(){
+  return [...document.querySelectorAll('[data-dealer]')].map(card=>{
+    const g=f=>{const el=card.querySelector(`[data-f="${f}"]`);return el?el.value.trim():'';};
+    const num=f=>{const v=g(f);return v===''?null:parseFloat(v);};
+    const buy={},sell={};
+    [999,916,750].forEach(p=>{const b=num('b'+p);if(b!=null)buy[p]=b;const s=num('s'+p);if(s!=null)sell[p]=s;});
+    const o={id:g('id')||g('name').replace(/\s+/g,'').toLowerCase(),name:g('name'),cat:g('cat'),type:g('type'),pop:parseInt(g('pop'))||99,url:g('url'),en:g('en'),bm:g('bm'),buy,sell};
+    return o;
+  }).filter(d=>d.name);
+}
+$('saveDealers').addEventListener('click',async()=>{
+  try{const items=collectDealers();await api('/api/admin/data?type=dealers',{method:'POST',body:JSON.stringify({items})});toast('Saved '+items.length+' dealers ✓');}
+  catch(e){toast(e.message,true);}
+});
+
+/* ================= SUBSCRIBERS ================= */
+let SUBS=[];
+async function loadSubs(){
+  try{const d=await api('/api/admin/data?type=subscribers');SUBS=d.items||[];
+    $('subCount').textContent=SUBS.length+' subscriber'+(SUBS.length===1?'':'s');
+    $('subList').innerHTML=SUBS.length?SUBS.map(s=>`<div class="sub-item"><span class="em">${esc(s.email||s)}</span><span class="muted">${s.ts?new Date(s.ts).toLocaleDateString():''}</span></div>`).join(''):'<p class="muted">No subscribers yet.</p>';
+  }catch(e){$('subList').innerHTML='<p class="muted">'+esc(e.message)+'</p>';}
+}
+$('exportSubs').addEventListener('click',()=>{
+  if(!SUBS.length)return toast('Nothing to export',true);
+  const rows=[['email','date']].concat(SUBS.map(s=>[s.email||s,s.ts?new Date(s.ts).toISOString():'']));
+  const csv=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='subscribers.csv';a.click();
+});
+
+/* ================= FAQ ================= */
+function faqCard(f){
+  f=f||{q:{},a:{}};
+  return `<div class="dealer-card" data-faq>
+    <div class="dc-head"><b>Question</b><button class="btn danger sm" data-del>Remove</button></div>
+    <div class="grid g2">
+      <div class="field"><label>Question (EN)</label><input data-f="qen" value="${esc(f.q&&f.q.en)}"></div>
+      <div class="field"><label>Question (BM)</label><input data-f="qbm" value="${esc(f.q&&f.q.bm)}"></div>
+    </div>
+    <div class="field"><label>Answer (EN)</label><textarea data-f="aen">${esc(f.a&&f.a.en)}</textarea></div>
+    <div class="field"><label>Answer (BM)</label><textarea data-f="abm">${esc(f.a&&f.a.bm)}</textarea></div>
+  </div>`;
+}
+async function loadFaq(){
+  try{const d=await api('/api/admin/data?type=faq');
+    $('faqList').innerHTML=d.items.map(faqCard).join('');
+    $('faqCount').textContent=d.items.length+' questions ('+d.source+')';
+  }catch(e){toast(e.message,true);}
+}
+$('addFaq').addEventListener('click',()=>{$('faqList').insertAdjacentHTML('beforeend',faqCard());});
+$('reloadFaq').addEventListener('click',loadFaq);
+$('faqList').addEventListener('click',e=>{if(e.target.matches('[data-del]'))e.target.closest('[data-faq]').remove();});
+$('saveFaq').addEventListener('click',async()=>{
+  try{
+    const items=[...document.querySelectorAll('[data-faq]')].map(c=>{
+      const g=f=>c.querySelector(`[data-f="${f}"]`).value.trim();
+      return {q:{en:g('qen'),bm:g('qbm')},a:{en:g('aen'),bm:g('abm')}};
+    }).filter(f=>f.q.en);
+    await api('/api/admin/data?type=faq',{method:'POST',body:JSON.stringify({items})});toast('Saved '+items.length+' questions ✓');
+  }catch(e){toast(e.message,true);}
+});
+
+/* ================= EVENTS ================= */
+const ETYPES=['up','down','neutral'];
+function eventCard(ev){
+  ev=ev||{};
+  return `<div class="dealer-card" data-event>
+    <div class="dc-head"><b>Market event</b><button class="btn danger sm" data-del>Remove</button></div>
+    <div class="grid g4">
+      <div class="field"><label>Date</label><input data-f="date" type="date" value="${esc(ev.date)}"></div>
+      <div class="field"><label>Label (EN)</label><input data-f="en" value="${esc(ev.en)}"></div>
+      <div class="field"><label>Label (BM)</label><input data-f="bm" value="${esc(ev.bm)}"></div>
+      <div class="field"><label>Effect</label><select data-f="type">${ETYPES.map(x=>opt(x,ev.type)).join('')}</select></div>
+    </div>
+  </div>`;
+}
+async function loadEvents(){
+  try{const d=await api('/api/admin/data?type=events');
+    $('eventList').innerHTML=d.items.map(eventCard).join('');
+    $('eventCount').textContent=d.items.length+' events ('+d.source+')';
+  }catch(e){toast(e.message,true);}
+}
+$('addEvent').addEventListener('click',()=>{$('eventList').insertAdjacentHTML('afterbegin',eventCard());});
+$('reloadEvents').addEventListener('click',loadEvents);
+$('eventList').addEventListener('click',e=>{if(e.target.matches('[data-del]'))e.target.closest('[data-event]').remove();});
+$('saveEvents').addEventListener('click',async()=>{
+  try{
+    const items=[...document.querySelectorAll('[data-event]')].map(c=>{
+      const g=f=>c.querySelector(`[data-f="${f}"]`).value.trim();
+      return {date:g('date'),en:g('en'),bm:g('bm'),type:g('type')};
+    }).filter(e=>e.date&&e.en);
+    await api('/api/admin/data?type=events',{method:'POST',body:JSON.stringify({items})});toast('Saved '+items.length+' events ✓');
+  }catch(e){toast(e.message,true);}
+});
+
+/* ---- boot ---- */
+if(TOKEN)showDash();
+</script>
+</body>
+</html>

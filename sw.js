@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gold-rush-v11';
+const CACHE_NAME = 'gold-rush-v12';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -38,6 +38,12 @@ self.addEventListener('fetch', e => {
   // Analytics: never cache, always network
   if (url.pathname.startsWith('/_vercel/')) {
     e.respondWith(fetch(e.request).catch(() => new Response('', { status: 204 })));
+    return;
+  }
+
+  // Admin panel: never cache, always fresh
+  if (url.pathname === '/admin' || url.pathname === '/admin.html') {
+    e.respondWith(fetch(e.request));
     return;
   }
 

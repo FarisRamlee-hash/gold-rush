@@ -617,7 +617,7 @@ const TF_DAYS={'1D':1,'7D':7,'1M':30,'3M':90,'6M':180,'1Y':365};
 const NISAB_GRAMS=85,URUF_GRAMS=850,ZAKAT_RATE=0.025;
 
 /* ═══ DEALERS ═══ */
-const DEALERS=[
+let DEALERS=[
   {id:'publicGold',name:'Public Gold',cat:'dealer',type:'physical',pop:1,
    en:'Largest private gold dealer',bm:'Peniaga emas swasta terbesar',
    url:'https://publicgold.com.my',
@@ -712,7 +712,7 @@ function applyLang(){
 }
 
 /* ═══ EVENTS ═══ */
-const EVENTS=[
+let EVENTS=[
   {ts:Date.parse('2026-06-09'),en:'US CPI Data Release',bm:'Data CPI AS Dikeluarkan',type:'up'},
   {ts:Date.parse('2026-06-04'),en:'ECB Rate Decision',bm:'Keputusan Kadar ECB',type:'down'},
   {ts:Date.parse('2026-05-28'),en:'FOMC Meeting Minutes',bm:'Minit Mesyuarat FOMC',type:'neutral'},
@@ -746,6 +746,22 @@ function captureReferral(){
       if(!localStorage.getItem('gr_ref'))localStorage.setItem('gr_ref',ref);
       if(typeof window.va==='function')window.va('event',{name:'referral',data:{ref}});
     }
+  }catch(e){}
+}
+
+/* ═══ ADMIN-MANAGED CONTENT ═══ */
+async function loadContent(){
+  try{
+    const r=await fetch('/api/content');
+    if(!r.ok)return;
+    const d=await r.json();
+    if(Array.isArray(d.dealers)&&d.dealers.length)DEALERS=d.dealers;
+    if(Array.isArray(d.faq)&&d.faq.length)FAQ=d.faq;
+    if(Array.isArray(d.events)&&d.events.length){
+      const ev=d.events.map(e=>({ts:Date.parse(e.date),en:e.en,bm:e.bm,type:e.type})).filter(e=>!isNaN(e.ts));
+      if(ev.length)EVENTS=ev;
+    }
+    updateDealers();renderFAQ();updateEvents();updateChart();updateSignal();
   }catch(e){}
 }
 
@@ -1086,7 +1102,7 @@ function initShare(){
 }
 
 /* ═══ FAQ / GUIDE ═══ */
-const FAQ=[
+let FAQ=[
  {q:{en:'How is the gold price in Malaysia calculated?',bm:'Bagaimana harga emas di Malaysia dikira?'},
   a:{en:'Malaysian gold prices start from the international spot price, quoted in US dollars per troy ounce (31.1035g). This is converted to Ringgit using the live USD/MYR exchange rate, then divided into a per-gram price. Dealers add a premium of roughly 3–18% on top of spot to cover minting, distribution and profit — that is why retail prices are always higher than the spot price shown in our Compare tab.',
      bm:'Harga emas Malaysia bermula daripada harga spot antarabangsa, disebut dalam dolar AS per auns troy (31.1035g). Ia ditukar kepada Ringgit menggunakan kadar USD/MYR semasa, kemudian dibahagikan kepada harga per gram. Peniaga menambah premium kira-kira 3–18% di atas spot untuk kos tempaan, pengedaran dan keuntungan — sebab itulah harga runcit sentiasa lebih tinggi daripada harga spot dalam tab Banding kami.'}},
@@ -1367,6 +1383,7 @@ function initModals(){[['privacyLink','privacyModal','privacyClose'],['termsLink
 try{S.lang=localStorage.getItem('gr_lang')||'en'}catch(e){}
 captureReferral();bindPurity();setupCalc();applyLang();initTilt();initModals();initNewsletter();initShare();
 refresh(true).then(()=>{initChart();updateChart();startTimer()});
+loadContent();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
