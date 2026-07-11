@@ -6,11 +6,22 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#050510">
-<meta name="description" content="Live gold and silver price tracker for Malaysia with real-time updates, zakat calculator, and price alerts.">
+<meta name="description" content="Harga emas Malaysia hari ini — live gold prices in RM for 999, 916 & 750, compare 18 Malaysian dealers & jewellers, buy/sell signals, zakat calculator. Free gold price tracker.">
+<link rel="canonical" href="https://gold-rush-tau.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gold Rush">
+<meta property="og:title" content="Gold Rush — Harga Emas Malaysia Hari Ini | Live Gold Price">
+<meta property="og:description" content="Live gold prices in RM, compare 18 Malaysian dealers & jewellers, buy/sell signals, zakat calculator. Percuma.">
+<meta property="og:url" content="https://gold-rush-tau.vercel.app/">
+<meta property="og:image" content="https://gold-rush-tau.vercel.app/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gold Rush — Harga Emas Malaysia Hari Ini">
+<meta name="twitter:description" content="Live gold prices in RM, compare 18 Malaysian dealers, buy/sell signals, zakat calculator.">
+<meta name="twitter:image" content="https://gold-rush-tau.vercel.app/icon-512.png">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<title>Gold Rush — Live Gold & Silver Tracker</title>
+<title>Harga Emas Malaysia Hari Ini — Gold Rush | Live Gold Price & Dealer Comparison</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7616860998471661" crossorigin="anonymous"></script>
@@ -358,6 +369,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 </style>
 </head>
 <body>
+<h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">Harga Emas Malaysia Hari Ini — Live Gold Price Tracker &amp; Dealer Comparison</h1>
 <div class="orb orb-1"></div><div class="orb orb-2"></div>
 <div class="app">
   <header class="header">
@@ -573,6 +585,18 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <!-- Toast -->
 <div class="toast" id="toast"><div class="toast-title" id="toastTitle"></div><div class="toast-body" id="toastBody"></div></div>
 
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","name":"Gold Rush","url":"https://gold-rush-tau.vercel.app/","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"MYR"},"description":"Live Malaysian gold and silver price tracker with dealer comparison, buy/sell signals and zakat calculator.","publisher":{"@type":"Organization","name":"FR Ventures"}},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"How is the gold price in Malaysia calculated?","acceptedAnswer":{"@type":"Answer","text":"Malaysian gold prices start from the international spot price quoted in US dollars per troy ounce, converted to Ringgit using the live USD/MYR exchange rate, then divided into a per-gram price. Dealers add a premium of roughly 3-18% on top of spot to cover minting, distribution and profit."}},
+{"@type":"Question","name":"What is the difference between 999, 916 and 750 gold?","acceptedAnswer":{"@type":"Answer","text":"The number refers to purity in parts per thousand. 999 (24K) is 99.9% pure gold used for investment bars and coins. 916 (22K) is the standard for Malaysian jewellery. 750 (18K) is 75% gold mixed with other metals."}},
+{"@type":"Question","name":"Should I buy physical or digital gold?","acceptedAnswer":{"@type":"Answer","text":"Physical gold is yours to hold with no counterparty risk but must be stored safely and has wider spreads. Digital gold lets you start from as little as RM10 with instant buy and sell, but you rely on the provider's credibility. Many Malaysians mix both."}},
+{"@type":"Question","name":"How is zakat on gold calculated in Malaysia?","acceptedAnswer":{"@type":"Answer","text":"Zakat is due when gold holdings exceed the nisab of 85g of pure gold held for one full year. The rate is 2.5% of current market value. Worn jewellery is exempt up to the uruf limit, commonly 800-850g depending on state."}},
+{"@type":"Question","name":"When is a good time to buy gold?","acceptedAnswer":{"@type":"Answer","text":"Dollar-cost averaging smooths out price swings, and buying dips when the price falls below its recent average with an oversold RSI has historically been a better entry point. Gold in ringgit has risen substantially over the past decade as a hedge against inflation."}}
+]}]}
+</script>
+
 <script>
 "use strict";
 
@@ -582,7 +606,8 @@ function initTilt(){if(window.matchMedia('(hover:none)').matches)return;document
 /* ═══ STATE ═══ */
 const S={metal:'gold',purity:999,tf:'7D',price:0,prevPrice:0,spot:0,change:0,changePct:0,liveData:null,isLive:false,history:[],chart:null,countdown:30,timer:null,lang:'en',tab:'Live',dealerCat:'all',dealerType:'all',dealerSort:'popularity'};
 const FALLBACK={gold:{999:576,916:543,750:458},silver:{999:7.20}};
-const WEIGHTS=[1,5,10,20,50,100];
+const WEIGHTS=[1,3.71,5,10,20,50,100,1000];
+function weightLabel(w){return w===3.71?'1 mayam':w===1000?'1kg':w+'g'}
 const TF_DAYS={'1D':1,'7D':7,'1M':30,'3M':90,'6M':180,'1Y':365};
 const NISAB_GRAMS=85,URUF_GRAMS=850,ZAKAT_RATE=0.025;
 
@@ -718,7 +743,7 @@ function updateChart(){if(!S.chart){initChart();return}const a=S.metal==='gold'?
 /* ═══ STATS ═══ */
 function updateStats(){const prices=S.history.map(p=>p.y),high=Math.max(...prices),low=Math.min(...prices),avg=prices.reduce((a,b)=>a+b,0)/prices.length;const rets=prices.slice(1).map((p,i)=>(p-prices[i])/prices[i]),vol=Math.sqrt(rets.reduce((a,r)=>a+r*r,0)/rets.length)*100;document.getElementById('statHigh').textContent=fmtRM(high);document.getElementById('statLow').textContent=fmtRM(low);document.getElementById('statAvg').textContent=fmtRM(avg);const vE=document.getElementById('statVol');vE.textContent=vol.toFixed(2)+'%';vE.className='stat-val '+(vol>.5?'red':'green');const range=high-low,pct=range>0?((S.price-low)/range)*100:50;document.getElementById('levelDot').style.left=Math.max(4,Math.min(96,pct))+'%'}
 function updateSpread(){const sp=S.metal==='gold'?.015:.025;document.getElementById('buyPrice').textContent=fmtRM(S.price*(1+sp/2));document.getElementById('sellPrice').textContent=fmtRM(S.price*(1-sp/2))}
-function updateWeights(){const sil=S.metal==='silver';document.getElementById('weightsScroll').innerHTML=WEIGHTS.map(w=>`<div class="weight-chip glass tilt${sil?' sil-chip':''}"><div class="grams">${w}g</div><div class="wprice">${fmtRM(S.price*w)}</div></div>`).join('');initTilt()}
+function updateWeights(){const sil=S.metal==='silver';document.getElementById('weightsScroll').innerHTML=WEIGHTS.map(w=>`<div class="weight-chip glass tilt${sil?' sil-chip':''}"><div class="grams">${weightLabel(w)}</div><div class="wprice">${fmtRM(S.price*w)}</div></div>`).join('');initTilt()}
 
 /* ═══ PRICE DISPLAY ═══ */
 function updatePriceDisplay(){const el=document.getElementById('priceValue'),old=S.prevPrice,target=S.price;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),150);const start=performance.now(),dur=500;function tick(now){const p=Math.min((now-start)/dur,1);el.textContent=(old+(target-old)*(1-Math.pow(1-p,3))).toFixed(2);if(p<1)requestAnimationFrame(tick)}if(old>0)requestAnimationFrame(tick);else el.textContent=target.toFixed(2);const up=S.change>=0,cE=document.getElementById('priceChange');cE.className=`price-change ${up?'up':'down'}`;document.getElementById('changeText').textContent=`RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;cE.querySelector('.arrow').innerHTML=up?'&#9650;':'&#9660;';document.getElementById('lastUpdated').textContent=`${t('updated')} ${new Date().toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'})}`;document.getElementById('spotLabel').textContent=S.spot>0?`${t('spot')}: ${fmtRM(S.spot)}${t('perG')}`:''}
