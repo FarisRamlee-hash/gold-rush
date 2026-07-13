@@ -1,20 +1,13 @@
 const OZ_TO_G = 31.1035;
 
-const PREMIUM = {
-  gold:   { 999: 1.08, 916: 1.11, 750: 1.14 },
-  silver: { 999: 1.10 },
-};
-
-function retail(spotPerG, metal, purity) {
-  return +(spotPerG * (PREMIUM[metal]?.[purity] ?? 1)).toFixed(2);
-}
-
-function entry(spotG, prevG, metal, purity) {
-  const price = retail(spotG, metal, purity);
-  const prev  = retail(prevG, metal, purity);
+// Headline prices are true spot (MKS/interbank-level, no retail markup).
+// Dealer retail premiums live in the Compare tab data, not here.
+function entry(spotG, prevG) {
+  const price = +spotG.toFixed(2);
+  const prev  = +prevG.toFixed(2);
   const change = +(price - prev).toFixed(2);
   const pct = prev ? +((change / prev) * 100).toFixed(2) : 0;
-  return { price, close: prev, change, pct, spot: +spotG.toFixed(2) };
+  return { price, close: prev, change, pct, spot: price };
 }
 
 function buildResult(goldUsdOz, goldPrevOz, silverUsdOz, silverPrevOz, myr) {
@@ -25,11 +18,11 @@ function buildResult(goldUsdOz, goldPrevOz, silverUsdOz, silverPrevOz, myr) {
   return {
     live: true, ts: Date.now(), usdMyr: +myr.toFixed(4),
     gold: {
-      999: entry(g999, gc999, 'gold', 999),
-      916: entry(g999 * 0.916, gc999 * 0.916, 'gold', 916),
-      750: entry(g999 * 0.750, gc999 * 0.750, 'gold', 750),
+      999: entry(g999, gc999),
+      916: entry(g999 * 0.916, gc999 * 0.916),
+      750: entry(g999 * 0.750, gc999 * 0.750),
     },
-    silver: { 999: entry(s999, sc999, 'silver', 999) },
+    silver: { 999: entry(s999, sc999) },
   };
 }
 
@@ -90,5 +83,5 @@ module.exports = async (req, res) => {
   } catch (e) { console.log('yahoo failed:', e.message); }
 
   // Source 3: hardcoded recent price + live exchange rate
-  return res.json(buildResult(4060, 4080, 32, 32.5, myr));
+  return res.json(buildResult(4110, 4115, 48, 48, myr));
 };
