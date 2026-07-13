@@ -66,7 +66,7 @@ async function scrapePohKong() {
 // Jeweller chains all charge the same standard trade retail price per gram
 // (workmanship fees differ, per-gram gold price does not). They inherit the
 // live standard price but stay flagged std:true — shown as ≈, never ✓.
-const STANDARD_JEWELLERS = ['habib', 'tomei', 'wahChan', 'zhulian', 'kedaiEmasAnuar', 'deGem', 'selberan'];
+const STANDARD_JEWELLERS = ['habib', 'tomei', 'wahChan', 'zhulian', 'deGem', 'selberan'];
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
