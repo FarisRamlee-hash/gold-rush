@@ -6,17 +6,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#050510">
-<meta name="description" content="Harga emas Malaysia hari ini — live gold prices in RM for 999, 916 & 750, compare 18 Malaysian dealers & jewellers, buy/sell signals, zakat calculator. Free gold price tracker.">
+<meta name="description" content="Harga emas Malaysia hari ini — live gold prices in RM for 999, 916 & 750, compare 19 Malaysian dealers & jewellers, buy/sell signals, zakat calculator. Free gold price tracker.">
 <link rel="canonical" href="https://gold-rush-tau.vercel.app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gold Rush">
 <meta property="og:title" content="Gold Rush — Harga Emas Malaysia Hari Ini | Live Gold Price">
-<meta property="og:description" content="Live gold prices in RM, compare 18 Malaysian dealers & jewellers, buy/sell signals, zakat calculator. Percuma.">
+<meta property="og:description" content="Live gold prices in RM, compare 19 Malaysian dealers & jewellers, buy/sell signals, zakat calculator. Percuma.">
 <meta property="og:url" content="https://gold-rush-tau.vercel.app/">
 <meta property="og:image" content="https://gold-rush-tau.vercel.app/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Gold Rush — Harga Emas Malaysia Hari Ini">
-<meta name="twitter:description" content="Live gold prices in RM, compare 18 Malaysian dealers, buy/sell signals, zakat calculator.">
+<meta name="twitter:description" content="Live gold prices in RM, compare 19 Malaysian dealers, buy/sell signals, zakat calculator.">
 <meta name="twitter:image" content="https://gold-rush-tau.vercel.app/icon-512.png">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
@@ -320,6 +320,16 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .zakat-links .zl-label{font-size:10px;color:var(--text3);width:100%}
 .zakat-links a{display:inline-flex;padding:5px 12px;font-size:10px;font-weight:600;color:var(--text2);background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--pill);text-decoration:none;transition:all .3s}
 .zakat-links a:hover{border-color:var(--gold);color:var(--gold)}
+.zk-hero{margin:12px 16px 0;padding:18px}
+.zk-hero-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.zk-hijri{font-size:11px;font-weight:700;color:var(--gold);background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);padding:4px 10px;border-radius:var(--pill)}
+.zk-progress-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.zk-bar{position:relative;height:10px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden}
+.zk-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#8a6d00,var(--gold));border-radius:5px;transition:width .6s ease}
+.zk-nisab-note{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5}
+.zk-haul{margin-top:12px;padding:10px 12px;font-size:11px;line-height:1.5;color:var(--text2);background:rgba(255,255,255,0.02);border-radius:var(--r-sm);border:1px solid rgba(255,255,255,0.04)}
+.zk-empty{font-size:11px;color:var(--text3);line-height:1.5}
+.zk-uruf-note{font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5}
 .zpaid-btn{margin-top:10px;width:100%;padding:9px;font-size:11px;font-weight:700;font-family:inherit;color:var(--text2);background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r-sm);cursor:pointer;transition:all .3s}
 .zpaid-btn.paid{color:var(--grn);border-color:rgba(0,214,143,0.3);background:var(--grn-bg)}
 .calc-swap{display:grid;place-items:center;align-self:flex-end;width:40px;height:44px;background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--r-sm);color:var(--gold);font-size:18px;cursor:pointer;transition:all .3s;flex-shrink:0}
@@ -484,6 +494,43 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </div>
   </div>
 
+  <!-- ═══ VIEW: ZAKAT ═══ -->
+  <div class="view hidden" id="viewZakat">
+    <div class="zk-hero glass">
+      <div class="zk-hero-top"><div class="section-title" id="lZkHero" style="margin:0;padding:0">Gold Zakat</div><span class="zk-hijri" id="zkHijri"></span></div>
+      <div id="zkProgressWrap" style="display:none">
+        <div class="zk-progress-label"><span id="zkProgressText"></span><span id="zkProgressPct"></span></div>
+        <div class="zk-bar"><div class="zk-bar-fill" id="zkBarFill"></div></div>
+        <div class="zk-nisab-note" id="zkNisabNote"></div>
+      </div>
+      <div class="zk-empty" id="zkEmpty" style="display:none"></div>
+      <div class="zk-haul" id="zkHaul" style="display:none"></div>
+    </div>
+
+    <div class="tools-section" style="margin-top:12px">
+      <div class="section-title" id="lZakat">Zakat Calculator</div>
+      <div class="tools-card glass tilt">
+        <button class="zakat-port-btn" id="zakatFromPort" style="display:none"></button>
+        <div class="zakat-inputs">
+          <div class="zakat-field"><label class="form-label" id="lZGold">Gold held (g)</label><input class="form-input" id="zakatGrams" type="number" placeholder="100" inputmode="decimal"></div>
+          <div class="zakat-field"><label class="form-label" id="lZType">Type</label><select class="form-input form-select" id="zakatType"><option value="simpan" id="zOptKeep">Kept / Investment</option><option value="pakai" id="zOptWear">Worn (uruf: 850g)</option></select></div>
+        </div>
+        <div class="zakat-result"><div class="zr-label" id="lZDue">Zakat due</div><div class="zr-value exempt" id="zakatValue">—</div><div class="zr-note" id="zakatNote"></div></div>
+        <button class="zpaid-btn" id="zMarkPaid"></button>
+      </div>
+    </div>
+
+    <div class="tools-section">
+      <div class="section-title" id="lZkPay">Pay Zakat Online</div>
+      <div class="tools-card glass">
+        <label class="form-label" id="lZkState">Your state</label>
+        <select class="form-input form-select" id="zkState"></select>
+        <a class="btn btn-gold" id="zkPayBtn" href="https://www.zakat.com.my" target="_blank" rel="noopener" style="display:flex;justify-content:center;margin-top:10px;text-decoration:none"></a>
+        <div class="zk-uruf-note" id="zkUrufNote"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ VIEW: TOOLS ═══ -->
   <div class="view hidden" id="viewTools">
     <div style="padding:12px 16px 6px"><div class="section-title" id="lAlerts">Price Alerts</div></div>
@@ -500,20 +547,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </div>
 
     <div class="tools-section" style="margin-top:12px">
-      <div class="section-title" id="lZakat">Zakat Calculator</div>
-      <div class="tools-card glass tilt">
-        <button class="zakat-port-btn" id="zakatFromPort" style="display:none"></button>
-        <div class="zakat-inputs">
-          <div class="zakat-field"><label class="form-label" id="lZGold">Gold held (g)</label><input class="form-input" id="zakatGrams" type="number" placeholder="100" inputmode="decimal"></div>
-          <div class="zakat-field"><label class="form-label" id="lZType">Type</label><select class="form-input form-select" id="zakatType"><option value="simpan" id="zOptKeep">Kept / Investment</option><option value="pakai" id="zOptWear">Worn (uruf: 850g)</option></select></div>
-        </div>
-        <div class="zakat-result"><div class="zr-label" id="lZDue">Zakat due</div><div class="zr-value exempt" id="zakatValue">—</div><div class="zr-note" id="zakatNote"></div></div>
-        <div class="zakat-links"><span class="zl-label" id="zPayLabel">Pay zakat online:</span><a href="https://www.zakat.com.my" target="_blank" rel="noopener">PPZ-MAIWP</a><a href="https://www.zakatselangor.com.my" target="_blank" rel="noopener">Zakat Selangor</a><a href="https://www.zakatpenang.com" target="_blank" rel="noopener">Zakat Penang</a><a href="https://www.zakatkedah.com.my" target="_blank" rel="noopener">Zakat Kedah</a></div>
-        <button class="zpaid-btn" id="zMarkPaid"></button>
-      </div>
-    </div>
-
-    <div class="tools-section">
       <div class="section-title" id="lCalc">Calculator</div>
       <div class="tools-card glass tilt">
         <div class="calc-row">
@@ -549,7 +582,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <details class="faq-item"><summary>Should I buy physical or digital gold?</summary><div class="faq-a">Physical gold (bars, coins, jewellery) is yours to hold with no counterparty risk, but you must store it safely and spreads are wider. Digital gold (bank gold accounts and apps) lets you start from as little as RM10 with instant buy/sell and tighter spreads, but you rely on the provider&rsquo;s credibility and most accounts are unallocated. Many Malaysians mix both: digital for monthly saving, physical for long-term wealth. Use the Physical/Digital filter in our Compare tab to see which is which.</div></details>
       <details class="faq-item"><summary>What is the spread and why does it matter?</summary><div class="faq-a">The spread is the gap between a dealer&rsquo;s selling price and their buy-back price, shown as a percentage on each card in our Compare tab. If you buy at RM600/g and the dealer buys back at RM540/g, the spread is 10% &mdash; gold must rise 10% before you break even. A lower spread means you recover your cost faster, so compare spreads, not just the sticker price.</div></details>
       <details class="faq-item"><summary>When is a good time to buy gold?</summary><div class="faq-a">Nobody can time the market perfectly, but two approaches work well. Dollar-cost averaging &mdash; buying a fixed amount every month &mdash; smooths out price swings. Buying dips: our Signal indicator flags when the price falls below its recent average with an oversold RSI, historically a better entry point. Long-term holders worry less about timing: gold in ringgit has risen substantially over the past decade as a hedge against inflation and currency weakness.</div></details>
-      <details class="faq-item"><summary>How is zakat on gold calculated in Malaysia?</summary><div class="faq-a">Zakat is due when your gold holdings exceed the nisab (85g of pure gold) and have been held for one full year (haul). The rate is 2.5% of current market value. Gold jewellery that is regularly worn is exempt up to the uruf limit (commonly 800&ndash;850g depending on state). Use our Zakat Calculator in the Tools tab &mdash; it can autofill from your portfolio and links directly to official zakat bodies for online payment.</div></details>
+      <details class="faq-item"><summary>How is zakat on gold calculated in Malaysia?</summary><div class="faq-a">Zakat is due when your gold holdings exceed the nisab (85g of pure gold) and have been held for one full year (haul). The rate is 2.5% of current market value. Gold jewellery that is regularly worn is exempt up to the uruf limit (commonly 800&ndash;850g depending on state). Use our Zakat tab &mdash; it tracks your nisab progress and haul from your portfolio automatically, and links directly to all 14 official state zakat bodies for online payment.</div></details>
       <details class="faq-item"><summary>Is gold a good investment in Malaysia?</summary><div class="faq-a">Gold is primarily a store of value, not an income asset &mdash; it pays no dividends but protects against inflation and ringgit depreciation. Because gold trades in US dollars, a weaker ringgit lifts the local price even when the world price is flat. Many advisers suggest holding 5&ndash;15% of a portfolio in gold for diversification. This is general information, not financial advice.</div></details>
       <details class="faq-item"><summary>How do I store physical gold safely?</summary><div class="faq-a">Common options: a home safe (fast access, but arrange insurance), a bank safe deposit box (roughly RM100&ndash;400 per year), or dealer vault storage offered by companies like Public Gold. Keep purchase receipts and certificates &mdash; they matter greatly at resale. Never store large amounts unsecured at home.</div></details>
       <details class="faq-item"><summary>How do I sell gold at the best price?</summary><div class="faq-a">Compare buy-back prices first &mdash; the Cheapest sort and Best Sell badge in our Compare tab show who pays the most today. Selling back to the dealer you bought from is usually smoothest; bring the original certificate and receipt. Jewellery loses the workmanship fee (upah) at resale, so bars and coins retain value better. Avoid panic-selling during dips; our Signal can help you spot overbought peaks instead.</div></details>
@@ -569,6 +602,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <button class="tab active" data-tab="Live"><svg viewBox="0 0 24 24"><path d="M3 12l4-8 4 6 4-4 6 10"/><path d="M3 20h18"/></svg><span>Live</span></button>
     <button class="tab" data-tab="Compare"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="2"/><circle cx="17" cy="12" r="2"/><circle cx="11" cy="18" r="2"/></svg><span id="lTabCompare">Compare</span></button>
     <button class="tab" data-tab="Portfolio"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/><circle cx="12" cy="14" r="2"/></svg><span id="lTabPortfolio">Portfolio</span></button>
+    <button class="tab" data-tab="Zakat"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><span id="lTabZakat">Zakat</span></button>
     <button class="tab" data-tab="Tools"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83"/></svg><span id="lTabTools">Tools</span></button>
   </nav>
 
@@ -702,13 +736,13 @@ let DEALERS=[
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Prices calibrated to published dealer rates (July 2026), tracked against live spot. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide',shareCompare:'Share Comparison'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Harga ditentukur mengikut kadar terbitan peniaga (Julai 2026), dijejak mengikut harga spot semasa. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas',shareCompare:'Kongsi Perbandingan'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Prices are indicative dealer rates derived from international spot markets with estimated retail premiums. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Prices calibrated to published dealer rates (July 2026), tracked against live spot. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide',shareCompare:'Share Comparison',tabZakat:'Zakat',zkHero:'Gold Zakat',zkEmpty:'Add your gold holdings in the Portfolio tab to track nisab progress, haul and zakat automatically.',zkAboveNisab:'Above nisab — zakat applies',zkBelowNisab:'Below nisab — no zakat yet',zkEstDue:'estimated zakat',zkHaulLeft:'Haul complete in {d} days ({date}) — zakat falls due if you stay above nisab.',zkHaulDone:'Haul complete — zakat is due this year',zkPay:'Pay Zakat Online',zkState:'Your state',zkPayWith:'Pay via',zkUrufNote:'Official zakat body for your state. The uruf exemption for worn jewellery varies by state — check with your zakat body. This tool gives estimates, not a fatwa.'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga adalah anggaran harga peniaga. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Harga ditentukur mengikut kadar terbitan peniaga (Julai 2026), dijejak mengikut harga spot semasa. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas',shareCompare:'Kongsi Perbandingan',tabZakat:'Zakat',zkHero:'Zakat Emas',zkEmpty:'Tambah pegangan emas anda dalam tab Portfolio untuk menjejak nisab, haul dan zakat secara automatik.',zkAboveNisab:'Melebihi nisab — zakat dikenakan',zkBelowNisab:'Bawah nisab — belum wajib zakat',zkEstDue:'anggaran zakat',zkHaulLeft:'Haul genap dalam {d} hari ({date}) — zakat wajib jika kekal melebihi nisab.',zkHaulDone:'Haul genap — zakat wajib tahun ini',zkPay:'Bayar Zakat Dalam Talian',zkState:'Negeri anda',zkPayWith:'Bayar melalui',zkUrufNote:'Badan zakat rasmi negeri anda. Had uruf barang kemas dipakai berbeza mengikut negeri — semak dengan badan zakat anda. Alat ini memberi anggaran, bukan fatwa.'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
   const m=(id,k)=>{const el=document.getElementById(id);if(el)el.textContent=t(k)};
-  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabTools','tabTools');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');m('lSignal','signal');m('lSigRSI','sigRSI');m('lSigTrend','sigTrend');m('lSig52','sig52');m('sigDisclaimer','sigDisclaimer');m('nlTitle','nlTitle');m('nlDesc','nlDesc');m('nlSuccessTitle','nlSuccess');m('nlSuccessDesc','nlSuccessDesc');m('lShare','sharePrice');m('zPayLabel','zPayLabel');
+  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabZakat','tabZakat');m('lTabTools','tabTools');m('lZkHero','zkHero');m('lZkPay','zkPay');m('lZkState','zkState');m('zkUrufNote','zkUrufNote');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');m('lSignal','signal');m('lSigRSI','sigRSI');m('lSigTrend','sigTrend');m('lSig52','sig52');m('sigDisclaimer','sigDisclaimer');m('nlTitle','nlTitle');m('nlDesc','nlDesc');m('nlSuccessTitle','nlSuccess');m('nlSuccessDesc','nlSuccessDesc');m('lShare','sharePrice');m('zPayLabel','zPayLabel');
   document.getElementById('typeAll').textContent=t('tAll');
   document.getElementById('typePhysical').innerHTML='&#129689; '+t('tPhysical');
   document.getElementById('typeDigital').innerHTML='&#128241; '+t('tDigital');
@@ -716,7 +750,7 @@ function applyLang(){
   document.getElementById('badgeText').textContent=S.isLive?t('live'):t('demo');
   document.getElementById('nlSubmit').textContent=t('nlSubscribe');
   m('faqTitle','faqTitle');m('lShareCompare','shareCompare');
-  updateEvents();updateSignal();updateDealers();updateZakatPortBtn();updateZakatPaid();renderFAQ();
+  updateEvents();updateSignal();updateDealers();updateZakatPortBtn();updateZakatPaid();updateZakatHero();updateZakatPayBtn();renderFAQ();
 }
 
 /* ═══ EVENTS ═══ */
@@ -1127,8 +1161,8 @@ let FAQ=[
   a:{en:'Nobody can time the market perfectly, but two approaches work well. Dollar-cost averaging — buying a fixed amount every month — smooths out price swings. Buying dips: our Signal indicator flags when the price falls below its recent average with an oversold RSI, historically a better entry point. Long-term holders worry less about timing: gold in ringgit has risen substantially over the past decade as a hedge against inflation and currency weakness.',
      bm:'Tiada siapa boleh menjangka pasaran dengan tepat, tetapi dua pendekatan terbukti berkesan. Purata kos ringgit — membeli jumlah tetap setiap bulan — meratakan turun naik harga. Membeli ketika harga jatuh: penunjuk Isyarat kami menanda apabila harga jatuh bawah purata terkini dengan RSI terlebih jual, secara sejarah titik masuk yang lebih baik. Pemegang jangka panjang kurang risau tentang masa: emas dalam ringgit telah naik dengan ketara sedekad lalu sebagai lindung nilai inflasi dan kelemahan mata wang.'}},
  {q:{en:'How is zakat on gold calculated in Malaysia?',bm:'Bagaimana zakat emas dikira di Malaysia?'},
-  a:{en:'Zakat is due when your gold holdings exceed the nisab (85g of pure gold) and have been held for one full year (haul). The rate is 2.5% of current market value. Gold jewellery that is regularly worn is exempt up to the uruf limit (commonly 800–850g depending on state). Use our Zakat Calculator in the Tools tab — it can autofill from your portfolio and links directly to official zakat bodies for online payment.',
-     bm:'Zakat wajib apabila pegangan emas anda melebihi nisab (85g emas tulen) dan telah disimpan genap setahun (haul). Kadarnya 2.5% daripada nilai pasaran semasa. Barang kemas emas yang kerap dipakai dikecualikan sehingga had uruf (biasanya 800–850g bergantung negeri). Guna Kalkulator Zakat kami dalam tab Alat — ia boleh mengisi automatik daripada portfolio anda dan berpaut terus ke badan zakat rasmi untuk bayaran dalam talian.'}},
+  a:{en:'Zakat is due when your gold holdings exceed the nisab (85g of pure gold) and have been held for one full year (haul). The rate is 2.5% of current market value. Gold jewellery that is regularly worn is exempt up to the uruf limit (commonly 800–850g depending on state). Use our Zakat tab — it tracks your nisab progress and haul from your portfolio automatically, and links directly to all 14 official state zakat bodies for online payment.',
+     bm:'Zakat wajib apabila pegangan emas anda melebihi nisab (85g emas tulen) dan telah disimpan genap setahun (haul). Kadarnya 2.5% daripada nilai pasaran semasa. Barang kemas emas yang kerap dipakai dikecualikan sehingga had uruf (biasanya 800–850g bergantung negeri). Guna tab Zakat kami — ia menjejak nisab dan haul daripada portfolio anda secara automatik, serta berpaut terus ke semua 14 badan zakat negeri rasmi untuk bayaran dalam talian.'}},
  {q:{en:'Is gold a good investment in Malaysia?',bm:'Adakah emas pelaburan yang baik di Malaysia?'},
   a:{en:'Gold is primarily a store of value, not an income asset — it pays no dividends but protects against inflation and ringgit depreciation. Because gold trades in US dollars, a weaker ringgit lifts the local price even when the world price is flat. Many advisers suggest holding 5–15% of a portfolio in gold for diversification. This is general information, not financial advice.',
      bm:'Emas adalah penyimpan nilai, bukan aset pendapatan — ia tidak membayar dividen tetapi melindungi daripada inflasi dan kejatuhan ringgit. Oleh kerana emas didagangkan dalam dolar AS, ringgit yang lemah menaikkan harga tempatan walaupun harga dunia mendatar. Ramai penasihat mencadangkan 5–15% portfolio dalam emas untuk kepelbagaian. Ini maklumat umum, bukan nasihat kewangan.'}},
@@ -1263,7 +1297,7 @@ function updatePortfolio(){
   const yr=new Date().getFullYear();
   let zPaid=false;try{zPaid=localStorage.getItem('gr_zakat_paid')===String(yr)}catch(e){}
   document.getElementById('portMeta').innerHTML=`${totalG.toFixed(1)}g total &middot; Cost: ${fmtRM(totalCost)}${zPaid?` &middot; <span style="color:var(--grn)">✓ ${t('zPaid')} ${yr}</span>`:''}`;
-  updateZakatPortBtn();
+  updateZakatPortBtn();updateZakatHero();
 }
 function deleteHolding(id){const h=getHoldings().filter(x=>x.id!==id);saveHoldings(h);updatePortfolio()}
 
@@ -1324,6 +1358,69 @@ document.getElementById('zMarkPaid').addEventListener('click',()=>{
   updateZakatPaid();updatePortfolio();
 });
 
+/* Official state zakat bodies — URLs verified July 2026 */
+const ZAKAT_BODIES=[
+  {s:'Wilayah Persekutuan',n:'PPZ-MAIWP',u:'https://www.zakat.com.my'},
+  {s:'Selangor',n:'Lembaga Zakat Selangor',u:'https://www.zakatselangor.com.my'},
+  {s:'Johor',n:'MAIJ',u:'https://www.maij.gov.my'},
+  {s:'Kedah',n:'Lembaga Zakat Negeri Kedah',u:'https://www.zakatkedah.com.my'},
+  {s:'Kelantan',n:'MAIK',u:'https://www.e-maik.my'},
+  {s:'Melaka',n:'MAIM',u:'https://www.maim.gov.my'},
+  {s:'Negeri Sembilan',n:'MAINS',u:'https://www.mains.gov.my'},
+  {s:'Pahang',n:'Pusat Kutipan Zakat Pahang',u:'https://www.zakatpahang.my'},
+  {s:'Pulau Pinang',n:'Zakat Pulau Pinang',u:'https://www.zakatpenang.com'},
+  {s:'Perak',n:'MAIPk',u:'https://www.maiamp.gov.my'},
+  {s:'Perlis',n:'MAIPs',u:'https://www.maips.gov.my'},
+  {s:'Sabah',n:'Zakat MUIS Sabah',u:'https://www.zakat.sabah.gov.my'},
+  {s:'Sarawak',n:'Tabung Baitulmal Sarawak',u:'https://www.tbs.org.my'},
+  {s:'Terengganu',n:'MAIDAM',u:'https://www.maidam.gov.my'},
+];
+function hijriYear(){try{const p=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{year:'numeric'}).formatToParts(new Date());return p.find(x=>x.type==='year')?.value||''}catch(e){return''}}
+function zkGoldPrice(purity){return S.liveData?.gold?.[purity]?.price||FALLBACK.gold[purity]||0}
+function updateZakatHero(){
+  const hEl=document.getElementById('zkHijri');if(!hEl)return;
+  const hy=hijriYear();
+  hEl.textContent=hy?hy+'H':String(new Date().getFullYear());
+  const hs=getHoldings();
+  const wrap=document.getElementById('zkProgressWrap'),empty=document.getElementById('zkEmpty'),haulEl=document.getElementById('zkHaul');
+  const p999=zkGoldPrice(999);
+  if(!hs.length||p999<=0){wrap.style.display='none';haulEl.style.display='none';empty.style.display='';empty.textContent=t('zkEmpty');return}
+  empty.style.display='none';wrap.style.display='';
+  const pure=hs.reduce((a,h)=>a+(h.grams||0)*((h.purity||999)/1000),0);
+  const val=hs.reduce((a,h)=>a+(h.grams||0)*zkGoldPrice(h.purity||999),0);
+  const pct=Math.min(100,pure/NISAB_GRAMS*100);
+  document.getElementById('zkBarFill').style.width=pct.toFixed(1)+'%';
+  document.getElementById('zkProgressText').textContent=`${pure.toFixed(1)}g / ${NISAB_GRAMS}g nisab`;
+  document.getElementById('zkProgressPct').textContent=pct.toFixed(0)+'%';
+  const over=pure>=NISAB_GRAMS;
+  document.getElementById('zkNisabNote').innerHTML=over
+    ?`<span style="color:var(--grn)">✓ ${t('zkAboveNisab')}</span> · ${t('zkEstDue')}: <b style="color:var(--gold)">${fmtRM(val*ZAKAT_RATE)}</b>`
+    :`${t('zkBelowNisab')} (${t('zNisab')} ≈ ${fmtRM(NISAB_GRAMS*p999)})`;
+  const dates=hs.map(h=>Date.parse(h.date)).filter(x=>!isNaN(x));
+  if(dates.length&&over){
+    const haulEnd=Math.min(...dates)+354*86400000;
+    const days=Math.ceil((haulEnd-Date.now())/86400000);
+    haulEl.style.display='';
+    haulEl.innerHTML='🌙 '+(days>0
+      ?t('zkHaulLeft').replace('{d}',days).replace('{date}',new Date(haulEnd).toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{day:'numeric',month:'short',year:'numeric'}))
+      :`<span style="color:var(--gold)">${t('zkHaulDone')}</span>`);
+  }else haulEl.style.display='none';
+}
+function updateZakatPayBtn(){
+  const sel=document.getElementById('zkState');if(!sel||!sel.options.length)return;
+  const b=ZAKAT_BODIES[+sel.value]||ZAKAT_BODIES[0];
+  const btn=document.getElementById('zkPayBtn');
+  btn.href=b.u;btn.textContent=`${t('zkPayWith')} ${b.n} ↗`;
+}
+(function initZakatStates(){
+  const sel=document.getElementById('zkState');
+  sel.innerHTML=ZAKAT_BODIES.map((b,i)=>`<option value="${i}">${b.s}</option>`).join('');
+  let saved=0;try{saved=Math.min(ZAKAT_BODIES.length-1,Math.max(0,+localStorage.getItem('gr_zakat_state')||0))}catch(e){}
+  sel.value=String(saved);
+  sel.addEventListener('change',()=>{try{localStorage.setItem('gr_zakat_state',sel.value)}catch(e){};updateZakatPayBtn()});
+  updateZakatPayBtn();
+})();
+
 /* ═══ CALCULATOR ═══ */
 function setupCalc(){const gE=document.getElementById('calcGrams'),vE=document.getElementById('calcValue');gE.addEventListener('input',()=>{const g=parseFloat(gE.value);vE.value=(!isNaN(g)&&g>=0)?(g*S.price).toFixed(2):''});vE.addEventListener('input',()=>{const v=parseFloat(vE.value);gE.value=(!isNaN(v)&&v>=0&&S.price>0)?(v/S.price).toFixed(2):''});document.getElementById('calcSwap').addEventListener('click',()=>{[gE.value,vE.value]=[vE.value,gE.value]})}
 
@@ -1336,6 +1433,7 @@ function switchTab(tab){
   window.scrollTo(0,0);
   if(tab==='Compare')updateDealers();
   if(tab==='Portfolio')updatePortfolio();
+  if(tab==='Zakat'){updateZakatHero();updateZakatPortBtn();updateZakatPaid();updateZakat()}
   if(tab==='Tools')updateAlertsList();
 }
 
@@ -1353,7 +1451,7 @@ async function refresh(fetchNew){
     S.history=genHistory(S.price,TF_DAYS[S.tf]);
   }
   loadSignalData();
-  updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();applyTheme();updateSignal();updateDealers();updatePortfolio();checkAlerts();
+  updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();updateZakatHero();applyTheme();updateSignal();updateDealers();updatePortfolio();checkAlerts();
   S.countdown=30;
 }
 function startTimer(){clearInterval(S.timer);S.timer=setInterval(async()=>{S.countdown--;document.getElementById('timer').textContent=S.countdown+'s';if(S.countdown<=0)await refresh(true)},1000)}
