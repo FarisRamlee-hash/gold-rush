@@ -320,6 +320,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .zakat-links .zl-label{font-size:10px;color:var(--text3);width:100%}
 .zakat-links a{display:inline-flex;padding:5px 12px;font-size:10px;font-weight:600;color:var(--text2);background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--pill);text-decoration:none;transition:all .3s}
 .zakat-links a:hover{border-color:var(--gold);color:var(--gold)}
+.dealer-verify{display:inline-flex;align-items:center;font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:var(--pill);margin-left:6px;vertical-align:middle;white-space:nowrap}
+.dealer-verify.live{color:var(--grn);background:rgba(0,214,143,0.08);border:1px solid rgba(0,214,143,0.25)}
+.dealer-verify.est{color:var(--text3);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
 .zk-hero{margin:12px 16px 0;padding:18px}
 .zk-hero-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .zk-hijri{font-size:11px;font-weight:700;color:var(--gold);background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);padding:4px 10px;border-radius:var(--pill)}
@@ -736,8 +739,8 @@ let DEALERS=[
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Live price tracks the international spot market converted to RM. Dealer retail prices are in the Compare tab. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'Prices calibrated to published dealer rates (July 2026), tracked against live spot. Actual prices may vary. Visit dealer websites for live quotes.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide',shareCompare:'Share Comparison',tabZakat:'Zakat',zkHero:'Gold Zakat',zkEmpty:'Add your gold holdings in the Portfolio tab to track nisab progress, haul and zakat automatically.',zkAboveNisab:'Above nisab — zakat applies',zkBelowNisab:'Below nisab — no zakat yet',zkEstDue:'estimated zakat',zkHaulLeft:'Haul complete in {d} days ({date}) — zakat falls due if you stay above nisab.',zkHaulDone:'Haul complete — zakat is due this year',zkPay:'Pay Zakat Online',zkState:'Your state',zkPayWith:'Pay via',zkUrufNote:'Official zakat body for your state. The uruf exemption for worn jewellery varies by state — check with your zakat body. This tool gives estimates, not a fatwa.'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga langsung mengikut pasaran spot antarabangsa ditukar kepada RM. Harga runcit peniaga dalam tab Banding. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Harga ditentukur mengikut kadar terbitan peniaga (Julai 2026), dijejak mengikut harga spot semasa. Harga sebenar mungkin berbeza. Lawati laman web peniaga untuk harga terkini.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas',shareCompare:'Kongsi Perbandingan',tabZakat:'Zakat',zkHero:'Zakat Emas',zkEmpty:'Tambah pegangan emas anda dalam tab Portfolio untuk menjejak nisab, haul dan zakat secara automatik.',zkAboveNisab:'Melebihi nisab — zakat dikenakan',zkBelowNisab:'Bawah nisab — belum wajib zakat',zkEstDue:'anggaran zakat',zkHaulLeft:'Haul genap dalam {d} hari ({date}) — zakat wajib jika kekal melebihi nisab.',zkHaulDone:'Haul genap — zakat wajib tahun ini',zkPay:'Bayar Zakat Dalam Talian',zkState:'Negeri anda',zkPayWith:'Bayar melalui',zkUrufNote:'Badan zakat rasmi negeri anda. Had uruf barang kemas dipakai berbeza mengikut negeri — semak dengan badan zakat anda. Alat ini memberi anggaran, bukan fatwa.'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Live price tracks the international spot market converted to RM. Dealer retail prices are in the Compare tab. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'✓ LIVE prices are confirmed today from official dealer and bank sources. ≈ EST prices are calibrated to published rates (July 2026) and tracked against live spot. Always confirm on the dealer site before transacting.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide',shareCompare:'Share Comparison',tabZakat:'Zakat',zkHero:'Gold Zakat',zkEmpty:'Add your gold holdings in the Portfolio tab to track nisab progress, haul and zakat automatically.',zkAboveNisab:'Above nisab — zakat applies',zkBelowNisab:'Below nisab — no zakat yet',zkEstDue:'estimated zakat',zkHaulLeft:'Haul complete in {d} days ({date}) — zakat falls due if you stay above nisab.',zkHaulDone:'Haul complete — zakat is due this year',zkPay:'Pay Zakat Online',zkState:'Your state',zkPayWith:'Pay via',zkUrufNote:'Official zakat body for your state. The uruf exemption for worn jewellery varies by state — check with your zakat body. This tool gives estimates, not a fatwa.'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga langsung mengikut pasaran spot antarabangsa ditukar kepada RM. Harga runcit peniaga dalam tab Banding. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Harga ✓ LIVE disahkan hari ini daripada sumber rasmi peniaga dan bank. Harga ≈ EST ditentukur mengikut kadar terbitan (Julai 2026) dan dijejak mengikut spot semasa. Sentiasa sahkan di laman peniaga sebelum urus niaga.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas',shareCompare:'Kongsi Perbandingan',tabZakat:'Zakat',zkHero:'Zakat Emas',zkEmpty:'Tambah pegangan emas anda dalam tab Portfolio untuk menjejak nisab, haul dan zakat secara automatik.',zkAboveNisab:'Melebihi nisab — zakat dikenakan',zkBelowNisab:'Bawah nisab — belum wajib zakat',zkEstDue:'anggaran zakat',zkHaulLeft:'Haul genap dalam {d} hari ({date}) — zakat wajib jika kekal melebihi nisab.',zkHaulDone:'Haul genap — zakat wajib tahun ini',zkPay:'Bayar Zakat Dalam Talian',zkState:'Negeri anda',zkPayWith:'Bayar melalui',zkUrufNote:'Badan zakat rasmi negeri anda. Had uruf barang kemas dipakai berbeza mengikut negeri — semak dengan badan zakat anda. Alat ini memberi anggaran, bukan fatwa.'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
@@ -1060,9 +1063,9 @@ function generateCompareCard(){
   ctx.beginPath();ctx.roundRect(W/2-pw/2-26,pillY-24,pw+52,50,25);ctx.fill();ctx.stroke();
   ctx.fillStyle='#FFD700';ctx.fillText(pillTxt,W/2,pillY+9);
   let list=DEALERS.map(d=>{
-    const bmul=d.buy[S.purity];if(!bmul)return null;
-    const sm=d.sell?.[S.purity];
-    return{name:d.name,type:d.type,cat:d.cat,buyP:+(spotG*bmul).toFixed(2),sellP:sm?+(spotG*sm).toFixed(2):null};
+    const o=liveOverride(d,S.purity,spotG);
+    if(!o)return null;
+    return{name:d.name,type:d.type,cat:d.cat,buyP:o.buyP,sellP:o.sellP};
   }).filter(Boolean);
   if(S.dealerCat!=='all')list=list.filter(d=>d.cat===S.dealerCat);
   if(S.dealerType!=='all')list=list.filter(d=>d.type===S.dealerType);
@@ -1210,23 +1213,46 @@ function initNewsletter(){
 
 /* ═══ DEALER COMPARISON ═══ */
 const CAT_LABELS={all:{en:'All',bm:'Semua'},dealer:{en:'Dealers',bm:'Peniaga'},jeweller:{en:'Jewellers',bm:'Pengemas'},digital:{en:'Digital',bm:'Digital'},bank:{en:'Banks',bm:'Bank'}};
+/* Live crosscheck: prices confirmed today from official sources override the
+   calibrated multipliers, and only those cards get the ✓ LIVE badge. */
+let LIVE_DEALERS={},LIVE_DEALERS_TS=0;
+async function loadLiveDealers(){
+  try{
+    const r=await fetch('/api/live-dealers');if(!r.ok)return;
+    const d=await r.json();
+    if(d&&d.live&&Object.keys(d.live).length){LIVE_DEALERS=d.live;LIVE_DEALERS_TS=d.ts||Date.now();updateDealers()}
+  }catch(e){}
+}
+function liveOverride(d,purity,spotG){
+  const bm=d.buy[purity],sm=d.sell?.[purity];
+  if(!bm)return null;
+  const lv=LIVE_DEALERS[d.id];
+  const lb=lv?.buy?.[purity],ls=lv?.sell?.[purity];
+  const buyP=+(lb||spotG*bm).toFixed(2);
+  const sellP=(ls||(sm?spotG*sm:0))?+(ls||spotG*sm).toFixed(2):null;
+  return{buyP,sellP,verified:lb&&!lv.std?'live':'est'};
+}
 function updateDealers(){
   const rawSpot=S.spot>0?S.spot:(S.price>0?S.price:0);
   if(rawSpot<=0)return;
   const spotG=rawSpot*(S.purity/1000);
   const all=DEALERS.map(d=>{
-    const bm=d.buy[S.purity],sm=d.sell?.[S.purity];
-    if(!bm)return null;
-    const buyP=+(spotG*bm).toFixed(2),sellP=sm?+(spotG*sm).toFixed(2):null;
+    const o=liveOverride(d,S.purity,spotG);
+    if(!o)return null;
+    const{buyP,sellP,verified}=o;
     const spread=sellP?+(((buyP-sellP)/buyP)*100).toFixed(1):null;
-    return{...d,buyP,sellP,spread};
+    return{...d,buyP,sellP,spread,verified};
   }).filter(Boolean);
   let filtered=S.dealerCat==='all'?all:all.filter(d=>d.cat===S.dealerCat);
   if(S.dealerType!=='all')filtered=filtered.filter(d=>d.type===S.dealerType);
   const sorted=S.dealerSort==='price'?filtered.sort((a,b)=>a.buyP-b.buyP):filtered.sort((a,b)=>a.pop-b.pop);
   document.getElementById('spotBanner').innerHTML=`<span>${t('sbSpot')} &middot; ${S.purity} ${t(S.metal==='silver'?'silver':'gold')}</span><span class="sb-val">${fmtRM(spotG)}${t('perG')}</span>`;
   const countEl=document.getElementById('dealerCount');
-  countEl.textContent=S.lang==='bm'?`${sorted.length} peniaga tersedia`:`${sorted.length} dealers available`;
+  const liveN=sorted.filter(d=>d.verified==='live').length;
+  const ago=LIVE_DEALERS_TS?Math.max(1,Math.round((Date.now()-LIVE_DEALERS_TS)/60000)):0;
+  countEl.textContent=S.lang==='bm'
+    ?`${sorted.length} peniaga${liveN?` · ✓ ${liveN} disahkan langsung (${ago} min lalu)`:''}`
+    :`${sorted.length} dealers${liveN?` · ✓ ${liveN} live-verified (${ago}m ago)`:''}`;
   if(!sorted.length){document.getElementById('dealerList').innerHTML='';return}
   const cheapestP=Math.min(...filtered.map(d=>d.buyP));
   const bestSellP=Math.max(...sorted.map(d=>d.sellP||0));
@@ -1242,7 +1268,7 @@ function updateDealers(){
     if(isCheap)badges+=`<span class="cheapest-badge">${t('cheapest')}</span>`;
     if(isBestSell&&!isCheap)badges+=`<span class="best-sell-badge">${t('bestSell')}</span>`;
     return`<div class="dealer-card glass${isCheap?' cheapest':''}${isBestSell&&!isCheap?' best-sell':''}">
-      <div class="dealer-top"><div class="dealer-name">${d.name}<span class="dealer-type ${d.type}">${typeLabel}</span><span class="dealer-cat cat-${d.cat}">${catLabel}</span></div><div class="dealer-sub">${desc}</div></div>
+      <div class="dealer-top"><div class="dealer-name">${d.name}<span class="dealer-type ${d.type}">${typeLabel}</span><span class="dealer-cat cat-${d.cat}">${catLabel}</span><span class="dealer-verify ${d.verified==='live'?'live':'est'}">${d.verified==='live'?'✓ LIVE':'≈ EST'}</span></div><div class="dealer-sub">${desc}</div></div>
       <div class="dealer-prices">
         <div class="dp-col buy-col"><div class="dp-label">${t('buy')}</div><div class="dp-val">${fmtRM(d.buyP)}</div></div>
         <div class="dp-col sell-col${d.sellP?'':' na'}"><div class="dp-label">${t('sell')}</div><div class="dp-val">${d.sellP?fmtRM(d.sellP):'—'}</div></div>
@@ -1490,6 +1516,7 @@ try{S.lang=localStorage.getItem('gr_lang')||'en'}catch(e){}
 captureReferral();bindPurity();setupCalc();applyLang();initTilt();initModals();initNewsletter();initShare();
 refresh(true).then(()=>{initChart();updateChart();startTimer()});
 loadContent();
+loadLiveDealers();setInterval(loadLiveDealers,1800000);
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
