@@ -166,7 +166,26 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .ad-slot ins{display:block;width:100%}
 
 /* ─── Views ─── */
-.view{display:block}.view.hidden{display:none}
+.view{display:block;animation:viewIn .38s cubic-bezier(.22,1,.36,1) both}.view.hidden{display:none}
+/* ─── Motion pack ─── */
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.dealer-card.anim{animation:cardIn .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes tickUp{30%{color:var(--grn);text-shadow:0 0 34px rgba(0,214,143,.55)}}
+@keyframes tickDown{30%{color:#ff5c7a;text-shadow:0 0 34px rgba(255,92,122,.55)}}
+.price-value.tick-up{animation:tickUp .9s ease}
+.price-value.tick-down{animation:tickDown .9s ease}
+@keyframes popIn{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+.price-change.pop{animation:popIn .45s cubic-bezier(.22,1,.36,1)}
+@keyframes tabPop{40%{transform:scale(1.28)}}
+.tab.active svg{animation:tabPop .35s cubic-bezier(.22,1,.36,1)}
+@keyframes livePulse{50%{box-shadow:0 0 10px rgba(0,214,143,.35)}}
+.dealer-verify.live{animation:livePulse 3s ease-in-out infinite}
+@keyframes shimmer{to{transform:translateX(100%)}}
+.zk-bar-fill{position:relative;overflow:hidden}
+.zk-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:shimmer 2.6s ease-in-out infinite}
+.btn:active,.tab:active,.purity-btn:active,.tf-btn:active,.df-btn:active,.sort-btn:active,.metal-btn:active,.dl-btn:active,.zakat-port-btn:active,.zpaid-btn:active,.share-btn:active{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
 /* ─── Compare ─── */
 .dealer-filters{display:flex;gap:6px;padding:8px 16px 4px;overflow-x:auto;scrollbar-width:none}
@@ -850,7 +869,7 @@ function updateSpread(){const sp=S.metal==='gold'?.015:.025;document.getElementB
 function updateWeights(){const sil=S.metal==='silver';document.getElementById('weightsScroll').innerHTML=WEIGHTS.map(w=>`<div class="weight-chip glass tilt${sil?' sil-chip':''}"><div class="grams">${weightLabel(w)}</div><div class="wprice">${fmtRM(S.price*w)}</div></div>`).join('');initTilt()}
 
 /* ═══ PRICE DISPLAY ═══ */
-function updatePriceDisplay(){const el=document.getElementById('priceValue'),old=S.prevPrice,target=S.price;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),150);const start=performance.now(),dur=500;function tick(now){const p=Math.min((now-start)/dur,1);el.textContent=(old+(target-old)*(1-Math.pow(1-p,3))).toFixed(2);if(p<1)requestAnimationFrame(tick)}if(old>0)requestAnimationFrame(tick);else el.textContent=target.toFixed(2);const up=S.change>=0,cE=document.getElementById('priceChange');cE.className=`price-change ${up?'up':'down'}`;document.getElementById('changeText').textContent=`RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;cE.querySelector('.arrow').innerHTML=up?'&#9650;':'&#9660;';document.getElementById('lastUpdated').textContent=`${t('updated')} ${new Date().toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'})}`;document.getElementById('spotLabel').textContent=S.spot>0?`${t('spot')}: ${fmtRM(S.spot)}${t('perG')}`:''}
+function updatePriceDisplay(){const el=document.getElementById('priceValue'),old=S.prevPrice,target=S.price;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),150);if(old>0&&Math.abs(target-old)>0.001){el.classList.remove('tick-up','tick-down');void el.offsetWidth;el.classList.add(target>old?'tick-up':'tick-down');setTimeout(()=>el.classList.remove('tick-up','tick-down'),950)}const start=performance.now(),dur=500;function tick(now){const p=Math.min((now-start)/dur,1);el.textContent=(old+(target-old)*(1-Math.pow(1-p,3))).toFixed(2);if(p<1)requestAnimationFrame(tick)}if(old>0)requestAnimationFrame(tick);else el.textContent=target.toFixed(2);const up=S.change>=0,cE=document.getElementById('priceChange');cE.className=`price-change ${up?'up':'down'}`;void cE.offsetWidth;cE.classList.add('pop');document.getElementById('changeText').textContent=`RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;cE.querySelector('.arrow').innerHTML=up?'&#9650;':'&#9660;';document.getElementById('lastUpdated').textContent=`${t('updated')} ${new Date().toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'})}`;document.getElementById('spotLabel').textContent=S.spot>0?`${t('spot')}: ${fmtRM(S.spot)}${t('perG')}`:''}
 function applyTheme(){const sil=S.metal==='silver';document.getElementById('priceValue').className=`price-value${sil?' sil-text':''}`;document.querySelectorAll('.purity-btn.active').forEach(b=>b.classList.toggle('sil',sil));document.querySelectorAll('.tf-btn.active').forEach(b=>b.classList.toggle('sil',sil))}
 
 /* ═══ REAL HISTORY ═══ */
@@ -1281,6 +1300,7 @@ function updateDealers(){
   if(!sorted.length){document.getElementById('dealerList').innerHTML=`<div class="alert-empty">${t('noDealersPurity')}</div>`;return}
   const cheapestP=Math.min(...filtered.map(d=>d.buyP));
   const bestSellP=Math.max(...sorted.map(d=>d.sellP||0));
+  const anim=S.dealerAnim===true;S.dealerAnim=false;
   document.getElementById('dealerList').innerHTML=sorted.map((d,i)=>{
     const isCheap=d.buyP===cheapestP;
     const isBestSell=d.sellP===bestSellP&&d.sellP>0;
@@ -1292,7 +1312,7 @@ function updateDealers(){
     let badges='';
     if(isCheap)badges+=`<span class="cheapest-badge">${t('cheapest')}</span>`;
     if(isBestSell&&!isCheap)badges+=`<span class="best-sell-badge">${t('bestSell')}</span>`;
-    return`<div class="dealer-card glass${isCheap?' cheapest':''}${isBestSell&&!isCheap?' best-sell':''}">
+    return`<div class="dealer-card glass${isCheap?' cheapest':''}${isBestSell&&!isCheap?' best-sell':''}${anim?' anim':''}"${anim?` style="animation-delay:${Math.min(i,9)*45}ms"`:''}>
       <div class="dealer-top"><div class="dealer-name">${d.name}<span class="dealer-type ${d.type}">${typeLabel}</span><span class="dealer-cat cat-${d.cat}">${catLabel}</span><span class="dealer-verify ${d.verified==='live'?'live':'est'}">${d.verified==='live'?'✓ LIVE':'≈ EST'}</span></div><div class="dealer-sub">${desc}</div></div>
       <div class="dealer-prices">
         <div class="dp-col buy-col"><div class="dp-label">${t('buy')}</div><div class="dp-val">${fmtRM(d.buyP)}</div></div>
@@ -1309,21 +1329,21 @@ document.getElementById('dealerFilters').addEventListener('click',e=>{
   S.dealerCat=btn.dataset.cat;
   document.querySelectorAll('#dealerFilters .df-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  updateDealers();
+  S.dealerAnim=true;updateDealers();
 });
 document.getElementById('typeFilters').addEventListener('click',e=>{
   const btn=e.target.closest('.df-btn');if(!btn)return;
   S.dealerType=btn.dataset.type;
   document.querySelectorAll('#typeFilters .df-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  updateDealers();
+  S.dealerAnim=true;updateDealers();
 });
 document.getElementById('sortToggle').addEventListener('click',e=>{
   const btn=e.target.closest('.sort-btn');if(!btn)return;
   S.dealerSort=btn.dataset.sort;
   document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  updateDealers();
+  S.dealerAnim=true;updateDealers();
 });
 
 /* ═══ PORTFOLIO ═══ */
@@ -1501,7 +1521,7 @@ function switchTab(tab){
   document.getElementById('view'+tab)?.classList.remove('hidden');
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
   window.scrollTo(0,0);
-  if(tab==='Compare')updateDealers();
+  if(tab==='Compare'){S.dealerAnim=true;updateDealers()}
   if(tab==='Portfolio')updatePortfolio();
   if(tab==='Zakat'){updateZakatHero();updateZakatPortBtn();updateZakatPaid();updateZakat()}
   if(tab==='Tools')updateAlertsList();
