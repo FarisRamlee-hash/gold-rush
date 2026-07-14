@@ -2,12 +2,16 @@ const OZ_TO_G = 31.1035;
 
 // Headline prices are true spot (MKS/interbank-level, no retail markup).
 // Dealer retail premiums live in the Compare tab data, not here.
-function entry(spotG, prevG) {
-  const price = +spotG.toFixed(2);
+// `spot` is always the RAW pure-gold spot per gram — clients derive
+// purity-adjusted values from it exactly once (no double-discounting).
+const GOLD_PURITIES = [999, 916, 900, 835, 750, 585, 375];
+
+function entry(priceG, prevG, rawG) {
+  const price = +priceG.toFixed(2);
   const prev  = +prevG.toFixed(2);
   const change = +(price - prev).toFixed(2);
   const pct = prev ? +((change / prev) * 100).toFixed(2) : 0;
-  return { price, close: prev, change, pct, spot: price };
+  return { price, close: prev, change, pct, spot: +rawG.toFixed(2) };
 }
 
 function buildResult(goldUsdOz, goldPrevOz, silverUsdOz, silverPrevOz, myr) {
@@ -15,14 +19,15 @@ function buildResult(goldUsdOz, goldPrevOz, silverUsdOz, silverPrevOz, myr) {
   const gc999 = (goldPrevOz / OZ_TO_G) * myr;
   const s999  = (silverUsdOz / OZ_TO_G) * myr;
   const sc999 = (silverPrevOz / OZ_TO_G) * myr;
+  const gold = {};
+  for (const p of GOLD_PURITIES) {
+    const f = p === 999 ? 1 : p / 1000; // convention: 999 quote = full spot
+    gold[p] = entry(g999 * f, gc999 * f, g999);
+  }
   return {
     live: true, ts: Date.now(), usdMyr: +myr.toFixed(4),
-    gold: {
-      999: entry(g999, gc999),
-      916: entry(g999 * 0.916, gc999 * 0.916),
-      750: entry(g999 * 0.750, gc999 * 0.750),
-    },
-    silver: { 999: entry(s999, sc999) },
+    gold,
+    silver: { 999: entry(s999, sc999, s999) },
   };
 }
 

@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#050510">
-<meta name="description" content="Harga emas Malaysia hari ini — live gold prices in RM for 999, 916 & 750, compare 18 Malaysian dealers & jewellers, buy/sell signals, zakat calculator. Free gold price tracker.">
+<meta name="description" content="Harga emas Malaysia hari ini — live gold prices in RM for every purity (999, 916, 900, 835, 750, 585, 375), compare 18 Malaysian dealers & jewellers, old gold valuation, buy/sell signals, zakat calculator. Free gold price tracker.">
 <link rel="canonical" href="https://gold-rush-tau.vercel.app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gold Rush">
@@ -77,8 +77,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .mt-inner.silver::before{transform:translateX(100%);background:linear-gradient(135deg,var(--sil),#888);box-shadow:0 0 20px rgba(192,192,192,0.15)}
 .metal-btn{padding:8px 28px;font-size:13px;font-weight:600;border:none;background:none;color:var(--text2);cursor:pointer;position:relative;z-index:1;border-radius:var(--pill);transition:color .3s}
 .metal-btn.active{color:#000}
-.purity-row{display:flex;justify-content:center;gap:8px;padding:12px 20px 0;position:relative;z-index:2}
-.purity-btn{padding:6px 16px;font-size:12px;font-weight:600;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(8px);color:var(--text2);border-radius:var(--pill);cursor:pointer;transition:all .3s}
+.purity-row{display:flex;justify-content:center;gap:6px;padding:12px 12px 0;position:relative;z-index:2;flex-wrap:wrap}
+.purity-btn{padding:6px 12px;font-size:12px;font-weight:600;border:1px solid var(--glass-b);background:var(--glass);backdrop-filter:blur(8px);color:var(--text2);border-radius:var(--pill);cursor:pointer;transition:all .3s}
 .purity-btn.active{border-color:rgba(255,215,0,0.35);color:var(--gold);background:rgba(255,215,0,0.06);box-shadow:0 0 24px var(--glow-s),inset 0 0 16px rgba(255,215,0,0.03)}
 .purity-btn.active.sil{border-color:rgba(192,192,192,0.3);color:var(--sil);background:rgba(192,192,192,0.06)}
 
@@ -320,6 +320,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .zakat-links .zl-label{font-size:10px;color:var(--text3);width:100%}
 .zakat-links a{display:inline-flex;padding:5px 12px;font-size:10px;font-weight:600;color:var(--text2);background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--pill);text-decoration:none;transition:all .3s}
 .zakat-links a:hover{border-color:var(--gold);color:var(--gold)}
+.ogv-range{margin-top:12px;padding:12px;background:rgba(255,255,255,0.015);border-radius:var(--r-sm);border:1px solid rgba(255,255,255,0.03);text-align:center}
+.ogv-range-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.ogv-range-val{font-size:17px;font-weight:800;color:var(--gold)}
 .dealer-verify{display:inline-flex;align-items:center;font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:var(--pill);margin-left:6px;vertical-align:middle;white-space:nowrap}
 .dealer-verify.live{color:var(--grn);background:rgba(0,214,143,0.08);border:1px solid rgba(0,214,143,0.25)}
 .dealer-verify.est{color:var(--text3);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
@@ -401,7 +404,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   </header>
 
   <div class="metal-toggle"><div class="mt-inner" id="metalToggle"><button class="metal-btn active" data-metal="gold" id="btnGold">Gold</button><button class="metal-btn" data-metal="silver" id="btnSilver">Silver</button></div></div>
-  <div class="purity-row" id="purityRow"><button class="purity-btn active" data-purity="999">999</button><button class="purity-btn" data-purity="916">916</button><button class="purity-btn" data-purity="750">750</button></div>
+  <div class="purity-row" id="purityRow"><button class="purity-btn active" data-purity="999">999</button><button class="purity-btn" data-purity="916">916</button><button class="purity-btn" data-purity="900">900</button><button class="purity-btn" data-purity="835">835</button><button class="purity-btn" data-purity="750">750</button><button class="purity-btn" data-purity="585">585</button><button class="purity-btn" data-purity="375">375</button></div>
 
   <!-- ═══ VIEW: LIVE ═══ -->
   <div class="view" id="viewLive">
@@ -487,7 +490,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="glass">
         <div class="port-form-grid">
           <div><label class="form-label" id="lPfLabel">Label</label><input class="form-input" id="pfLabel" placeholder="e.g. Public Gold bar"></div>
-          <div><label class="form-label" id="lPfPurity">Purity</label><select class="form-input form-select" id="pfPurity"><option value="999">999</option><option value="916" selected>916</option><option value="750">750</option></select></div>
+          <div><label class="form-label" id="lPfPurity">Purity</label><select class="form-input form-select" id="pfPurity"><option value="999">999</option><option value="916" selected>916</option><option value="900">900</option><option value="835">835</option><option value="750">750</option><option value="585">585</option><option value="375">375</option></select></div>
           <div><label class="form-label" id="lPfGrams">Weight (g)</label><input class="form-input" id="pfGrams" type="number" placeholder="50" inputmode="decimal"></div>
           <div><label class="form-label" id="lPfBuyPrice">Buy price/g (RM)</label><input class="form-input" id="pfBuyPrice" type="number" placeholder="540" inputmode="decimal"></div>
           <div class="full"><label class="form-label" id="lPfDate">Purchase date</label><input class="form-input" id="pfDate" type="date"></div>
@@ -556,6 +559,22 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
           <div class="calc-field"><label class="form-label" id="lWeight">Weight (g)</label><input class="form-input" id="calcGrams" type="number" placeholder="10" inputmode="decimal"></div>
           <button class="calc-swap" id="calcSwap">&#8644;</button>
           <div class="calc-field"><label class="form-label" id="lValue">Value (RM)</label><input class="form-input" id="calcValue" type="number" placeholder="5,000" inputmode="decimal"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools-section">
+      <div class="section-title" id="lOgv">Value My Old Gold</div>
+      <div class="tools-card glass tilt">
+        <div class="zakat-inputs">
+          <div class="zakat-field"><label class="form-label" id="lOgvPurity">Purity</label><select class="form-input form-select" id="ogvPurity"><option value="999">999 (24K)</option><option value="916" selected>916 (22K)</option><option value="900">900</option><option value="835">835 (20K)</option><option value="750">750 (18K)</option><option value="585">585 (14K)</option><option value="375">375 (9K)</option></select></div>
+          <div class="zakat-field"><label class="form-label" id="lOgvGrams">Weight (g)</label><input class="form-input" id="ogvGrams" type="number" placeholder="10" inputmode="decimal"></div>
+        </div>
+        <div class="zakat-result"><div class="zr-label" id="lOgvMelt">Melt value today</div><div class="zr-value exempt" id="ogvValue">—</div><div class="zr-note" id="ogvNote"></div></div>
+        <div class="ogv-range" id="ogvRange" style="display:none">
+          <div class="ogv-range-label" id="lOgvRange">Typical dealer buyback</div>
+          <div class="ogv-range-val" id="ogvRangeVal"></div>
+          <div class="zr-note" id="ogvGuide" style="margin-top:6px"></div>
         </div>
       </div>
     </div>
@@ -647,7 +666,15 @@ function initTilt(){if(window.matchMedia('(hover:none)').matches)return;document
 
 /* ═══ STATE ═══ */
 const S={metal:'gold',purity:999,tf:'7D',price:0,prevPrice:0,spot:0,change:0,changePct:0,liveData:null,isLive:false,history:[],chart:null,countdown:30,timer:null,lang:'en',tab:'Live',dealerCat:'all',dealerType:'all',dealerSort:'popularity'};
-const FALLBACK={gold:{999:538,916:493,750:404},silver:{999:6.50}};
+const FALLBACK={gold:{999:538,916:493,900:484,835:449,750:404,585:315,375:202},silver:{999:6.50}};
+/* Raw pure-gold spot per gram. S.spot is raw when live; in demo mode S.price
+   is purity-adjusted, so divide the purity factor back out exactly once. */
+function rawSpotNow(){
+  if(S.spot>0)return S.spot;
+  if(!(S.price>0))return 0;
+  const f=S.purity===999?1:S.purity/1000;
+  return S.price/f;
+}
 const WEIGHTS=[1,3.71,5,10,20,50,100,1000];
 function weightLabel(w){return w===3.71?'1 mayam':w===1000?'1kg':w+'g'}
 const TF_DAYS={'1D':1,'7D':7,'1M':30,'3M':90,'6M':180,'1Y':365};
@@ -735,13 +762,13 @@ let DEALERS=[
 
 /* ═══ i18n ═══ */
 const L={
-  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Live price tracks the international spot market converted to RM. Dealer retail prices are in the Compare tab. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'✓ LIVE prices are confirmed today from official dealer and bank sources. ≈ EST prices are calibrated to published rates (July 2026) and tracked against live spot. Always confirm on the dealer site before transacting.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide',shareCompare:'Share Comparison',tabZakat:'Zakat',zkHero:'Gold Zakat',zkEmpty:'Add your gold holdings in the Portfolio tab to track nisab progress, haul and zakat automatically.',zkAboveNisab:'Above nisab — zakat applies',zkBelowNisab:'Below nisab — no zakat yet',zkEstDue:'estimated zakat',zkHaulLeft:'Haul complete in {d} days ({date}) — zakat falls due if you stay above nisab.',zkHaulDone:'Haul complete — zakat is due this year',zkPay:'Pay Zakat Online',zkState:'Your state',zkPayWith:'Pay via',zkUrufNote:'Official zakat body for your state. The uruf exemption for worn jewellery varies by state — check with your zakat body. This tool gives estimates, not a fatwa.'},
-  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga langsung mengikut pasaran spot antarabangsa ditukar kepada RM. Harga runcit peniaga dalam tab Banding. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Harga ✓ LIVE disahkan hari ini daripada sumber rasmi peniaga dan bank. Harga ≈ EST ditentukur mengikut kadar terbitan (Julai 2026) dan dijejak mengikut spot semasa. Sentiasa sahkan di laman peniaga sebelum urus niaga.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas',shareCompare:'Kongsi Perbandingan',tabZakat:'Zakat',zkHero:'Zakat Emas',zkEmpty:'Tambah pegangan emas anda dalam tab Portfolio untuk menjejak nisab, haul dan zakat secara automatik.',zkAboveNisab:'Melebihi nisab — zakat dikenakan',zkBelowNisab:'Bawah nisab — belum wajib zakat',zkEstDue:'anggaran zakat',zkHaulLeft:'Haul genap dalam {d} hari ({date}) — zakat wajib jika kekal melebihi nisab.',zkHaulDone:'Haul genap — zakat wajib tahun ini',zkPay:'Bayar Zakat Dalam Talian',zkState:'Negeri anda',zkPayWith:'Bayar melalui',zkUrufNote:'Badan zakat rasmi negeri anda. Had uruf barang kemas dipakai berbeza mengikut negeri — semak dengan badan zakat anda. Alat ini memberi anggaran, bukan fatwa.'}
+  en:{gold:'Gold',silver:'Silver',live:'LIVE',demo:'DEMO',high:'High',low:'Low',average:'Average',volatility:'Volatility',buy:'Buy',sell:'Sell',spread:'Spread',weights:'Quick Prices',calc:'Calculator',weight:'Weight (g)',value:'Value (RM)',updated:'Updated',zakat:'Zakat Calculator',zGold:'Gold held (g)',zType:'Type',zKeep:'Kept / Investment',zWear:'Worn (uruf: 850g)',zDue:'Zakat due',zExempt:'Exempt — below nisab',zNisab:'Nisab: 85g of 999 gold',spot:'Spot',perG:'/g',disclaimer:'Live price tracks the international spot market converted to RM. Dealer retail prices are in the Compare tab. This is not financial advice.',langLabel:'BM',compare:'Dealer Comparison',compareNote:'✓ LIVE prices are confirmed today from official dealer and bank sources. ≈ EST prices are calibrated to published rates (July 2026) and tracked against live spot. Always confirm on the dealer site before transacting.',tabCompare:'Compare',tabPortfolio:'Portfolio',tabTools:'Tools',portTotal:'Total Value',holdings:'Holdings',alerts:'Price Alerts',pfLabel:'Label',pfPurity:'Purity',pfGrams:'Weight (g)',pfBuyPrice:'Buy price/g',pfDate:'Purchase date',cheapest:'Cheapest',bestSell:'Best Sell',dfAll:'All',dfDealer:'Dealers',dfJeweller:'Jewellers',dfDigital:'Digital',dfBank:'Banks',sortBy:'Sort by',sortPop:'Popular',sortPrice:'Cheapest',visitSite:'Visit Site',signal:'Signal',sigBuy:'BUY',sigSell:'SELL',sigHold:'HOLD',sigStrongBuy:'STRONG BUY',sigStrongSell:'STRONG SELL',sigRSI:'RSI (14)',sigTrend:'Trend',sig52:'52W Range',ctaBuy:'Compare best buy prices →',ctaSell:'See best sell prices →',ctaHold:'Compare dealer prices →',sigDataReal:'Based on 1 year of real market data',sigDataDemo:'Demo data — live analysis unavailable',sigDisclaimer:'Not financial advice. Always do your own research.',nlTitle:'Daily Gold Signals',nlDesc:'Get buy/sell signals and market analysis delivered to your inbox every morning.',nlSubscribe:'Subscribe',nlSuccess:'You\'re in!',nlSuccessDesc:'Daily gold signals will be sent to your inbox.',sharePrice:'Share Price',tAll:'All',tPhysical:'Physical',tDigital:'Digital',sbSpot:'Spot price',vsSpot:'vs spot',zFromPort:'Use my portfolio',zPayLabel:'Pay zakat online:',zMarkPaid:'Mark zakat paid',zPaid:'Zakat paid',faqTitle:'Gold Investment Guide',shareCompare:'Share Comparison',tabZakat:'Zakat',zkHero:'Gold Zakat',zkEmpty:'Add your gold holdings in the Portfolio tab to track nisab progress, haul and zakat automatically.',zkAboveNisab:'Above nisab — zakat applies',zkBelowNisab:'Below nisab — no zakat yet',zkEstDue:'estimated zakat',zkHaulLeft:'Haul complete in {d} days ({date}) — zakat falls due if you stay above nisab.',zkHaulDone:'Haul complete — zakat is due this year',zkPay:'Pay Zakat Online',zkState:'Your state',zkPayWith:'Pay via',zkUrufNote:'Official zakat body for your state. The uruf exemption for worn jewellery varies by state — check with your zakat body. This tool gives estimates, not a fatwa.',noDealersPurity:'Dealers do not publish prices for this purity. Use Value My Old Gold in the Tools tab to estimate melt value.',ogvTitle:'Value My Old Gold',ogvMelt:'Melt value today',ogvRange:'Typical dealer buyback',ogvGuide:'Bullion dealers pay near melt value; jewellery shops pay less. Guide only — not a quote.'},
+  bm:{gold:'Emas',silver:'Perak',live:'LANGSUNG',demo:'DEMO',high:'Tertinggi',low:'Terendah',average:'Purata',volatility:'Kemeruapan',buy:'Beli',sell:'Jual',spread:'Spread',weights:'Harga Pantas',calc:'Kalkulator',weight:'Berat (g)',value:'Nilai (RM)',updated:'Dikemas kini',zakat:'Kalkulator Zakat',zGold:'Emas dimiliki (g)',zType:'Jenis',zKeep:'Simpanan / Pelaburan',zWear:'Dipakai (uruf: 850g)',zDue:'Zakat perlu dibayar',zExempt:'Dikecualikan — bawah nisab',zNisab:'Nisab: 85g emas 999',spot:'Spot',perG:'/g',disclaimer:'Harga langsung mengikut pasaran spot antarabangsa ditukar kepada RM. Harga runcit peniaga dalam tab Banding. Bukan nasihat kewangan.',langLabel:'EN',compare:'Perbandingan Peniaga',compareNote:'Harga ✓ LIVE disahkan hari ini daripada sumber rasmi peniaga dan bank. Harga ≈ EST ditentukur mengikut kadar terbitan (Julai 2026) dan dijejak mengikut spot semasa. Sentiasa sahkan di laman peniaga sebelum urus niaga.',tabCompare:'Banding',tabPortfolio:'Portfolio',tabTools:'Alat',portTotal:'Jumlah Nilai',holdings:'Pegangan',alerts:'Amaran Harga',pfLabel:'Label',pfPurity:'Ketulenan',pfGrams:'Berat (g)',pfBuyPrice:'Harga beli/g',pfDate:'Tarikh pembelian',cheapest:'Termurah',bestSell:'Jual Terbaik',dfAll:'Semua',dfDealer:'Peniaga',dfJeweller:'Pengemas',dfDigital:'Digital',dfBank:'Bank',sortBy:'Susun',sortPop:'Popular',sortPrice:'Termurah',visitSite:'Lawati',signal:'Isyarat',sigBuy:'BELI',sigSell:'JUAL',sigHold:'TAHAN',sigStrongBuy:'BELI KUKUH',sigStrongSell:'JUAL KUKUH',sigRSI:'RSI (14)',sigTrend:'Tren',sig52:'Julat 52M',ctaBuy:'Banding harga beli terbaik →',ctaSell:'Lihat harga jual terbaik →',ctaHold:'Banding harga peniaga →',sigDataReal:'Berdasarkan data pasaran sebenar 1 tahun',sigDataDemo:'Data demo — analisis langsung tidak tersedia',sigDisclaimer:'Bukan nasihat kewangan. Sentiasa buat kajian sendiri.',nlTitle:'Isyarat Emas Harian',nlDesc:'Dapatkan isyarat beli/jual dan analisis pasaran setiap pagi ke e-mel anda.',nlSubscribe:'Langgan',nlSuccess:'Berjaya!',nlSuccessDesc:'Isyarat emas harian akan dihantar ke e-mel anda.',sharePrice:'Kongsi Harga',tAll:'Semua',tPhysical:'Fizikal',tDigital:'Digital',sbSpot:'Harga spot',vsSpot:'vs spot',zFromPort:'Guna portfolio saya',zPayLabel:'Bayar zakat dalam talian:',zMarkPaid:'Tanda zakat dibayar',zPaid:'Zakat dibayar',faqTitle:'Panduan Pelaburan Emas',shareCompare:'Kongsi Perbandingan',tabZakat:'Zakat',zkHero:'Zakat Emas',zkEmpty:'Tambah pegangan emas anda dalam tab Portfolio untuk menjejak nisab, haul dan zakat secara automatik.',zkAboveNisab:'Melebihi nisab — zakat dikenakan',zkBelowNisab:'Bawah nisab — belum wajib zakat',zkEstDue:'anggaran zakat',zkHaulLeft:'Haul genap dalam {d} hari ({date}) — zakat wajib jika kekal melebihi nisab.',zkHaulDone:'Haul genap — zakat wajib tahun ini',zkPay:'Bayar Zakat Dalam Talian',zkState:'Negeri anda',zkPayWith:'Bayar melalui',zkUrufNote:'Badan zakat rasmi negeri anda. Had uruf barang kemas dipakai berbeza mengikut negeri — semak dengan badan zakat anda. Alat ini memberi anggaran, bukan fatwa.',noDealersPurity:'Peniaga tidak menerbitkan harga untuk ketulenan ini. Guna Nilai Emas Lama dalam tab Alat untuk anggaran nilai lebur.',ogvTitle:'Nilai Emas Lama',ogvMelt:'Nilai lebur hari ini',ogvRange:'Anggaran belian balik peniaga',ogvGuide:'Peniaga jongkong bayar hampir nilai lebur; kedai emas bayar kurang. Panduan sahaja — bukan sebut harga.'}
 };
 function t(k){return L[S.lang]?.[k]||L.en[k]||k}
 function applyLang(){
   const m=(id,k)=>{const el=document.getElementById(id);if(el)el.textContent=t(k)};
-  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabZakat','tabZakat');m('lTabTools','tabTools');m('lZkHero','zkHero');m('lZkPay','zkPay');m('lZkState','zkState');m('zkUrufNote','zkUrufNote');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');m('lSignal','signal');m('lSigRSI','sigRSI');m('lSigTrend','sigTrend');m('lSig52','sig52');m('sigDisclaimer','sigDisclaimer');m('nlTitle','nlTitle');m('nlDesc','nlDesc');m('nlSuccessTitle','nlSuccess');m('nlSuccessDesc','nlSuccessDesc');m('lShare','sharePrice');m('zPayLabel','zPayLabel');
+  m('btnGold','gold');m('btnSilver','silver');m('lHigh','high');m('lLow','low');m('lAvg','average');m('lVol','volatility');m('lBuy','buy');m('lSell','sell');m('lWeights','weights');m('lCalc','calc');m('lWeight','weight');m('lValue','value');m('lZakat','zakat');m('lZGold','zGold');m('lZType','zType');m('lZDue','zDue');m('zOptKeep','zKeep');m('zOptWear','zWear');m('lDisclaimer','disclaimer');m('lCompare','compare');m('lCompareNote','compareNote');m('lTabCompare','tabCompare');m('lTabPortfolio','tabPortfolio');m('lTabZakat','tabZakat');m('lTabTools','tabTools');m('lZkHero','zkHero');m('lZkPay','zkPay');m('lZkState','zkState');m('zkUrufNote','zkUrufNote');m('lOgv','ogvTitle');m('lOgvPurity','pfPurity');m('lOgvGrams','weight');m('lOgvMelt','ogvMelt');m('lOgvRange','ogvRange');m('ogvGuide','ogvGuide');m('lPortTotal','portTotal');m('lHoldings','holdings');m('lAlerts','alerts');m('lPfLabel','pfLabel');m('lPfPurity','pfPurity');m('lPfGrams','pfGrams');m('lPfBuyPrice','pfBuyPrice');m('lPfDate','pfDate');m('dfAll','dfAll');m('dfDealer','dfDealer');m('dfJeweller','dfJeweller');m('dfDigital','dfDigital');m('dfBank','dfBank');m('lSortBy','sortBy');m('sortPop','sortPop');m('sortPrice','sortPrice');m('lSignal','signal');m('lSigRSI','sigRSI');m('lSigTrend','sigTrend');m('lSig52','sig52');m('sigDisclaimer','sigDisclaimer');m('nlTitle','nlTitle');m('nlDesc','nlDesc');m('nlSuccessTitle','nlSuccess');m('nlSuccessDesc','nlSuccessDesc');m('lShare','sharePrice');m('zPayLabel','zPayLabel');
   document.getElementById('typeAll').textContent=t('tAll');
   document.getElementById('typePhysical').innerHTML='&#129689; '+t('tPhysical');
   document.getElementById('typeDigital').innerHTML='&#128241; '+t('tDigital');
@@ -1050,7 +1077,7 @@ function generateCompareCard(){
   const now=new Date();
   ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 24px Inter,-apple-system,sans-serif';
   ctx.fillText(now.toLocaleDateString(bm?'ms-MY':'en-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · '+now.toLocaleTimeString(bm?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'}),W/2,logoY+175);
-  const rawSpot=S.spot>0?S.spot:(S.price>0?S.price:0);
+  const rawSpot=rawSpotNow();
   const spotG=rawSpot*(S.purity/1000);
   const pillY=400;
   const pillTxt=`${S.purity} ${t(S.metal==='silver'?'silver':'gold').toUpperCase()} · ${t('sbSpot')}: ${fmtRM(spotG)}/g`;
@@ -1099,7 +1126,7 @@ function generateCompareCard(){
   ctx.fillStyle='#22d3ee';ctx.fillText('●',W/2+40,legY);
   ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillText(t('tDigital'),W/2+115,legY);
   ctx.fillStyle='rgba(0,214,143,0.9)';ctx.font='700 24px Inter,-apple-system,sans-serif';
-  ctx.fillText((bm?'✓ Termurah hari ini: ':'✓ Cheapest today: ')+top[0].name,W/2,legY+50);
+  if(top.length)ctx.fillText((bm?'✓ Termurah hari ini: ':'✓ Cheapest today: ')+top[0].name,W/2,legY+50);
   const footY=H-95;
   ctx.fillStyle='rgba(255,215,0,0.6)';ctx.font='700 28px Inter,-apple-system,sans-serif';
   ctx.fillText('gold-rush-tau.vercel.app',W/2,footY);
@@ -1229,7 +1256,7 @@ function liveOverride(d,purity,spotG){
   return{buyP,sellP,verified:lb&&!lv.std?'live':'est'};
 }
 function updateDealers(){
-  const rawSpot=S.spot>0?S.spot:(S.price>0?S.price:0);
+  const rawSpot=rawSpotNow();
   if(rawSpot<=0)return;
   const spotG=rawSpot*(S.purity/1000);
   const all=DEALERS.map(d=>{
@@ -1249,7 +1276,7 @@ function updateDealers(){
   countEl.textContent=S.lang==='bm'
     ?`${sorted.length} peniaga${liveN?` · ✓ ${liveN} disahkan langsung (${ago} min lalu)`:''}`
     :`${sorted.length} dealers${liveN?` · ✓ ${liveN} live-verified (${ago}m ago)`:''}`;
-  if(!sorted.length){document.getElementById('dealerList').innerHTML='';return}
+  if(!sorted.length){document.getElementById('dealerList').innerHTML=`<div class="alert-empty">${t('noDealersPurity')}</div>`;return}
   const cheapestP=Math.min(...filtered.map(d=>d.buyP));
   const bestSellP=Math.max(...sorted.map(d=>d.sellP||0));
   document.getElementById('dealerList').innerHTML=sorted.map((d,i)=>{
@@ -1443,6 +1470,25 @@ function updateZakatPayBtn(){
   updateZakatPayBtn();
 })();
 
+/* ═══ OLD GOLD VALUATOR ═══ */
+/* Melt value is pure math from live spot × purity — no dealer assumption.
+   The buyback range is a clearly-labelled guide (bullion traders pay near
+   melt, jewellery shops less), never presented as a quote. */
+function updateOgv(){
+  const pEl=document.getElementById('ogvPurity');if(!pEl)return;
+  const p=+pEl.value,g=parseFloat(document.getElementById('ogvGrams').value);
+  const vE=document.getElementById('ogvValue'),nE=document.getElementById('ogvNote'),rE=document.getElementById('ogvRange');
+  const raw=rawSpotNow();
+  if(isNaN(g)||g<=0||raw<=0||S.metal==='silver'){vE.textContent='—';vE.className='zr-value exempt';nE.textContent='';rE.style.display='none';return}
+  const perG=raw*p/1000,melt=g*perG;
+  vE.textContent=fmtRM(melt);vE.className='zr-value';
+  nE.textContent=`${g}g × ${fmtRM(perG)}/g (${p})`;
+  rE.style.display='';
+  document.getElementById('ogvRangeVal').textContent=`${fmtRM(melt*0.88)} – ${fmtRM(melt*0.98)}`;
+}
+document.getElementById('ogvGrams').addEventListener('input',updateOgv);
+document.getElementById('ogvPurity').addEventListener('change',updateOgv);
+
 /* ═══ CALCULATOR ═══ */
 function setupCalc(){const gE=document.getElementById('calcGrams'),vE=document.getElementById('calcValue');gE.addEventListener('input',()=>{const g=parseFloat(gE.value);vE.value=(!isNaN(g)&&g>=0)?(g*S.price).toFixed(2):''});vE.addEventListener('input',()=>{const v=parseFloat(vE.value);gE.value=(!isNaN(v)&&v>=0&&S.price>0)?(v/S.price).toFixed(2):''});document.getElementById('calcSwap').addEventListener('click',()=>{[gE.value,vE.value]=[vE.value,gE.value]})}
 
@@ -1473,13 +1519,13 @@ async function refresh(fetchNew){
     S.history=genHistory(S.price,TF_DAYS[S.tf]);
   }
   loadSignalData();
-  updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();updateZakatHero();applyTheme();updateSignal();updateDealers();updatePortfolio();checkAlerts();
+  updatePriceDisplay();updateChart();updateStats();updateSpread();updateWeights();updateEvents();updateZakat();updateZakatHero();updateOgv();applyTheme();updateSignal();updateDealers();updatePortfolio();checkAlerts();
   S.countdown=30;
 }
 function startTimer(){clearInterval(S.timer);S.timer=setInterval(async()=>{S.countdown--;document.getElementById('timer').textContent=S.countdown+'s';if(S.countdown<=0)await refresh(true)},1000)}
 
 /* ═══ LISTENERS ═══ */
-document.querySelectorAll('.metal-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.metal-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const m=btn.dataset.metal;document.getElementById('metalToggle').className='mt-inner'+(m==='silver'?' silver':'');S.metal=m;const purities=m==='silver'?[999]:[999,916,750];document.getElementById('purityRow').innerHTML=purities.map((p,i)=>`<button class="purity-btn${i===0?' active':''}" data-purity="${p}">${p}</button>`).join('');S.purity=purities[0];bindPurity();refresh(false)})});
+document.querySelectorAll('.metal-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.metal-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const m=btn.dataset.metal;document.getElementById('metalToggle').className='mt-inner'+(m==='silver'?' silver':'');S.metal=m;const purities=m==='silver'?[999]:[999,916,900,835,750,585,375];document.getElementById('purityRow').innerHTML=purities.map((p,i)=>`<button class="purity-btn${i===0?' active':''}" data-purity="${p}">${p}</button>`).join('');S.purity=purities[0];bindPurity();refresh(false)})});
 function bindPurity(){document.querySelectorAll('.purity-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.purity-btn').forEach(b=>b.classList.remove('active','sil'));btn.classList.add('active');if(S.metal==='silver')btn.classList.add('sil');S.purity=+btn.dataset.purity;refresh(false)})})}
 document.querySelectorAll('.tf-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active','sil'));btn.classList.add('active');if(S.metal==='silver')btn.classList.add('sil');S.tf=btn.dataset.tf;refresh(false)})});
 document.querySelectorAll('.tab').forEach(btn=>{btn.addEventListener('click',()=>switchTab(btn.dataset.tab))});
