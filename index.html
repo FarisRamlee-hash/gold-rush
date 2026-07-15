@@ -99,6 +99,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 /* Hover info card: read-only (pointer-events none), translucent, desktop only */
 .unit-tip{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-6px);z-index:60;width:250px;padding:13px 15px;background:rgba(10,10,26,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,215,0,0.18);border-radius:var(--r-sm);text-align:left;opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;box-shadow:0 12px 40px rgba(0,0,0,0.45)}
 @media (hover:hover){.unit-toggle{cursor:help}.unit-toggle:hover+.unit-tip{opacity:1;transform:translateX(-50%) translateY(0)}}
+.unit-tip.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.unit-toggle{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .ut-title{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
 .ut-row{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--text2);padding:3px 0}
 .ut-row b{color:#fff;font-weight:600;white-space:nowrap}
@@ -1557,7 +1559,8 @@ function updateUnitUI(){
     `<div class="ut-row"><b>1 ${bm?'tahil':'tael'} = 37.8 g</b><span>${bm?'tukang emas / jongkong':'goldsmiths / bullion'}</span></div>`+
     `<div class="ut-note">${t('unitTipNote')}</div>`;
 }
-document.getElementById('unitToggle').addEventListener('click',()=>{
+document.getElementById('unitToggle').addEventListener('click',e=>{
+  if(unitTipHeld){unitTipHeld=false;return} // long-press showed the info card; don't also cycle
   S.wunit=WUNIT_ORDER[(WUNIT_ORDER.indexOf(S.wunit)+1)%WUNIT_ORDER.length];
   try{localStorage.setItem('gr_wunit',S.wunit)}catch(e){}
   const b=document.getElementById('unitToggle');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop');
@@ -1565,6 +1568,19 @@ document.getElementById('unitToggle').addEventListener('click',()=>{
   S.prevPrice=0; // repaint headline instantly in the new unit (skip count-up)
   updateUnitUI();updatePriceDisplay();updateStats();updateSpread();updateWeights();updateOgv();
 });
+
+/* Mobile: long-press the unit pill to show the info card (hover equivalent).
+   Quick tap still cycles units; the card stays read-only. */
+let unitTipHeld=false,unitTipTimer=null;
+(function(){
+  const b=document.getElementById('unitToggle'),tip=document.getElementById('unitTip');
+  const show=()=>{unitTipHeld=true;tip.classList.add('show');try{navigator.vibrate&&navigator.vibrate(10)}catch(e){}};
+  const cancel=hide=>{clearTimeout(unitTipTimer);unitTipTimer=null;if(hide)tip.classList.remove('show')};
+  b.addEventListener('touchstart',()=>{cancel(false);unitTipTimer=setTimeout(show,450)},{passive:true});
+  b.addEventListener('touchmove',()=>cancel(true),{passive:true});
+  ['touchend','touchcancel'].forEach(ev=>b.addEventListener(ev,()=>{cancel(false);setTimeout(()=>tip.classList.remove('show'),1200)},{passive:true}));
+  b.addEventListener('contextmenu',e=>{if(unitTipHeld)e.preventDefault()});
+})();
 
 /* ═══ CALCULATOR ═══ */
 function setupCalc(){const gE=document.getElementById('calcGrams'),vE=document.getElementById('calcValue');gE.addEventListener('input',()=>{const g=parseFloat(gE.value);vE.value=(!isNaN(g)&&g>=0)?(g*S.price*unitF()).toFixed(2):''});vE.addEventListener('input',()=>{const v=parseFloat(vE.value);gE.value=(!isNaN(v)&&v>=0&&S.price>0)?(v/(S.price*unitF())).toFixed(2):''});document.getElementById('calcSwap').addEventListener('click',()=>{[gE.value,vE.value]=[vE.value,gE.value]})}
