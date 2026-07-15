@@ -301,6 +301,14 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .share-modal.open{display:flex}
 .share-preview{max-width:320px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
 .share-preview canvas{width:100%;height:auto;display:block}
+.share-designs{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:14px}
+.sd-arrow{width:36px;height:36px;border-radius:50%;border:1px solid var(--glass-b);background:var(--glass);color:var(--text2);font-size:20px;line-height:1;cursor:pointer;transition:all .3s}
+.sd-arrow:hover{color:var(--gold);border-color:rgba(255,215,0,0.3)}
+.sd-mid{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:110px}
+.sd-dots{display:flex;gap:8px}
+.sd-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);cursor:pointer;transition:all .3s}
+.sd-dot.active{background:var(--gold);transform:scale(1.35)}
+.sd-name{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.4px}
 .share-actions{display:flex;gap:10px;margin-top:16px}
 .share-actions .btn{font-size:12px;padding:10px 24px}
 .share-close{position:absolute;top:20px;right:20px;width:36px;height:36px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;font-size:20px;border-radius:50%;cursor:pointer;display:grid;place-items:center;transition:all .2s}
@@ -674,6 +682,11 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <div class="share-modal" id="shareModal">
   <button class="share-close" id="shareClose">&times;</button>
   <div class="share-preview"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>
+  <div class="share-designs" id="shareDesigns">
+    <button class="sd-arrow" id="sdPrev">&#8249;</button>
+    <div class="sd-mid"><div class="sd-dots" id="sdDots"></div><div class="sd-name" id="sdName"></div></div>
+    <button class="sd-arrow" id="sdNext">&#8250;</button>
+  </div>
   <div class="share-actions">
     <button class="btn btn-gold btn-sm" id="shareDownload">Download</button>
     <button class="btn btn-ghost btn-sm" id="shareNative" style="display:none">Share</button>
@@ -989,9 +1002,13 @@ function updateSignal(){
 }
 
 /* ═══ SHARE CARD ═══ */
-function generateShareCard(){
-  const c=document.getElementById('shareCanvas'),ctx=c.getContext('2d');
-  const W=1080,H=1920;c.width=W;c.height=H;
+/* ─── Share card designs ───
+   0 "Price"  — big price in the chosen unit + quick prices (no market jargon)
+   1 "Board"  — kedai-style board: market / shop sells / buyback per unit
+   2 "Deals"  — cheapest place to buy + highest buyback today (real dealer data)
+   Swipe the preview or tap the dots/arrows in the share modal to switch. */
+function shareCtx(){const c=document.getElementById('shareCanvas');c.width=1080;c.height=1920;return c.getContext('2d')}
+function drawShareBase(ctx,W,H,subtitle){
   const bg=ctx.createLinearGradient(0,0,0,H);
   bg.addColorStop(0,'#0a0a1e');bg.addColorStop(0.3,'#080818');bg.addColorStop(0.7,'#060614');bg.addColorStop(1,'#04040e');
   ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
@@ -1004,7 +1021,7 @@ function generateShareCard(){
   for(let i=0;i<H;i+=60){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke()}
   const logoY=160;
   ctx.fillStyle='#FFD700';ctx.beginPath();
-  const lx=W/2-36,ly=logoY-36;const lr=12;
+  const lx=W/2-36,ly=logoY-36,lr=12;
   ctx.moveTo(lx+lr,ly);ctx.lineTo(lx+72-lr,ly);ctx.quadraticCurveTo(lx+72,ly,lx+72,ly+lr);
   ctx.lineTo(lx+72,ly+72-lr);ctx.quadraticCurveTo(lx+72,ly+72,lx+72-lr,ly+72);
   ctx.lineTo(lx+lr,ly+72);ctx.quadraticCurveTo(lx,ly+72,lx,ly+72-lr);
@@ -1014,90 +1031,151 @@ function generateShareCard(){
   ctx.fillStyle='#fff';ctx.font='900 48px Inter,-apple-system,sans-serif';
   ctx.fillText('Gold Rush',W/2,logoY+100);
   ctx.fillStyle='rgba(255,215,0,0.5)';ctx.font='600 22px Inter,-apple-system,sans-serif';
-  ctx.fillText('LIVE GOLD PRICE',W/2,logoY+145);
-  const now=new Date();
-  const dateStr=now.toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  ctx.fillText(subtitle,W/2,logoY+145);
+  const now=new Date(),loc=S.lang==='bm'?'ms-MY':'en-MY';
   ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 26px Inter,-apple-system,sans-serif';
-  ctx.fillText(dateStr,W/2,logoY+195);
-  const timeStr=now.toLocaleTimeString(S.lang==='bm'?'ms-MY':'en-MY',{hour:'2-digit',minute:'2-digit'});
-  ctx.fillText(timeStr,W/2,logoY+235);
-  const purityY=530;
-  const pLabel=S.purity+' '+t(S.metal==='silver'?'silver':'gold').toUpperCase();
-  ctx.font='700 28px Inter,-apple-system,sans-serif';const pw=ctx.measureText(pLabel).width;
-  const px=W/2-pw/2-24,py=purityY-22;
-  ctx.strokeStyle='rgba(255,215,0,0.3)';ctx.lineWidth=2;ctx.fillStyle='rgba(255,215,0,0.06)';
-  ctx.beginPath();ctx.roundRect(px,py,pw+48,48,24);ctx.fill();ctx.stroke();
-  ctx.fillStyle='#FFD700';ctx.textAlign='center';ctx.fillText(pLabel,W/2,purityY+6);
-  const priceY=720;
-  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='500 40px Inter,-apple-system,sans-serif';
-  ctx.fillText('RM',W/2,priceY-80);
-  ctx.fillStyle='#fff';ctx.font='900 140px Inter,-apple-system,sans-serif';
-  ctx.fillText(S.price.toFixed(2),W/2,priceY+30);
-  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 36px Inter,-apple-system,sans-serif';
-  ctx.fillText(S.lang==='bm'?'per gram':'per gram',W/2,priceY+80);
-  const up=S.change>=0;
-  const changeY=priceY+150;
-  const arrow=up?'▲':'▼';
-  const changeStr=`${arrow} RM ${Math.abs(S.change).toFixed(2)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;
-  ctx.font='700 34px Inter,-apple-system,sans-serif';const cw=ctx.measureText(changeStr).width;
-  const cBg=up?'rgba(0,214,143,0.1)':'rgba(255,71,87,0.1)';
-  const cBorder=up?'rgba(0,214,143,0.25)':'rgba(255,71,87,0.25)';
-  ctx.fillStyle=cBg;ctx.strokeStyle=cBorder;ctx.lineWidth=2;
-  ctx.beginPath();ctx.roundRect(W/2-cw/2-30,changeY-28,cw+60,56,28);ctx.fill();ctx.stroke();
-  ctx.fillStyle=up?'#00d68f':'#ff4757';ctx.fillText(changeStr,W/2,changeY+7);
-  const cardY=1050;const cardH=360;const cardM=80;
-  ctx.fillStyle='rgba(255,255,255,0.02)';ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=2;
-  ctx.beginPath();ctx.roundRect(cardM,cardY,W-cardM*2,cardH,24);ctx.fill();ctx.stroke();
-  const colW=(W-cardM*2)/3;
-  const prices=S.history.map(p=>p.y);
-  const high=Math.max(...prices),low=Math.min(...prices),avg=prices.reduce((a,b)=>a+b,0)/prices.length;
-  const metrics=[{label:t('high').toUpperCase(),val:fmtRM(high)},{label:t('low').toUpperCase(),val:fmtRM(low)},{label:t('average').toUpperCase(),val:fmtRM(avg)}];
-  metrics.forEach((m,i)=>{
-    const cx=cardM+colW*i+colW/2;
-    ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='600 22px Inter,-apple-system,sans-serif';
-    ctx.fillText(m.label,cx,cardY+60);
-    ctx.fillStyle='#fff';ctx.font='800 36px Inter,-apple-system,sans-serif';
-    ctx.fillText(m.val,cx,cardY+110);
-    if(i<2){ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cardM+colW*(i+1),cardY+30);ctx.lineTo(cardM+colW*(i+1),cardY+cardH-30);ctx.stroke()}
-  });
-  const sp=S.metal==='gold'?.015:.025;const buyP=S.price*(1+sp/2),sellP=S.price*(1-sp/2);
-  const bsY=cardY+200;
-  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='600 22px Inter,-apple-system,sans-serif';
-  ctx.fillText(t('buy').toUpperCase(),cardM+colW*0.75,bsY+20);
-  ctx.fillText(t('sell').toUpperCase(),cardM+colW*2.25,bsY+20);
-  ctx.fillStyle='#fff';ctx.font='800 36px Inter,-apple-system,sans-serif';
-  ctx.fillText(fmtRM(buyP),cardM+colW*0.75,bsY+70);
-  ctx.fillStyle='rgba(255,255,255,0.7)';
-  ctx.fillText(fmtRM(sellP),cardM+colW*2.25,bsY+70);
-  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(W/2,bsY-10);ctx.lineTo(W/2,bsY+90);ctx.stroke();
-  const sigY=1500;
-  const sig=S.lastSignal||{label:t('sigHold'),cls:'hold'};
-  const sigColor=sig.cls==='buy'?'#00d68f':sig.cls==='sell'?'#ff4757':'#ffa502';
-  const sigBg=sig.cls==='buy'?'rgba(0,214,143,0.1)':sig.cls==='sell'?'rgba(255,71,87,0.1)':'rgba(255,165,2,0.1)';
-  const sigBorder=sig.cls==='buy'?'rgba(0,214,143,0.25)':sig.cls==='sell'?'rgba(255,71,87,0.25)':'rgba(255,165,2,0.25)';
-  ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font='600 22px Inter,-apple-system,sans-serif';
-  ctx.fillText(t('signal').toUpperCase(),W/2,sigY);
-  const sigLabel=sig.label;
-  ctx.font='900 52px Inter,-apple-system,sans-serif';const sw=ctx.measureText(sigLabel).width;
-  ctx.fillStyle=sigBg;ctx.strokeStyle=sigBorder;ctx.lineWidth=2;
-  ctx.beginPath();ctx.roundRect(W/2-sw/2-40,sigY+15,sw+80,68,34);ctx.fill();ctx.stroke();
-  ctx.fillStyle=sigColor;ctx.fillText(sigLabel,W/2,sigY+62);
-  const miniH=120;const miniY=1620;const miniW=W-160;const miniX=80;
-  ctx.strokeStyle='rgba(255,215,0,0.3)';ctx.lineWidth=3;ctx.beginPath();
-  const pts=S.history;const minP=Math.min(...pts.map(p=>p.y)),maxP=Math.max(...pts.map(p=>p.y)),rangeP=maxP-minP||1;
-  pts.forEach((p,i)=>{const x=miniX+(i/(pts.length-1))*miniW,y=miniY+miniH-(((p.y-minP)/rangeP)*miniH);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
-  ctx.stroke();
-  const grad=ctx.createLinearGradient(0,miniY,0,miniY+miniH);
-  grad.addColorStop(0,'rgba(255,215,0,0.12)');grad.addColorStop(1,'transparent');
-  ctx.lineTo(miniX+miniW,miniY+miniH);ctx.lineTo(miniX,miniY+miniH);ctx.closePath();
-  ctx.fillStyle=grad;ctx.fill();
+  ctx.fillText(now.toLocaleDateString(loc,{weekday:'long',day:'numeric',month:'long',year:'numeric'}),W/2,logoY+195);
+  ctx.fillText(now.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit'}),W/2,logoY+235);
+}
+function drawShareFooter(ctx,W,H,note){
   const footY=H-80;
+  ctx.textAlign='center';
+  if(note){ctx.fillStyle='rgba(255,255,255,0.22)';ctx.font='400 20px Inter,-apple-system,sans-serif';ctx.fillText(note,W/2,footY-50)}
   ctx.fillStyle='rgba(255,215,0,0.6)';ctx.font='700 28px Inter,-apple-system,sans-serif';
   ctx.fillText('gold-rush-tau.vercel.app',W/2,footY);
   ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='500 20px Inter,-apple-system,sans-serif';
   ctx.fillText('© FR Ventures',W/2,footY+35);
 }
+function sharePill(ctx,W,y,label){
+  ctx.font='700 28px Inter,-apple-system,sans-serif';const pw=ctx.measureText(label).width;
+  ctx.strokeStyle='rgba(255,215,0,0.3)';ctx.lineWidth=2;ctx.fillStyle='rgba(255,215,0,0.06)';
+  ctx.beginPath();ctx.roundRect(W/2-pw/2-24,y-22,pw+48,48,24);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#FFD700';ctx.textAlign='center';ctx.fillText(label,W/2,y+6);
+}
+function drawPriceCard(){
+  const ctx=shareCtx(),W=1080,H=1920,bm=S.lang==='bm',f=unitF(),un=unitName();
+  drawShareBase(ctx,W,H,bm?'HARGA EMAS LANGSUNG':'LIVE GOLD PRICE');
+  sharePill(ctx,W,530,S.purity+' '+t(S.metal==='silver'?'silver':'gold').toUpperCase());
+  const priceY=720;
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='500 40px Inter,-apple-system,sans-serif';
+  ctx.fillText('RM',W/2,priceY-80);
+  ctx.fillStyle='#fff';ctx.font='900 130px Inter,-apple-system,sans-serif';
+  ctx.fillText(fmtNum(S.price*f),W/2,priceY+30);
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 36px Inter,-apple-system,sans-serif';
+  ctx.fillText((bm?'setiap ':'per ')+un,W/2,priceY+80);
+  const up=S.change>=0,changeY=priceY+150;
+  const changeStr=`${up?'▲':'▼'} RM ${fmtNum(Math.abs(S.change)*f)} (${up?'+':''}${S.changePct.toFixed(2)}%)`;
+  ctx.font='700 34px Inter,-apple-system,sans-serif';const cw=ctx.measureText(changeStr).width;
+  ctx.fillStyle=up?'rgba(0,214,143,0.1)':'rgba(255,71,87,0.1)';ctx.strokeStyle=up?'rgba(0,214,143,0.25)':'rgba(255,71,87,0.25)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(W/2-cw/2-30,changeY-28,cw+60,56,28);ctx.fill();ctx.stroke();
+  ctx.fillStyle=up?'#00d68f':'#ff4757';ctx.fillText(changeStr,W/2,changeY+7);
+  const qs=S.wunit==='g'?[1,10,100]:S.wunit==='tael'?[1,2,5]:[1,5,10];
+  const cardY=1050,cardH=300,cardM=80,colW=(W-cardM*2)/3;
+  ctx.fillStyle='rgba(255,255,255,0.02)';ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(cardM,cardY,W-cardM*2,cardH,24);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(255,215,0,0.45)';ctx.font='600 22px Inter,-apple-system,sans-serif';
+  ctx.fillText(bm?'HARGA PANTAS':'QUICK PRICES',W/2,cardY+55);
+  qs.forEach((n,i)=>{
+    const cx=cardM+colW*i+colW/2;
+    ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='600 26px Inter,-apple-system,sans-serif';
+    ctx.fillText(`${n} ${un}`,cx,cardY+130);
+    ctx.fillStyle='#fff';ctx.font='800 34px Inter,-apple-system,sans-serif';
+    ctx.fillText(fmtRM(S.price*f*n),cx,cardY+185);
+    if(i<2){ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cardM+colW*(i+1),cardY+40);ctx.lineTo(cardM+colW*(i+1),cardY+cardH-40);ctx.stroke()}
+  });
+  const sigY=1470,sig=S.lastSignal||{label:t('sigHold'),cls:'hold'};
+  const sigColor=sig.cls==='buy'?'#00d68f':sig.cls==='sell'?'#ff4757':'#ffa502';
+  ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font='600 22px Inter,-apple-system,sans-serif';
+  ctx.fillText(t('signal').toUpperCase(),W/2,sigY);
+  ctx.font='900 52px Inter,-apple-system,sans-serif';const sw2=ctx.measureText(sig.label).width;
+  ctx.fillStyle=sig.cls==='buy'?'rgba(0,214,143,0.1)':sig.cls==='sell'?'rgba(255,71,87,0.1)':'rgba(255,165,2,0.1)';
+  ctx.strokeStyle=sig.cls==='buy'?'rgba(0,214,143,0.25)':sig.cls==='sell'?'rgba(255,71,87,0.25)':'rgba(255,165,2,0.25)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(W/2-sw2/2-40,sigY+15,sw2+80,68,34);ctx.fill();ctx.stroke();
+  ctx.fillStyle=sigColor;ctx.fillText(sig.label,W/2,sigY+62);
+  const miniH=120,miniY=1620,miniW=W-160,miniX=80,pts=S.history;
+  if(pts.length>1){
+    const minP=Math.min(...pts.map(p=>p.y)),maxP=Math.max(...pts.map(p=>p.y)),rangeP=maxP-minP||1;
+    ctx.strokeStyle='rgba(255,215,0,0.3)';ctx.lineWidth=3;ctx.beginPath();
+    pts.forEach((p,i)=>{const x=miniX+(i/(pts.length-1))*miniW,y=miniY+miniH-(((p.y-minP)/rangeP)*miniH);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+    ctx.stroke();
+    const grad=ctx.createLinearGradient(0,miniY,0,miniY+miniH);
+    grad.addColorStop(0,'rgba(255,215,0,0.12)');grad.addColorStop(1,'transparent');
+    ctx.lineTo(miniX+miniW,miniY+miniH);ctx.lineTo(miniX,miniY+miniH);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  }
+  drawShareFooter(ctx,W,H,null);
+}
+function shareGoldRaw(){return S.metal==='gold'?rawSpotNow():(S.liveData?.gold?.[999]?.spot||FALLBACK.gold[999])}
+function drawBoardCard(){
+  const ctx=shareCtx(),W=1080,H=1920,bm=S.lang==='bm',f=unitF(),un=unitName();
+  drawShareBase(ctx,W,H,bm?'PAPAN HARGA EMAS':'GOLD PRICE BOARD');
+  sharePill(ctx,W,530,(bm?'HARGA SETIAP ':'PRICES PER ')+un.toUpperCase());
+  const raw=shareGoldRaw();
+  const pk=DEALERS.find(d=>d.id==='pohKong');
+  const rows=[999,916,750].map(p=>{
+    const o=pk?liveOverride(pk,p,raw*p/1000):null;
+    return{p,spot:raw*p/1000*f,sell:o?o.buyP*f:null,back:o&&o.sellP?o.sellP*f:null};
+  });
+  const tX=70,tW=W-140,headY=680,rowH=150;
+  ctx.textAlign='left';ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='600 24px Inter,-apple-system,sans-serif';
+  ctx.fillText(bm?'MUTU':'PURITY',tX+30,headY);
+  ctx.textAlign='right';
+  ctx.fillText(bm?'PASARAN':'MARKET',tX+tW*0.46,headY);
+  ctx.fillText(bm?'KEDAI JUAL':'SHOP SELLS',tX+tW*0.73,headY);
+  ctx.fillText(bm?'BELI BALIK':'BUYBACK',tX+tW-20,headY);
+  rows.forEach((r,i)=>{
+    const y=headY+30+i*rowH,my=y+(rowH-14)/2;
+    ctx.fillStyle=i%2?'rgba(255,255,255,0.015)':'rgba(255,255,255,0.035)';
+    ctx.beginPath();ctx.roundRect(tX,y,tW,rowH-14,16);ctx.fill();
+    ctx.textAlign='left';ctx.fillStyle='#FFD700';ctx.font='800 40px Inter,-apple-system,sans-serif';
+    ctx.fillText(r.p,tX+30,my+14);
+    ctx.textAlign='right';ctx.font='700 32px Inter,-apple-system,sans-serif';
+    ctx.fillStyle='rgba(255,255,255,0.85)';ctx.fillText(fmtNum(r.spot),tX+tW*0.46,my+12);
+    ctx.fillStyle='#fff';ctx.fillText(r.sell?fmtNum(r.sell):'—',tX+tW*0.73,my+12);
+    ctx.fillStyle='#00d68f';ctx.fillText(r.back?fmtNum(r.back):'—',tX+tW-20,my+12);
+  });
+  const belowY=headY+30+rows.length*rowH;
+  ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='500 26px Inter,-apple-system,sans-serif';
+  ctx.fillText(`RM ${bm?'setiap':'per'} ${un}${f!==1?` · 1 ${un} = ${f} g`:''}`,W/2,belowY+60);
+  ctx.fillStyle='rgba(255,255,255,0.28)';ctx.font='400 22px Inter,-apple-system,sans-serif';
+  ctx.fillText(bm?'Trade-in biasanya sedikit lebih tinggi daripada beli balik tunai.':'Trade-in usually pays slightly above cash buyback.',W/2,belowY+105);
+  drawShareFooter(ctx,W,H,bm?'Panduan mengikut harga terbitan kedai · bukan sebut harga':'Guide from published shop prices · not a quote');
+}
+function drawDealsCard(){
+  const ctx=shareCtx(),W=1080,H=1920,bm=S.lang==='bm',f=unitF(),un=unitName();
+  drawShareBase(ctx,W,H,bm?'TAWARAN TERBAIK HARI INI':'BEST GOLD DEALS TODAY');
+  sharePill(ctx,W,530,S.purity+' '+(bm?'EMAS':'GOLD')+' · '+(bm?'SETIAP ':'PER ')+un.toUpperCase());
+  const raw=shareGoldRaw(),spotG=raw*(S.purity/1000);
+  const list=DEALERS.map(d=>{const o=liveOverride(d,S.purity,spotG);return o?{name:d.name,...o}:null}).filter(Boolean);
+  if(!list.length){drawShareFooter(ctx,W,H,null);return}
+  const buyBest=list.reduce((a,b)=>b.buyP<a.buyP?b:a);
+  const sellList=list.filter(d=>d.sellP);
+  const sellBest=sellList.length?sellList.reduce((a,b)=>b.sellP>a.sellP?b:a):null;
+  const blocks=[
+    {label:bm?'NAK BELI? PALING MURAH':'BUYING? CHEAPEST TODAY',name:buyBest.name,val:fmtRM(buyBest.buyP*f)+'/'+un,color:'#00d68f',live:buyBest.verified==='live'},
+    sellBest?{label:bm?'NAK JUAL? BELI BALIK TERTINGGI':'SELLING? HIGHEST BUYBACK',name:sellBest.name,val:fmtRM(sellBest.sellP*f)+'/'+un,color:'#FFD700',live:sellBest.verified==='live'}:null
+  ].filter(Boolean);
+  let y=700;
+  blocks.forEach(b=>{
+    ctx.fillStyle='rgba(255,255,255,0.02)';ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(80,y,W-160,300,24);ctx.fill();ctx.stroke();
+    ctx.textAlign='center';
+    ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='700 26px Inter,-apple-system,sans-serif';
+    ctx.fillText(b.label,W/2,y+65);
+    ctx.fillStyle='#fff';ctx.font='800 44px Inter,-apple-system,sans-serif';
+    ctx.fillText(b.name,W/2,y+140);
+    ctx.fillStyle=b.color;ctx.font='900 58px Inter,-apple-system,sans-serif';
+    ctx.fillText(b.val,W/2,y+220);
+    if(b.live){ctx.fillStyle='rgba(0,214,143,0.8)';ctx.font='700 22px Inter,-apple-system,sans-serif';ctx.fillText('✓ LIVE',W/2,y+265)}
+    y+=340;
+  });
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='500 28px Inter,-apple-system,sans-serif';
+  ctx.fillText(`${bm?'Harga pasaran':'Market price'}: ${fmtRM(spotG*f)}/${un}`,W/2,y+40);
+  drawShareFooter(ctx,W,H,bm?'Banding semua 18 peniaga di laman kami':'Compare all 18 dealers on our site');
+}
+const SHARE_DESIGNS=[drawPriceCard,drawBoardCard,drawDealsCard];
+const SHARE_DESIGN_NAMES={en:['Price','Shop Board','Best Deals'],bm:['Harga','Papan Kedai','Terbaik']};
+S.shareDesign=0;try{const v=+localStorage.getItem('gr_share_design');if(v>=0&&v<SHARE_DESIGNS.length)S.shareDesign=v}catch(e){}
+function generateShareCard(){(SHARE_DESIGNS[S.shareDesign]||drawPriceCard)()}
 function generateCompareCard(){
   const c=document.getElementById('shareCanvas'),ctx=c.getContext('2d');
   const W=1080,H=1920;c.width=W;c.height=H;
@@ -1187,9 +1265,31 @@ function generateCompareCard(){
   ctx.fillText(bm?'Ditentukur mengikut kadar terbitan peniaga (Jul 2026). Harga sebenar mungkin berbeza.':'Calibrated to published dealer rates (Jul 2026). Actual prices may vary.',W/2,footY+68);
 }
 let shareKind='price';
+function updateShareDesignUI(){
+  document.getElementById('sdDots').innerHTML=SHARE_DESIGNS.map((_,i)=>`<span class="sd-dot${i===S.shareDesign?' active':''}" data-i="${i}"></span>`).join('');
+  document.getElementById('sdName').textContent=(SHARE_DESIGN_NAMES[S.lang]||SHARE_DESIGN_NAMES.en)[S.shareDesign];
+}
+function setShareDesign(i){
+  const n=SHARE_DESIGNS.length;S.shareDesign=((i%n)+n)%n;
+  try{localStorage.setItem('gr_share_design',String(S.shareDesign))}catch(e){}
+  generateShareCard();updateShareDesignUI();
+}
+document.getElementById('sdPrev').addEventListener('click',()=>setShareDesign(S.shareDesign-1));
+document.getElementById('sdNext').addEventListener('click',()=>setShareDesign(S.shareDesign+1));
+document.getElementById('sdDots').addEventListener('click',e=>{const d=e.target.closest('.sd-dot');if(d)setShareDesign(+d.dataset.i)});
+(function(){
+  let x0=null;const pv=document.querySelector('.share-preview');
+  pv.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
+  pv.addEventListener('touchend',e=>{
+    if(x0===null||shareKind==='compare')return;
+    const dx=e.changedTouches[0].clientX-x0;x0=null;
+    if(Math.abs(dx)>40)setShareDesign(S.shareDesign+(dx<0?1:-1));
+  },{passive:true});
+})();
 function openShare(kind){
   shareKind=kind;
-  if(kind==='compare')generateCompareCard();else generateShareCard();
+  document.getElementById('shareDesigns').style.display=kind==='compare'?'none':'';
+  if(kind==='compare')generateCompareCard();else{generateShareCard();updateShareDesignUI()}
   document.getElementById('shareModal').classList.add('open');
   if(navigator.canShare)document.getElementById('shareNative').style.display='';
 }
