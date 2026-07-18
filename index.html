@@ -947,7 +947,19 @@ function genHistory(endPrice,days){const vol=S.metal==='gold'?.004:.008,ppd=days
 /* ═══ CHART ═══ */
 const eventPlugin={id:'eventMarkers',afterDatasetsDraw(chart){const evs=getVisibleEvents();if(!evs.length)return;const{ctx,chartArea:ca,scales:{x:xS}}=chart;evs.forEach(e=>{const px=xS.getPixelForValue(e.ts);if(px<ca.left||px>ca.right)return;ctx.save();ctx.setLineDash([3,4]);ctx.strokeStyle=e.type==='up'?'#00d68f':e.type==='down'?'#ff4757':'#4a4a68';ctx.lineWidth=1;ctx.globalAlpha=.3;ctx.beginPath();ctx.moveTo(px,ca.top);ctx.lineTo(px,ca.bottom);ctx.stroke();ctx.globalAlpha=.9;ctx.setLineDash([]);ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(px,ca.bottom-6,3.5,0,Math.PI*2);ctx.fill();ctx.restore()})}};
 function initChart(){if(typeof Chart==='undefined'){setTimeout(initChart,60);return}if(!Chart.__grReg){Chart.register(eventPlugin);Chart.__grReg=1}const ctx=document.getElementById('chart').getContext('2d'),a=S.metal==='gold'?'#FFD700':'#C0C0C0';S.chart=new Chart(ctx,{type:'line',data:{datasets:[{data:S.history,borderColor:a,borderWidth:2,fill:true,backgroundColor:c=>{const g=c.chart.ctx.createLinearGradient(0,0,0,c.chart.height);g.addColorStop(0,S.metal==='gold'?'rgba(255,215,0,0.2)':'rgba(192,192,192,0.15)');g.addColorStop(1,'transparent');return g},tension:.35,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:a,pointHoverBorderColor:'#fff',pointHoverBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},animation:{duration:600,easing:'easeOutQuart'},scales:{x:{type:'time',display:false},y:{display:false,grace:'5%'}},plugins:{legend:{display:false},eventMarkers:{},tooltip:{backgroundColor:'rgba(8,8,20,0.95)',titleColor:'#8a8aaa',bodyColor:a,bodyFont:{size:15,weight:'700'},titleFont:{size:11},borderColor:'rgba(255,255,255,0.06)',borderWidth:1,padding:12,cornerRadius:12,displayColors:false,callbacks:{title:i=>new Date(i[0].parsed.x).toLocaleDateString(S.lang==='bm'?'ms-MY':'en-MY',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),label:i=>fmtRM(i.parsed.y)}}}}})}
-function updateChart(){if(!S.chart){initChart();return}const a=S.metal==='gold'?'#FFD700':'#C0C0C0',ds=S.chart.data.datasets[0];ds.data=S.history;ds.borderColor=a;ds.pointHoverBackgroundColor=a;S.chart.options.plugins.tooltip.bodyColor=a;S.chart.update('none');requestAnimationFrame(()=>S.chart.update())}
+function updateChart(animate){if(!S.chart){initChart();return}const a=S.metal==='gold'?'#FFD700':'#C0C0C0',ds=S.chart.data.datasets[0];ds.data=S.history;ds.borderColor=a;ds.pointHoverBackgroundColor=a;S.chart.options.plugins.tooltip.bodyColor=a;if(animate){S.chart.update()/* morph y-values (e.g. purity change) */}else{S.chart.update('none');requestAnimationFrame(()=>S.chart.update())}}
+/* Purity change within the same metal: the time-series shape is identical, only
+   scaled by the price ratio — so rescale the current history and let Chart.js
+   morph it, instead of a hard refetch + instant redraw. */
+function changePurity(p){
+  const oldPrice=S.price;S.purity=p;const entry=getLiveEntry();S.prevPrice=S.price;
+  if(entry){S.price=entry.price;S.change=entry.change;S.changePct=entry.pct;S.spot=entry.spot}
+  else{S.price=FALLBACK[S.metal]?.[p]||S.price;S.change=0;S.changePct=0;S.spot=0}
+  if(S.history&&S.history.length&&oldPrice>0&&S.price>0){const r=S.price/oldPrice;S.history=S.history.map(pt=>({x:pt.x,y:+(pt.y*r).toFixed(2)}))}
+  loadSignalData();
+  updatePriceDisplay();updateChart(true);updateTiers();updateWeights();updateEvents();updateZakat();updateZakatHero();updateOgv();applyTheme();updateSignal();updateDealers();updatePortfolio();
+  S.countdown=30;
+}
 
 /* ═══ STATS ═══ */
 /* Shop price tiers on the Live tab (replaces high/low stats & rough spread). */
@@ -1818,7 +1830,7 @@ function centerPurity(smooth){
   if(!row||!b)return;
   row.scrollTo({left:b.offsetLeft+b.offsetWidth/2-row.clientWidth/2,behavior:smooth?'smooth':'auto'});
 }
-function bindPurity(){document.querySelectorAll('.purity-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.purity-btn').forEach(b=>b.classList.remove('active','sil'));btn.classList.add('active');if(S.metal==='silver')btn.classList.add('sil');S.purity=+btn.dataset.purity;centerPurity(true);refresh(false)})})}
+function bindPurity(){document.querySelectorAll('.purity-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.purity-btn').forEach(b=>b.classList.remove('active','sil'));btn.classList.add('active');if(S.metal==='silver')btn.classList.add('sil');centerPurity(true);changePurity(+btn.dataset.purity)})})}
 document.querySelectorAll('.tf-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active','sil'));btn.classList.add('active');if(S.metal==='silver')btn.classList.add('sil');S.tf=btn.dataset.tf;refresh(false)})});
 document.querySelectorAll('.tab').forEach(btn=>{btn.addEventListener('click',()=>switchTab(btn.dataset.tab))});
 document.getElementById('langBtn').addEventListener('click',()=>{S.lang=S.lang==='en'?'bm':'en';try{localStorage.setItem('gr_lang',S.lang)}catch(e){}applyLang()});
