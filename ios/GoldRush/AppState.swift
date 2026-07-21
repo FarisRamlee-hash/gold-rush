@@ -16,6 +16,7 @@ final class AppState: ObservableObject {
     @Published var prices: PricesResponse?
     @Published var isLive = false
     @Published var history: [HistoryPoint] = []      // raw 999-gold RM/g series for current tf
+    @Published var historyLoading = false
     @Published var yearHistory: [HistoryPoint] = []  // 1Y series for the signal
     @Published var dealers: [Dealer] = []
     @Published var liveMap: [String: LiveDealerEntry] = [:]
@@ -207,8 +208,16 @@ final class AppState: ObservableObject {
     }
 
     func loadHistory() async {
-        history = (try? await APIClient.history(tf: tf, metal: metal))?.points ?? history
+        historyLoading = true
+        if let pts = (try? await APIClient.history(tf: tf, metal: metal))?.points {
+            withAnimation(.easeInOut(duration: 0.55)) { history = pts }
+        }
+        historyLoading = false
     }
+
+    /// Stable identity for the current chart series — the crossfade transition
+    /// keys on this, so it fires when new data lands (not while fetching).
+    var chartKey: String { "\(tf)|\(metal)|\(history.first?.t ?? 0)|\(history.count)" }
 
     func loadYearHistory() async {
         yearHistory = (try? await APIClient.history(tf: "1Y", metal: "gold"))?.points ?? yearHistory

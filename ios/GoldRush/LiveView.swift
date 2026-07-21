@@ -4,6 +4,7 @@ import Charts
 struct LiveView: View {
     @EnvironmentObject var st: AppState
     @State private var showUnitInfo = false
+    @State private var showShare = false
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -12,6 +13,7 @@ struct LiveView: View {
                 metalPicker
                 purityPicker
                 priceBlock
+                shareButton
                 chartCard
                 if st.metal == "gold" { tierGrid }
                 quickPrices
@@ -22,6 +24,21 @@ struct LiveView: View {
             .padding(.top, 6)
         }
         .sheet(isPresented: $showUnitInfo) { UnitInfoSheet() }
+        .sheet(isPresented: $showShare) { ShareSheetView() }
+    }
+
+    private var shareButton: some View {
+        Button { showShare = true } label: {
+            HStack(spacing: 7) {
+                Image(systemName: "square.and.arrow.up").font(.system(size: 13, weight: .bold))
+                Text(st.t("Share Price", "Kongsi Harga")).font(.system(size: 13, weight: .heavy))
+            }
+            .foregroundColor(Theme.gold)
+            .padding(.horizontal, 18).padding(.vertical, 10)
+            .background(Theme.goldSoft)
+            .overlay(Capsule().stroke(Theme.gold.opacity(0.25), lineWidth: 1))
+            .clipShape(Capsule())
+        }
     }
 
     // MARK: Header
@@ -156,10 +173,20 @@ struct LiveView: View {
                         .onTapGesture { withAnimation { st.selectTF(f) } }
                 }
             }
-            PriceChart(points: st.displayHistory, tint: st.metal == "silver" ? Theme.silver : Theme.gold)
-                .frame(height: 210)
-                .animation(.spring(response: 0.6), value: st.purity)
-                .animation(.spring(response: 0.6), value: st.displayHistory.last?.y)
+            ZStack {
+                PriceChart(points: st.displayHistory, tint: st.metal == "silver" ? Theme.silver : Theme.gold)
+                    .id(st.chartKey) // crossfade when a new series lands
+                    .transition(.opacity.combined(with: .scale(scale: 0.985)))
+                    .animation(.spring(response: 0.6), value: st.purity)
+                if st.historyLoading {
+                    Color.black.opacity(0.001) // keep layout; dim via chart opacity below
+                    ProgressView().tint(Theme.gold)
+                }
+            }
+            .frame(height: 210)
+            .opacity(st.historyLoading ? 0.45 : 1)
+            .animation(.easeInOut(duration: 0.55), value: st.chartKey)
+            .animation(.easeInOut(duration: 0.25), value: st.historyLoading)
         }
         .card()
     }
