@@ -34,7 +34,7 @@ struct CalculatorCard: View {
             SectionTitle(text: st.t("Calculator", "Kalkulator"))
             HStack(spacing: 12) {
                 field(st.t("Weight", "Berat") + " (\(st.unit.label))", $weight, .weight)
-                Text("⇄").font(.system(size: 18, weight: .bold)).foregroundColor(Theme.gold)
+                Image(systemName: "arrow.left.arrow.right").font(.system(size: 15, weight: .bold)).foregroundColor(Theme.gold)
                 field(st.t("Value (RM)", "Nilai (RM)"), $value, .value)
             }
         }
@@ -141,7 +141,7 @@ struct AlertsCard: View {
 
             ForEach(st.alerts) { a in
                 HStack {
-                    Text("\(a.purity) \(st.t("Gold", "Emas")) \(a.above ? "▲" : "▼") \(fmtRM(a.target))")
+                    Text("\(a.purity) \(st.t("Gold", "Emas")) \(Image(systemName: a.above ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")) \(fmtRM(a.target))")
                         .font(.system(size: 12, weight: .bold)).foregroundColor(.white)
                     if a.triggered {
                         Text("HIT").font(.system(size: 9, weight: .heavy)).foregroundColor(Theme.green)

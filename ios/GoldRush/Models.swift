@@ -100,19 +100,18 @@ struct Holding: Codable, Identifiable {
 }
 
 struct ItemType: Identifiable {
-    let id: String
-    let emoji: String
+    let id: String         // also the ItemIcon key
     let bullion: Bool      // bullion buys back near melt; jewellery loses upah
     let en: String
     let bm: String
 
     static let all: [ItemType] = [
-        ItemType(id: "ring", emoji: "💍", bullion: false, en: "Ring", bm: "Cincin"),
-        ItemType(id: "necklace", emoji: "📿", bullion: false, en: "Necklace", bm: "Rantai leher"),
-        ItemType(id: "bracelet", emoji: "🔗", bullion: false, en: "Bracelet / Bangle", bm: "Gelang"),
-        ItemType(id: "pendant", emoji: "✨", bullion: false, en: "Pendant / Other", bm: "Loket / Lain"),
-        ItemType(id: "coin", emoji: "🪙", bullion: true, en: "Coin", bm: "Syiling"),
-        ItemType(id: "bar", emoji: "🟨", bullion: true, en: "Bar / Wafer", bm: "Jongkong / Wafer"),
+        ItemType(id: "ring", bullion: false, en: "Ring", bm: "Cincin"),
+        ItemType(id: "necklace", bullion: false, en: "Necklace", bm: "Rantai leher"),
+        ItemType(id: "bracelet", bullion: false, en: "Bracelet / Bangle", bm: "Gelang"),
+        ItemType(id: "pendant", bullion: false, en: "Pendant / Other", bm: "Loket / Lain"),
+        ItemType(id: "coin", bullion: true, en: "Coin", bm: "Syiling"),
+        ItemType(id: "bar", bullion: true, en: "Bar / Wafer", bm: "Jongkong / Wafer"),
     ]
 
     static func by(_ id: String) -> ItemType { all.first { $0.id == id } ?? all[5] }

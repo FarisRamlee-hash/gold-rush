@@ -86,11 +86,16 @@ struct PortfolioView: View {
 
         return VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(ti.emoji) \(h.label.isEmpty ? (st.lang == "bm" ? ti.bm : ti.en) : h.label)")
-                        .font(.system(size: 14, weight: .heavy)).foregroundColor(.white)
-                    Text("\(fmtQty(h.grams))g \(h.purity) · \(st.lang == "bm" ? ti.bm : ti.en) · \(st.t("paid", "dibayar")) \(fmtRM(h.paidPerG))/g")
-                        .font(.system(size: 10)).foregroundColor(Theme.text3)
+                HStack(spacing: 9) {
+                    ItemIcon(type: h.type, size: 22)
+                        .frame(width: 30, height: 30)
+                        .background(Theme.goldSoft).clipShape(RoundedRectangle(cornerRadius: 9))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(h.label.isEmpty ? (st.lang == "bm" ? ti.bm : ti.en) : h.label)
+                            .font(.system(size: 14, weight: .heavy)).foregroundColor(.white)
+                        Text("\(fmtQty(h.grams))g \(h.purity) · \(st.lang == "bm" ? ti.bm : ti.en) · \(st.t("paid", "dibayar")) \(fmtRM(h.paidPerG))/g")
+                            .font(.system(size: 10)).foregroundColor(Theme.text3)
+                    }
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 3) {
@@ -107,14 +112,18 @@ struct PortfolioView: View {
 
             HStack(spacing: 8) {
                 Button {
+                    Haptics.tap()
                     withAnimation(.spring(response: 0.35)) { expanded = isOpen ? nil : h.id }
                 } label: {
-                    Text("💰 \(st.t("Where to sell", "Di mana nak jual"))")
-                        .font(.system(size: 11, weight: .bold)).foregroundColor(Theme.gold)
-                        .frame(maxWidth: .infinity).padding(.vertical, 9)
-                        .background(Theme.goldSoft)
-                        .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.gold.opacity(0.2), lineWidth: 1))
-                        .cornerRadius(11)
+                    HStack(spacing: 6) {
+                        Image(systemName: "banknote").font(.system(size: 11, weight: .bold))
+                        Text(st.t("Where to sell", "Di mana nak jual")).font(.system(size: 11, weight: .bold))
+                    }
+                    .foregroundColor(Theme.gold)
+                    .frame(maxWidth: .infinity).padding(.vertical, 9)
+                    .background(Theme.goldSoft)
+                    .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.gold.opacity(0.2), lineWidth: 1))
+                    .cornerRadius(11)
                 }
                 Button {
                     withAnimation { st.holdings.removeAll { $0.id == h.id } }
@@ -143,15 +152,23 @@ struct PortfolioView: View {
                         .font(.system(size: 11)).foregroundColor(Theme.text2)
                     Text(bb.dealer.name).font(.system(size: 11, weight: .heavy)).foregroundColor(.white)
                     if bb.live {
-                        Text("✓ LIVE").font(.system(size: 8, weight: .heavy)).foregroundColor(Theme.green)
+                        HStack(spacing: 3) {
+                            Image(systemName: "checkmark.seal.fill").font(.system(size: 8, weight: .bold))
+                            Text("LIVE").font(.system(size: 8, weight: .heavy))
+                        }.foregroundColor(Theme.green)
                     }
                 }
                 Text("\(st.t("pays", "bayar")) \(fmtRM(sellP))/g · \(st.t("your item fetches about", "barang anda dapat kira-kira")) \(fmtRM(sell))\(ti.bullion ? "" : " · \(st.t("workmanship (upah) not recovered", "upah tidak dikembalikan"))")")
                     .font(.system(size: 11)).foregroundColor(Theme.text2)
                 if let u = bb.dealer.url, let url = URL(string: u) {
-                    Link("\(st.t("Sell here", "Jual di sini")) ↗", destination: url)
+                    Link(destination: url) {
+                        HStack(spacing: 4) {
+                            Text(st.t("Sell here", "Jual di sini"))
+                            Image(systemName: "arrow.up.right").font(.system(size: 9, weight: .bold))
+                        }
                         .font(.system(size: 11, weight: .heavy)).foregroundColor(Theme.gold)
-                        .padding(.top, 2)
+                    }
+                    .padding(.top, 2)
                 }
             } else {
                 Text(st.t("No live buyback price for this purity yet. Check the Compare tab.",
@@ -183,7 +200,7 @@ struct AddHoldingSheet: View {
             Form {
                 Picker(st.t("Item", "Jenis"), selection: $type) {
                     ForEach(ItemType.all) { t in
-                        Text("\(t.emoji) \(st.lang == "bm" ? t.bm : t.en)").tag(t.id)
+                        Text(st.lang == "bm" ? t.bm : t.en).tag(t.id)
                     }
                 }
                 Picker(st.t("Purity", "Ketulenan"), selection: $purity) {

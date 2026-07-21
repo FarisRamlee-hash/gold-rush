@@ -78,6 +78,7 @@ struct RootView: View {
                     }
                 }
                 .onTapGesture {
+                    if tab != t { Haptics.select() }
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { tab = t }
                 }
             }

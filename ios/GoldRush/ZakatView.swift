@@ -67,7 +67,7 @@ struct ZakatView: View {
 
                 if over {
                     let due = st.portfolioMelt * AppState.zakatRate
-                    Text("✓ \(st.t("Above nisab — zakat applies", "Melebihi nisab — zakat dikenakan")) · \(st.t("estimated zakat", "anggaran zakat")): ") .font(.system(size: 12)).foregroundColor(Theme.green)
+                    Text("\(Image(systemName: "checkmark.circle.fill")) \(st.t("Above nisab — zakat applies", "Melebihi nisab — zakat dikenakan")) · \(st.t("estimated zakat", "anggaran zakat")): ").font(.system(size: 12)).foregroundColor(Theme.green)
                     + Text(fmtRM(due)).font(.system(size: 12, weight: .heavy)).foregroundColor(Theme.gold)
                 } else {
                     Text("\(st.t("Below nisab — no zakat yet", "Bawah nisab — belum wajib zakat")) (nisab ≈ \(fmtRM(st.nisabRM)))")
@@ -76,13 +76,17 @@ struct ZakatView: View {
 
                 if let end = st.haulEnd {
                     let days = Calendar.current.dateComponents([.day], from: Date(), to: end).day ?? 0
-                    Text(days > 0
-                         ? "🌙 \(st.t("Haul complete in \(days) days — zakat falls due if you stay above nisab.", "Haul genap dalam \(days) hari — zakat wajib jika kekal melebihi nisab."))"
-                         : "🌙 \(st.t("Haul complete — zakat is due this year", "Haul genap — zakat wajib tahun ini"))")
-                        .font(.system(size: 11)).foregroundColor(days > 0 ? Theme.text2 : Theme.gold)
-                        .padding(10)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white.opacity(0.03)).cornerRadius(12)
+                    HStack(alignment: .top, spacing: 7) {
+                        Image(systemName: "moon.stars.fill")
+                            .font(.system(size: 12)).foregroundColor(Theme.gold)
+                        Text(days > 0
+                             ? st.t("Haul complete in \(days) days — zakat falls due if you stay above nisab.", "Haul genap dalam \(days) hari — zakat wajib jika kekal melebihi nisab.")
+                             : st.t("Haul complete — zakat is due this year", "Haul genap — zakat wajib tahun ini"))
+                            .font(.system(size: 11)).foregroundColor(days > 0 ? Theme.text2 : Theme.gold)
+                    }
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.white.opacity(0.03)).cornerRadius(12)
                 }
             }
         }
@@ -181,10 +185,13 @@ struct ZakatView: View {
             let body = ZakatBody.all[st.zakatStateIdx]
             if let url = URL(string: body.url) {
                 Link(destination: url) {
-                    Text("\(st.t("Pay via", "Bayar melalui")) \(body.name) ↗")
-                        .font(.system(size: 13, weight: .heavy)).foregroundColor(.black)
-                        .frame(maxWidth: .infinity).padding(.vertical, 12)
-                        .background(Theme.gold).cornerRadius(13)
+                    HStack(spacing: 6) {
+                        Text("\(st.t("Pay via", "Bayar melalui")) \(body.name)")
+                        Image(systemName: "arrow.up.right").font(.system(size: 11, weight: .bold))
+                    }
+                    .font(.system(size: 13, weight: .heavy)).foregroundColor(.black)
+                    .frame(maxWidth: .infinity).padding(.vertical, 12)
+                    .background(Theme.gold).cornerRadius(13)
                 }
             }
             Text(st.t("Official zakat body for your state. Uruf varies by state — check with your zakat body. Estimates, not a fatwa.",

@@ -24,8 +24,8 @@ struct CompareView: View {
                     }
                 }
 
-                Text(st.t("✓ LIVE = confirmed today from official sources · ≈ EST = calibrated estimate. Always confirm on the dealer site.",
-                          "✓ LIVE = disahkan hari ini dari sumber rasmi · ≈ EST = anggaran ditentukur. Sentiasa sahkan di laman peniaga."))
+                Text(st.t("LIVE = confirmed today from official sources. EST = calibrated estimate. Always confirm on the dealer site.",
+                          "LIVE = disahkan hari ini dari sumber rasmi. EST = anggaran ditentukur. Sentiasa sahkan di laman peniaga."))
                     .font(.system(size: 10)).foregroundColor(Theme.text3)
                     .multilineTextAlignment(.center)
                     .padding(.top, 6)
@@ -127,10 +127,17 @@ struct CompareView: View {
 
     private var freshnessLine: some View {
         let liveN = st.compareRows.filter(\.live).count
-        return Text("\(st.compareRows.count) \(st.t("dealers", "peniaga"))\(liveN > 0 ? "  ·  ✓ \(liveN) \(st.t("live-verified", "disahkan langsung"))" : "")")
-            .font(.system(size: 11, weight: .semibold)).foregroundColor(Theme.text3)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 4)
+        return HStack(spacing: 5) {
+            Text("\(st.compareRows.count) \(st.t("dealers", "peniaga"))")
+            if liveN > 0 {
+                Text("·").foregroundColor(Theme.text3.opacity(0.5))
+                Image(systemName: "checkmark.seal.fill").font(.system(size: 9)).foregroundColor(Theme.green)
+                Text("\(liveN) \(st.t("live-verified", "disahkan langsung"))")
+            }
+        }
+        .font(.system(size: 11, weight: .semibold)).foregroundColor(Theme.text3)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
     }
 }
 
@@ -155,11 +162,14 @@ struct DealerCard: View {
                             .font(.system(size: 15, weight: .heavy)).foregroundColor(.white)
                             .lineLimit(1)
                         if row.live {
-                            Text("✓ LIVE")
-                                .font(.system(size: 8, weight: .heavy)).foregroundColor(Theme.green)
-                                .padding(.horizontal, 6).padding(.vertical, 3)
-                                .background(Theme.green.opacity(0.08))
-                                .clipShape(Capsule())
+                            HStack(spacing: 3) {
+                                Image(systemName: "checkmark.seal.fill").font(.system(size: 8, weight: .bold))
+                                Text("LIVE").font(.system(size: 8, weight: .heavy))
+                            }
+                            .foregroundColor(Theme.green)
+                            .padding(.horizontal, 6).padding(.vertical, 3)
+                            .background(Theme.green.opacity(0.08))
+                            .clipShape(Capsule())
                         }
                     }
                     HStack(spacing: 5) {
@@ -176,8 +186,12 @@ struct DealerCard: View {
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(fmtRM(row.buyP * f))
                         .font(.system(size: 17, weight: .heavy)).foregroundColor(.white)
-                    Text(row.sellP.map { "↩ \(fmtRM($0 * f))" } ?? "↩ —")
-                        .font(.system(size: 11, weight: .semibold)).foregroundColor(Theme.text2)
+                    HStack(spacing: 3) {
+                        Image(systemName: "arrow.uturn.left").font(.system(size: 8, weight: .bold))
+                        Text(row.sellP.map { fmtRM($0 * f) } ?? "—")
+                            .font(.system(size: 11, weight: .semibold))
+                    }
+                    .foregroundColor(Theme.text2)
                 }
 
                 Image(systemName: "chevron.down")
@@ -212,13 +226,16 @@ struct DealerCard: View {
 
                     if let u = d.url, let url = URL(string: u) {
                         Link(destination: url) {
-                            Text("\(st.t("Visit Site", "Lawati")) ↗")
-                                .font(.system(size: 12, weight: .heavy)).foregroundColor(Theme.gold)
-                                .frame(maxWidth: .infinity).padding(.vertical, 10)
-                                .background(Theme.goldSoft)
-                                .overlay(RoundedRectangle(cornerRadius: 11)
-                                    .stroke(Theme.gold.opacity(0.2), lineWidth: 1))
-                                .cornerRadius(11)
+                            HStack(spacing: 5) {
+                                Text(st.t("Visit Site", "Lawati"))
+                                Image(systemName: "arrow.up.right").font(.system(size: 10, weight: .bold))
+                            }
+                            .font(.system(size: 12, weight: .heavy)).foregroundColor(Theme.gold)
+                            .frame(maxWidth: .infinity).padding(.vertical, 10)
+                            .background(Theme.goldSoft)
+                            .overlay(RoundedRectangle(cornerRadius: 11)
+                                .stroke(Theme.gold.opacity(0.2), lineWidth: 1))
+                            .cornerRadius(11)
                         }
                     }
                 }

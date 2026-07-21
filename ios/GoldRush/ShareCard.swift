@@ -53,13 +53,17 @@ struct ShareCardView: View {
 
                 if let e = st.entry {
                     let up = e.change >= 0
-                    Text("\(up ? "▲" : "▼") RM \(fmtNum(abs(e.change) * st.unitFactor)) (\(up ? "+" : "")\(String(format: "%.2f", e.pct))%)")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(up ? Theme.green : Theme.red)
-                        .padding(.horizontal, 13).padding(.vertical, 6)
-                        .background((up ? Theme.green : Theme.red).opacity(0.1))
-                        .clipShape(Capsule())
-                        .padding(.top, 10)
+                    HStack(spacing: 4) {
+                        Image(systemName: up ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
+                            .font(.system(size: 8, weight: .bold))
+                        Text("RM \(fmtNum(abs(e.change) * st.unitFactor)) (\(up ? "+" : "")\(String(format: "%.2f", e.pct))%)")
+                            .font(.system(size: 12, weight: .bold))
+                    }
+                    .foregroundColor(up ? Theme.green : Theme.red)
+                    .padding(.horizontal, 13).padding(.vertical, 6)
+                    .background((up ? Theme.green : Theme.red).opacity(0.1))
+                    .clipShape(Capsule())
+                    .padding(.top, 10)
                 }
 
                 // Shop tiers 2×2

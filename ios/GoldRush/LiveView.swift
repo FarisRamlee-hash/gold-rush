@@ -85,7 +85,10 @@ struct LiveView: View {
                     .frame(maxWidth: .infinity).padding(.vertical, 11)
                     .background(active ? (m == "silver" ? Theme.silver : Theme.gold) : .clear)
                     .clipShape(Capsule())
-                    .onTapGesture { withAnimation(.spring(response: 0.35)) { st.selectMetal(m) } }
+                    .onTapGesture {
+                        Haptics.tap()
+                        withAnimation(.spring(response: 0.35)) { st.selectMetal(m) }
+                    }
             }
         }
         .padding(5).background(Theme.card).clipShape(Capsule())
@@ -108,6 +111,7 @@ struct LiveView: View {
                             .clipShape(Capsule())
                             .id(p)
                             .onTapGesture {
+                                Haptics.select()
                                 withAnimation(.spring(response: 0.4)) {
                                     st.purity = p
                                     proxy.scrollTo(p, anchor: .center)
@@ -131,28 +135,38 @@ struct LiveView: View {
                     .foregroundColor(st.metal == "silver" ? Theme.silver : Theme.gold)
                     .contentTransition(.numericText())
                 Button {
+                    Haptics.tap()
                     withAnimation(.spring(response: 0.35)) { st.cycleUnit() }
                 } label: {
-                    Text("/\(st.unit.label) ⇄")
-                        .font(.system(size: 13, weight: .bold)).foregroundColor(Theme.gold)
-                        .padding(.horizontal, 10).padding(.vertical, 5)
-                        .background(Theme.goldSoft)
-                        .overlay(Capsule().stroke(Theme.gold.opacity(0.2), lineWidth: 1))
-                        .clipShape(Capsule())
+                    HStack(spacing: 4) {
+                        Text("/\(st.unit.label)").font(.system(size: 13, weight: .bold))
+                        Image(systemName: "arrow.left.arrow.right").font(.system(size: 10, weight: .bold))
+                    }
+                    .foregroundColor(Theme.gold)
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(Theme.goldSoft)
+                    .overlay(Capsule().stroke(Theme.gold.opacity(0.2), lineWidth: 1))
+                    .clipShape(Capsule())
                 }
-                .simultaneousGesture(LongPressGesture(minimumDuration: 0.45).onEnded { _ in showUnitInfo = true })
+                .simultaneousGesture(LongPressGesture(minimumDuration: 0.45).onEnded { _ in
+                    Haptics.soft(); showUnitInfo = true
+                })
             }
             .animation(.spring(response: 0.4), value: st.entry?.price)
             .animation(.spring(response: 0.4), value: st.unit)
 
             if let e = st.entry {
                 let up = e.change >= 0
-                Text("\(up ? "▲" : "▼") RM \(fmtNum(abs(e.change) * st.unitFactor))  (\(up ? "+" : "")\(String(format: "%.2f", e.pct))%)")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(up ? Theme.green : Theme.red)
-                    .padding(.horizontal, 15).padding(.vertical, 7)
-                    .background((up ? Theme.green : Theme.red).opacity(0.1))
-                    .clipShape(Capsule())
+                HStack(spacing: 5) {
+                    Image(systemName: up ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
+                        .font(.system(size: 9, weight: .bold))
+                    Text("RM \(fmtNum(abs(e.change) * st.unitFactor))  (\(up ? "+" : "")\(String(format: "%.2f", e.pct))%)")
+                        .font(.system(size: 14, weight: .bold))
+                }
+                .foregroundColor(up ? Theme.green : Theme.red)
+                .padding(.horizontal, 15).padding(.vertical, 7)
+                .background((up ? Theme.green : Theme.red).opacity(0.1))
+                .clipShape(Capsule())
             }
         }
     }
