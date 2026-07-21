@@ -4,8 +4,7 @@ import SwiftUI
 struct GoldRushApp: App {
     var body: some Scene {
         WindowGroup {
-            LiveView()
-                .preferredColorScheme(.dark)
+            RootView()
         }
     }
 }

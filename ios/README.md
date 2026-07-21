@@ -4,11 +4,29 @@ A proper native SwiftUI app (not a PWA/webview). It reuses the **existing Vercel
 backend** — the same `/api/*` endpoints the website uses — so there is no backend
 to rebuild. Only the UI is native Swift.
 
-## Slice 1 (this commit): Live screen
+## Slice 2 (current): full app — web feature parity
 
-Native Live tab: Gold/Silver toggle, purity selector (999–375), live price with
-change, and the shop-price tiers (New / Used / Trade-in / Buyback), all driven by
-`https://gold-rush-tau.vercel.app/api/prices` and auto-refreshing every 30s.
+Five native screens behind a floating pill tab bar (matchedGeometryEffect):
+
+- **Live** — Gold/Silver, purity slider (999–375), live price with numericText
+  transitions, Swift Charts history (24H–1Y) with smooth purity morph, shop
+  tiers (New/Used/Trade-in/Buyback), unit-aware quick prices, RSI-based signal.
+  Tap the `/g ⇄` pill to cycle g → mayam → serial → tahil; long-press for the
+  unit info sheet.
+- **Compare** — all dealers from `/api/content` with the `/api/live-dealers`
+  crosscheck (✓ LIVE vs ≈ EST badges), physical/digital + category filters,
+  popular/cheapest sort, premium vs spot, visit-site links, freshness line.
+- **Portfolio** — jewellery item types, honest sell-back valuation (live best
+  buyback, upah excluded), melt shown transparently, per-item "where to sell"
+  drawer, add sheet.
+- **Zakat** — Hijri year, nisab progress bar from portfolio, 354-day haul
+  countdown, calculator (kept/worn + uruf), 14-state official payment directory.
+- **Tools** — weight⇄value calculator, old-gold valuator, price alerts
+  (checked every 30s while open).
+
+Fully bilingual EN/BM (header toggle). Everything is driven by the production
+Vercel APIs and refreshes every 30s. The whole source passes
+`xcrun -sdk iphonesimulator swiftc -typecheck` clean.
 
 ## Set up in Xcode (one-time)
 
